@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [DEPENDENCY_STRATEGY.md](docs/DEPENDENCY_STRATEGY.md): CLI / **`[pages]`** / **`[runner]`** notes.
 - [ROADMAP.md](docs/ROADMAP.md): **0.4.0** release index; Phase 2 “Next” adjusted.
 
+### Fixed
+
+- **CI:** **`cli-smoke`** sets job-level **`UV_PYTHON`** so **`uv run streamtree doctor`** reuses the **`[cli]`** sync environment (otherwise **`uv run`** could follow **`.python-version`** and miss Typer).
+
 ## [0.3.0] — 2026-05-12
 
 ### Added
