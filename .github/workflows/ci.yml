@@ -50,6 +50,9 @@ jobs:
 
   cli-smoke:
     runs-on: ubuntu-latest
+    env:
+      # Match ``uv sync`` interpreter; otherwise ``uv run`` follows ``.python-version`` and recreates a venv without ``--extra cli``.
+      UV_PYTHON: "3.12"
     steps:
       - uses: actions/checkout@v6
 
@@ -62,8 +65,6 @@ jobs:
         run: uv python install 3.12
 
       - name: Sync dev + cli extras
-        env:
-          UV_PYTHON: "3.12"
         run: uv sync --frozen --python 3.12 --extra dev --extra cli
 
       - name: streamtree doctor
