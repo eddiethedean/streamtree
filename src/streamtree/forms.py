@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from typing import Annotated, Any, TypeVar, get_args, get_origin
 
 from pydantic import BaseModel, ValidationError
+
+from streamtree.elements.widgets import TextInput
+from streamtree.state import StateVar, state
 
 M = TypeVar("M", bound=BaseModel)
 
@@ -65,4 +69,47 @@ def format_validation_errors(exc: ValidationError) -> str:
     return "\n".join(lines) if lines else str(exc)
 
 
-__all__ = ["format_validation_errors", "model_validate_json", "str_field_names"]
+def bind_str_fields(
+    model_cls: type[BaseModel],
+    *,
+    key_prefix: str = "model_form",
+) -> dict[str, StateVar[str]]:
+    """Create ``StateVar`` strings for each ``str`` / optional-``str`` field."""
+    if not key_prefix.strip():
+        raise ValueError("key_prefix must be a non-empty string")
+    p = key_prefix.strip()
+    return {n: state("", key=f"{p}.{n}") for n in str_field_names(model_cls)}
+
+
+def str_text_inputs(
+    model_cls: type[BaseModel],
+    *,
+    bindings: Mapping[str, StateVar[str]] | None = None,
+    key_prefix: str = "model_form",
+    field_labels: Mapping[str, str] | None = None,
+) -> tuple[TextInput, ...]:
+    """Build ``TextInput`` widgets for each string field."""
+    names = str_field_names(model_cls)
+    b: dict[str, StateVar[str]] = (
+        dict(bindings)
+        if bindings is not None
+        else bind_str_fields(model_cls, key_prefix=key_prefix)
+    )
+    for n in names:
+        if n not in b:
+            raise ValueError(f"missing StateVar binding for field {n!r}")
+    labels = field_labels or {}
+    out: list[TextInput] = []
+    for n in names:
+        label = labels.get(n, n.replace("_", " ").title())
+        out.append(TextInput(label, value=b[n]))
+    return tuple(out)
+
+
+__all__ = [
+    "bind_str_fields",
+    "format_validation_errors",
+    "model_validate_json",
+    "str_field_names",
+    "str_text_inputs",
+]

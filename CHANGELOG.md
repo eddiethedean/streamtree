@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] — 2026-05-12
+
+### Added
+
+- **`streamtree.app.App`** shell with optional sidebar composition, **`apply_page_config`**, **`app_root_element`**, and **`render_app()`** (one-time `st.set_page_config` guard).
+- **`streamtree.theme`**: **`Theme`** (Pydantic), **`theme()`** / **`theme_css()`**, and **`ThemeRoot`** element for CSS injection via `app_context.provider(theme=...)`.
+- **`streamtree.asyncio`**: **`submit()`** / **`TaskHandle`** for daemon-thread background work with session-scoped poll keys (stdlib-only; optional `[asyncio]` extra unchanged as meta).
+- **`streamtree.forms`**: **`bind_str_fields`** and **`str_text_inputs`** for declarative `TextInput` grids from Pydantic string fields.
+- Examples **`examples/app_shell.py`**, **`examples/async_bg.py`**, **`examples/model_form.py`**.
+
 ## [0.2.0] — 2026-05-12
 
 ### Added
@@ -33,5 +43,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Runnable example: `examples/counter.py`.
 - Design docs under `docs/` (plan, roadmap, dependency strategy).
 
+[0.3.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.3.0
 [0.2.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.2.0
 [0.1.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.1.0

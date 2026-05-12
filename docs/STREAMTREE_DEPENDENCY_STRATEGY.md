@@ -229,6 +229,8 @@ Keeps the **default** `streamtree` install free of extra threading/async infrast
 
 Optional dependency under **`async`**, wrapped entirely behind **`streamtree.asyncio`**. Application code should not depend on vendor imports as the primary API.
 
+**As of 0.3.0:** `streamtree.asyncio` ships in the **default** install with a **stdlib** `submit` / `TaskHandle` implementation (daemon threads + `st.session_state` boxes). The **`asyncio`** optional extra in `pyproject.toml` remains an empty stub reserved for a future backend (for example asynclit) without changing import paths.
+
 ```toml
 [project.optional-dependencies]
 async = [

@@ -55,6 +55,8 @@ Per the dependency strategy, the base package should standardize on:
 | **typing-extensions** | Portable modern typing (when Python version warrants it) |
 | **streamlit-extras** | Curated building blocks (badges, metric cards, helpers); **expose only through Streamtree**, not as a re-export surface |
 
+**0.3.0:** `streamtree.asyncio` (stdlib thread MVP), `streamtree.app` / `render_app`, `streamtree.theme`, and expanded `streamtree.forms` string bindings—see [CHANGELOG.md](../CHANGELOG.md). **`streamlit-extras`** remains a documented hard-dependency target, not yet pinned in the default install.
+
 ## Optional extras (target)
 
 | Extra | Purpose (summary) |

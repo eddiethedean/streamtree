@@ -11,8 +11,16 @@ _Last updated: 2026-05-12._
 |-------|--------|---------------|
 | Phase 0 — Foundation | Mostly complete | Package layout, Streamlit renderer, plan / roadmap / strategy docs. |
 | Phase 1 — MVP | In progress | **0.1.0**: core elements, state, `render`, `render_to_tree`. **0.2.0**: adds **Pydantic** + **typing-extensions** and stub extras; `streamlit-extras` and deeper memoization APIs still open. |
-| Phase 2 — Application features | In progress | **0.2.0** delivers the first tranche (see Phase 2 subsections below). Theme, auth, portals, async tasks, and full form builder remain for **0.3+**. |
-| Phase 3+ | Planned | Scope unchanged; timing follows Phase 2. |
+| Phase 2 — Application features | In progress | **0.2.0**: routing, `Routes`, `ErrorBoundary`, `app_context`, forms helpers. **0.3.0**: `App` + `render_app`, `theme` / `ThemeRoot`, `streamtree.asyncio` (stdlib thread MVP), `bind_str_fields` / `str_text_inputs`. **Still open for 0.3.1+ / 0.4.0:** richer **App** navigation, **auth**, **portals**, **imperative handles**, **route prefetch**, **`streamlit-extras`** curation, deeper **form builder** / async progress. |
+| Phase 3+ | Planned | Data toolkit and performance work; timing follows Phase 2 closure. |
+
+### 0.3.0 (Phase 2 — second tranche, shipped)
+
+- **`streamtree.app`**: `App`, `apply_page_config`, `app_root_element`, and `render_app()` with guarded `st.set_page_config`.
+- **`streamtree.theme`**: `Theme` (Pydantic), `theme()` / `theme_css()`, `ThemeRoot` for CSS injection alongside `provider(theme=...)`.
+- **`streamtree.asyncio`**: `submit` / `TaskHandle` for daemon-thread work keyed in `st.session_state` (stdlib-only; `[asyncio]` extra remains a documented slot for future backends).
+- **`streamtree.forms`**: `bind_str_fields`, `str_text_inputs` for Pydantic string-field `TextInput` grids.
+- **Examples:** `examples/app_shell.py`, `examples/async_bg.py`, `examples/model_form.py`.
 
 ### 0.2.0 (first Phase 2 tranche, shipped)
 
@@ -22,14 +30,14 @@ _Last updated: 2026-05-12._
 - **Context / DI (minimal):** `streamtree.app_context` with `provider`, `lookup`, and `current_bag`.
 - **Typed forms (slice):** `streamtree.forms` (`str_field_names`, `model_validate_json`, `format_validation_errors`).
 
-### Phase 2 — deferred to 0.3+ (intent unchanged)
+### Phase 2 — remaining after 0.3.0 (backlog)
 
-- Full **App** object and richer **navigation framework**; **theme engine**
+- Richer **App** / **navigation framework** (beyond shell + `Routes` composition)
 - **Authentication** abstractions and **`[auth]`** wrappers
 - **Portals / layout targets**, **imperative handles**
-- **Session-scoped async tasks**, **`streamtree.asyncio`**, **route-level async prefetch**
+- **Route-level async prefetch** and optional **progress** surfaces on `streamtree.asyncio`
 - **`streamlit-extras`** curation behind Streamtree names
-- **Form builder** beyond the 0.2.0 validation helpers
+- **Form builder** beyond string `TextInput` grids (numeric fields, layout presets, submit batching)
 
 ---
 
@@ -156,7 +164,7 @@ Streamtree is **not** React and will **not** ship a browser virtual DOM. The ite
 
 ### Release notes
 
-What shipped in **0.2.0** versus what stays on the **Phase 2** backlog for **0.3+** is summarized under [Progress and release alignment](#progress-and-release-alignment).
+What shipped in **0.2.0** and **0.3.0** versus what stays on the **Phase 2** backlog is summarized under [Progress and release alignment](#progress-and-release-alignment).
 
 ## Features
 - Routing
@@ -170,7 +178,7 @@ What shipped in **0.2.0** versus what stays on the **Phase 2** backlog for **0.3
 - **Context / DI** — scoped providers for theme, tenant, flags, and route-level data without threading through every component signature
 - **Portals / layout targets** — elements or APIs that render a declared subtree into sidebar, dialog, or other supported Streamlit regions while preserving a single composition model
 - **Imperative handles** — supported focus, scroll, and widget actions exposed through Streamtree where Streamlit’s API allows; clear docs where not possible
-- **Session-scoped async tasks** — named task handles stored with stable keys (precursor to `streamtree.asyncio`); document cancellation when navigation changes
+- **Session-scoped async tasks** — **`streamtree.asyncio`** MVP (`submit` / `TaskHandle`, stdlib threads); **progress**, richer cancellation, and **route-level async prefetch** remain on the backlog
 - **Route-level async prefetch (optional)** — parallel warm-up when entering a page, with stale-run discard when query params or auth context change
 
 ## Optional dependency alignment
@@ -179,10 +187,10 @@ What shipped in **0.2.0** versus what stays on the **Phase 2** backlog for **0.3
 - **`[async]` extra (when shipped):** optional backend for background event-loop + poll semantics (e.g. asynclit), exposed only through **`streamtree.asyncio`** — no primary-doc workflow that requires `import asynclit` in app code
 
 ## Deliverables
-- App object
+- **App object** (initial): `App` + `render_app` + guarded `set_page_config`; richer navigation framework still planned
 - Navigation framework
-- Theme engine
-- Form builder
+- **Theme engine** (initial): `Theme`, `theme()`, `ThemeRoot` CSS injection via `app_context`; deeper Streamlit-native theming TBD
+- **Form builder** (initial): `bind_str_fields` / `str_text_inputs`; richer field types and layout still planned
 - **Resilience and ergonomics** — documented error-boundary usage, context providers, and portal/layout-target patterns in example apps
 - **Async example app** — at least one sample using **parallel** async (or threaded) data loads + loading/error branches without blocking the rerun thread
 

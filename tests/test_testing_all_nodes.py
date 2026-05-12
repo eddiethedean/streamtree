@@ -27,6 +27,7 @@ from streamtree.elements import (
     Tabs,
     Text,
     TextInput,
+    ThemeRoot,
     Title,
     VStack,
 )
@@ -40,6 +41,7 @@ def test_render_to_tree_exercises_all_node_types() -> None:
     tree = render_to_tree(
         Page(
             VStack(
+                ThemeRoot(),
                 fragment(Text("f")),
                 HStack(Text("h")),
                 Columns(Text("c1"), weights=(1.0,)),

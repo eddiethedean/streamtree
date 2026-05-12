@@ -25,6 +25,10 @@ Streamtree is **not** a React clone, a browser framework, or a JS build step. It
 - **Python-first** — decorators, plain functions, standard typing
 - **Pydantic v2** in the default install for typed models and validation helpers
 - **Declarative layouts** — `Page`, `Card`, `Grid`, `VStack`, `Form`, `Tabs`, `Sidebar`, `Routes`, `ErrorBoundary`, …
+- **`App` + `render_app`** — one guarded `st.set_page_config` and optional sidebar + main composition
+- **Theming** — `Theme`, `ThemeRoot`, `theme()` / `theme_css()` with `app_context.provider(theme=...)`
+- **Background tasks** — `streamtree.asyncio.submit` / `TaskHandle` (poll `status` across reruns; stdlib threads)
+- **Form builder slice** — `bind_str_fields` / `str_text_inputs` for Pydantic string fields
 - **Session-backed state** — `state`, `toggle_state`, `form_state`, `memo`, `cache`
 - **Streamlit renderer** — virtual tree → `st.*` on each rerun
 - **Raw `st` when you need it** — `@component` bodies run during render, so you can compose `st.columns`, `st.metric`, custom components, then `return` elements or `fragment()` (see **Custom Streamlit inside `@component`** below)
@@ -45,7 +49,7 @@ Streamtree is **not** a React clone, a browser framework, or a JS build step. It
 **From PyPI** (after you publish this version):
 
 ```bash
-pip install streamtree==0.2.0
+pip install streamtree==0.3.0
 ```
 
 **From a clone** (editable, with dev tools):
@@ -58,7 +62,7 @@ pip install -e ".[dev]"
 uv sync --extra dev
 ```
 
-Optional install groups (`tables`, `charts`, `ui`, `auth`, `asyncio`, `cli`) are stub extras today; see [STREAMTREE_DEPENDENCY_STRATEGY.md](docs/STREAMTREE_DEPENDENCY_STRATEGY.md). Combine with e.g. `pip install "streamtree[tables,charts]"` as wrappers land.
+Optional install groups (`tables`, `charts`, `ui`, `auth`, `asyncio`, `cli`) are stub extras today; see [STREAMTREE_DEPENDENCY_STRATEGY.md](docs/STREAMTREE_DEPENDENCY_STRATEGY.md). The **`streamtree.asyncio`** helpers (thread-pool MVP) ship in the **default** install; the **`asyncio`** extra name stays reserved for future optional backends. Combine with e.g. `pip install "streamtree[tables,charts]"` as wrappers land.
 
 ---
 
@@ -90,6 +94,9 @@ Run the bundled demo from the repo root:
 ```bash
 streamlit run examples/counter.py
 streamlit run examples/routed_app.py
+streamlit run examples/app_shell.py
+streamlit run examples/async_bg.py
+streamlit run examples/model_form.py
 ```
 
 ## Custom Streamlit inside `@component`
@@ -147,6 +154,29 @@ Give every **manual** `st` widget a **stable `key=`** when Streamlit requires it
 
 ---
 
+## App shell, theming, and background tasks (0.3+)
+
+Use **`App`** with **`render_app()`** for `st.set_page_config` once per session and optional **`Sidebar`** + main body composition. Pair **`ThemeRoot`** with **`provider(theme=Theme(...))`** for CSS variables, and **`streamtree.asyncio.submit`** for work that should not block the main script (poll `TaskHandle.status` on each rerun).
+
+```python
+from streamtree import asyncio, component, render_app
+from streamtree.app import App
+from streamtree.app_context import provider
+from streamtree.elements import Page, Text, ThemeRoot, VStack
+from streamtree.theme import Theme
+
+@component
+def Body() -> object:
+    h = asyncio.submit(lambda: 7, key="demo_job")
+    return VStack(ThemeRoot(), Text(f"job={h.status()} result={h.result()}"))
+
+if __name__ == "__main__":
+    with provider(theme=Theme(primary_color="#0068c9")):
+        render_app(App(page_title="Demo", body=Body()))
+```
+
+---
+
 ## Layout and state at a glance
 
 **Grid of components**
@@ -188,8 +218,11 @@ TextInput(label="Search", value=search)
 ```text
 src/streamtree/     # installable package
   app_context.py    # provider / lookup DI bag (contextvars)
+  app.py            # App shell + page_config helpers
   routing.py        # query-param route sync + set_route
-  forms.py          # Pydantic str-field + JSON validation helpers
+  forms.py          # Pydantic helpers + str TextInput bindings
+  theme.py          # Theme model + ThemeRoot CSS injection
+  asyncio/          # submit / TaskHandle (stdlib thread MVP)
   core/             # elements, @component, render, render_context
   elements/         # layouts + widgets
   state/            # session state helpers

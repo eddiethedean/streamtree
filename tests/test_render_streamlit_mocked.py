@@ -40,6 +40,7 @@ from streamtree.elements import (
 )
 from streamtree.renderers import streamlit as rs
 from streamtree.state import FormState, StateVar, form_state, state, toggle_state
+from streamtree.theme import ThemeRoot
 
 
 def _make_st(
@@ -440,3 +441,13 @@ def test_render_routes_unknown_route_falls_back_to_default() -> None:
                 slot="0",
             )
     st.write.assert_any_call("H")
+
+
+def test_render_theme_root_injects_css() -> None:
+    st = _make_st()
+    with _patched_st(st), render_context("tr"):
+        rs.render_element(ThemeRoot(), slot="0")
+    st.markdown.assert_called_once()
+    arg0 = st.markdown.call_args[0][0]
+    assert "<style>" in arg0
+    assert "--st-theme-primary" in arg0

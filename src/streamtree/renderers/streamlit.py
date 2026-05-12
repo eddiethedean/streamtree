@@ -40,6 +40,7 @@ from streamtree.elements.widgets import (
 )
 from streamtree.routing import sync_route
 from streamtree.state import FormState, StateVar, ToggleState
+from streamtree.theme import ThemeRoot, theme_css
 
 __all__ = ["render_element"]
 
@@ -171,6 +172,13 @@ def render_element(el: Element, *, slot: str = "0") -> None:
     if isinstance(el, Fragment):
         for i, ch in enumerate(el.children):
             render_element(ch, slot=f"{slot}.f{i}")
+        return
+
+    if isinstance(el, ThemeRoot):
+        st.markdown(
+            f"<style>{theme_css()}</style>",
+            unsafe_allow_html=True,
+        )
         return
 
     if isinstance(el, ComponentCall):

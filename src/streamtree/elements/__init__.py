@@ -30,6 +30,7 @@ from streamtree.elements.widgets import (
     TextInput,
     Title,
 )
+from streamtree.theme import Theme, ThemeRoot
 
 __all__ = [
     "Button",
@@ -57,6 +58,8 @@ __all__ = [
     "Tabs",
     "Text",
     "TextInput",
+    "Theme",
+    "ThemeRoot",
     "Title",
     "VStack",
     "fragment",

@@ -34,6 +34,7 @@ from streamtree.elements.widgets import (
     TextInput,
     Title,
 )
+from streamtree.theme import ThemeRoot
 
 __all__ = ["render_to_tree"]
 
@@ -64,6 +65,9 @@ def _node(el: Element, *, expand_components: bool) -> dict[str, Any]:
             "key": el.key,
             "children": [_node(c, expand_components=expand_components) for c in el.children],
         }
+
+    if isinstance(el, ThemeRoot):
+        return {"kind": "ThemeRoot", "key": el.key}
 
     if isinstance(el, ComponentCall):
         if expand_components:

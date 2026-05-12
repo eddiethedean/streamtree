@@ -4,11 +4,14 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from functools import wraps
-from typing import ParamSpec, TypeVar
+from typing import TYPE_CHECKING, ParamSpec, TypeVar
 
 from streamtree.core.context import render_context
 from streamtree.core.element import ComponentCall, Element
 from streamtree.renderers.streamlit import render_element as _render_streamlit
+
+if TYPE_CHECKING:
+    from streamtree.app import App
 
 P = ParamSpec("P")
 R = TypeVar("R", bound=Element)
@@ -34,3 +37,15 @@ def render(root: Element, *, context_root: str = "app") -> None:
     """Render a virtual element tree using the Streamlit backend."""
     with render_context(context_root):
         _render_streamlit(root)
+
+
+def render_app(app: App, *, context_root: str = "app") -> None:
+    """Render an :class:`streamtree.app.App` shell (page config once, then body/sidebar tree)."""
+    from streamtree.app import App as AppShell
+    from streamtree.app import app_root_element, apply_page_config
+
+    if not isinstance(app, AppShell):
+        raise TypeError(f"render_app expects App, got {type(app)!r}")
+    apply_page_config(app)
+    with render_context(context_root):
+        _render_streamlit(app_root_element(app))

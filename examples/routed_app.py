@@ -58,7 +58,10 @@ def App() -> object:
         Nav(),
         Routes(
             routes=(
-                ("home", VStack(Title("Home"), Text("Open Profile to try Pydantic JSON validation."))),
+                (
+                    "home",
+                    VStack(Title("Home"), Text("Open Profile to try Pydantic JSON validation.")),
+                ),
                 ("profile", ProfileForm()),
             ),
             default="home",
