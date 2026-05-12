@@ -219,3 +219,106 @@ def test_submit_run_aborts_when_cancelled_before_fn() -> None:
     target(*captured["args"])
     assert ran == []
     assert st.session_state[sk]["status"] == "cancelled"
+
+
+def test_submit_worker_progress_poll_while_running() -> None:
+    """Progress updates are visible while status is still ``running``."""
+    st = SimpleNamespace(session_state={})
+    proceed = threading.Event()
+
+    def work() -> int:
+        set_task_progress(key="poll_run", value=0)
+        assert proceed.wait(timeout=2.0)
+        set_task_progress(key="poll_run", value=100)
+        return 1
+
+    with patch("streamtree.asyncio.st", st):
+        h = submit(work, key="poll_run")
+        deadline = time.monotonic() + 2.0
+        while time.monotonic() < deadline:
+            if h.status() == "running" and h.progress() == 0:
+                break
+            time.sleep(0.01)
+        else:
+            pytest.fail("expected running status and progress 0 from worker")
+        assert h.status() == "running"
+        proceed.set()
+        deadline = time.monotonic() + 2.0
+        while time.monotonic() < deadline:
+            if h.status() == "done":
+                break
+            time.sleep(0.01)
+        assert h.status() == "done"
+        assert h.progress() == 100
+        assert h.result() == 1
+
+
+def test_submit_error_preserves_last_progress() -> None:
+    st = SimpleNamespace(session_state={})
+    done = threading.Event()
+
+    def work() -> None:
+        set_task_progress(key="err_prog", value={"step": 2})
+        done.set()
+        raise ValueError("boom")
+
+    with patch("streamtree.asyncio.st", st):
+        h = submit(work, key="err_prog")
+        assert done.wait(timeout=2.0)
+        assert h.status() == "error"
+        assert h.progress() == {"step": 2}
+        assert h.result() is None
+
+
+def test_task_handle_progress_missing_progress_key() -> None:
+    st = SimpleNamespace(session_state={})
+    sk = "streamtree.asyncio.task.no_prog_key"
+    st.session_state[sk] = {
+        "status": "running",
+        "result": None,
+        "error": None,
+        "_submitted": True,
+        "_lock": threading.Lock(),
+    }
+    h = TaskHandle(_session_key=sk)
+    with patch("streamtree.asyncio.st", st):
+        assert h.progress() is None
+
+
+def test_task_handle_progress_non_lock_falls_back_to_unlocked_read() -> None:
+    st = SimpleNamespace(session_state={})
+    sk = "streamtree.asyncio.task.bad_lock"
+    st.session_state[sk] = {
+        "status": "done",
+        "result": 1,
+        "error": None,
+        "progress": {"pct": 50},
+        "_submitted": True,
+        "_lock": "not-a-lock",
+    }
+    h = TaskHandle(_session_key=sk)
+    with patch("streamtree.asyncio.st", st):
+        assert h.progress() == {"pct": 50}
+
+
+def test_set_task_progress_from_main_thread_updates_worker_box() -> None:
+    """Callers may set progress from the main rerun thread as well as the worker."""
+    st = SimpleNamespace(session_state={})
+    started = threading.Event()
+
+    def work() -> int:
+        started.set()
+        time.sleep(0.35)
+        return 99
+
+    with patch("streamtree.asyncio.st", st):
+        h = submit(work, key="main_set_prog")
+        assert started.wait(timeout=2.0)
+        set_task_progress(key="main_set_prog", value="main-thread")
+        assert h.progress() == "main-thread"
+        deadline = time.monotonic() + 2.0
+        while time.monotonic() < deadline:
+            if h.status() == "done":
+                break
+            time.sleep(0.01)
+        assert h.result() == 99
