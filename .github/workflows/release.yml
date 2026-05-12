@@ -9,11 +9,69 @@ permissions:
   contents: read
 
 jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    env:
+      # Otherwise `uv run` follows `.python-version` (3.11) and breaks non-3.11 matrix rows.
+      UV_PYTHON: ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          enable-cache: true
+
+      - name: Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Sync dev environment
+        run: uv sync --frozen --python ${{ matrix.python-version }} --extra dev
+
+      - name: Ruff format
+        run: uv run ruff format --check .
+
+      - name: Ruff
+        run: uv run ruff check src tests
+
+      - name: ty
+        run: uv run ty check src
+
+      - name: Pytest with coverage
+        run: uv run pytest tests/ -q
+
+  cli-smoke:
+    runs-on: ubuntu-latest
+    env:
+      # Match ``uv sync`` interpreter; otherwise ``uv run`` follows ``.python-version`` and recreates a venv without ``--extra cli``.
+      UV_PYTHON: "3.12"
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          enable-cache: true
+
+      - name: Python 3.12
+        run: uv python install 3.12
+
+      - name: Sync dev + cli extras
+        run: uv sync --frozen --python 3.12 --extra dev --extra cli
+
+      - name: streamtree doctor
+        run: uv run streamtree doctor
+
   publish:
     name: Publish to PyPI
     runs-on: ubuntu-latest
+    needs: [lint-test, cli-smoke]
     env:
-      # Match CI: pinned interpreter so `uv run` does not follow `.python-version` alone.
+      # Pinned interpreter for build + publish (matches prior release job).
       UV_PYTHON: "3.11"
     steps:
       - uses: actions/checkout@v6
@@ -28,18 +86,6 @@ jobs:
 
       - name: Sync dev dependencies
         run: uv sync --frozen --extra dev
-
-      - name: Ruff format
-        run: uv run ruff format --check .
-
-      - name: Ruff
-        run: uv run ruff check src tests
-
-      - name: ty
-        run: uv run ty check src
-
-      - name: Pytest with coverage
-        run: uv run pytest tests/ -q
 
       - name: Build sdist and wheel
         run: uv build
