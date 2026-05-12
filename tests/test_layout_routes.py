@@ -4,8 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from streamtree.elements import Routes
-from streamtree.elements.widgets import Text
+from streamtree.elements import Columns, Routes, Tabs, Text
 
 
 def test_routes_requires_at_least_one_route() -> None:
@@ -32,3 +31,13 @@ def test_routes_normalizes_query_param_and_default() -> None:
 def test_routes_rejects_duplicate_route_names() -> None:
     with pytest.raises(ValueError, match="unique"):
         Routes(routes=(("home", Text("A")), ("home", Text("B"))), default="home")
+
+
+def test_columns_rejects_weight_length_mismatch() -> None:
+    with pytest.raises(ValueError, match="weights length"):
+        Columns(Text("a"), Text("b"), weights=(1.0,))
+
+
+def test_tabs_requires_at_least_one_tab() -> None:
+    with pytest.raises(ValueError, match="at least one"):
+        Tabs()

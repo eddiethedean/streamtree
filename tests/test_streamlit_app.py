@@ -46,6 +46,7 @@ def _coverage_app() -> None:
         return Text("inner-component")
 
     fs = form_state("start", key="formtext")
+    num_fs = form_state(2.0, key="formnum")
     n = state(3.0, key="numbind")
     idx = state(0, key="selidx")
     cb = state(True, key="cbbind")
@@ -63,7 +64,7 @@ def _coverage_app() -> None:
             Inner(),
             HStack(Text("a"), Text("b")),
             Columns(Text("c1"), Text("c2"), weights=(2.0, 1.0)),
-            Columns(Text("only"), weights=(1.0, 2.0, 3.0)),
+            Columns(Text("only"), weights=(1.0,)),
             Grid(Text("g1"), Text("g2"), Text("g3"), columns=2),
             Card(Text("in-card")),
             Tabs(("tab1", Text("one")), ("tab2", Text("two"))),
@@ -73,6 +74,7 @@ def _coverage_app() -> None:
             Spacer(),
             Form(
                 TextInput("f", value=fs),
+                NumberInput("qty", value=num_fs, min_value=0.0),
                 Button("Submit", submit=True),
                 form_key="fk",
             ),

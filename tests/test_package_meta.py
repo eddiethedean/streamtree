@@ -20,3 +20,4 @@ def test_asyncio_and_forms_submodules_exposed() -> None:
     assert hasattr(streamtree.asyncio, "TaskHandle")
     assert hasattr(streamtree.forms, "bind_numeric_fields")
     assert hasattr(streamtree.forms, "number_inputs")
+    assert hasattr(streamtree.forms, "NumericStateVar")

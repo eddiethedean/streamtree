@@ -184,8 +184,8 @@ def test_render_element_full_tree_mocked() -> None:
                     Divider(),
                     Inner(),
                     HStack(Text("h1"), Text("h2")),
-                    Columns(Text("a"), Text("b"), weights=(1.0,)),
-                    Columns(Text("only"), weights=(1.0, 2.0)),
+                    Columns(Text("a"), Text("b"), weights=(1.0, 1.0)),
+                    Columns(Text("only"), weights=(1.0,)),
                     Columns(Text("c1"), Text("c2")),
                     Grid(Text("g1"), Text("g2"), Text("g3"), columns=2),
                     Card(Text("card")),
@@ -276,6 +276,43 @@ def test_render_number_input_statevar_updates() -> None:
         with render_context("r"):
             rs.render_element(NumberInput("n", value=sv), slot="0")
             assert st.session_state["nk"] == 2.0
+
+
+def test_render_number_input_formstate_updates() -> None:
+    st = _make_st(number_input_side_effect=[3.0])
+    fs = FormState(_edit_key="ne", _committed_key="nc", _default=1.0)
+    st.session_state["ne"] = 1.0
+    st.session_state["nc"] = 1.0
+    with _patched_st(st):
+        with render_context("r"):
+            rs.render_element(NumberInput("f", value=fs), slot="0")
+            assert st.session_state["ne"] == 3.0
+
+
+def test_render_number_input_optional_statevar_updates() -> None:
+    st = _make_st(number_input_side_effect=[9.0])
+    with _patched_st(st):
+        with render_context("r"):
+            sv = state(None, key="onz")
+            assert sv() is None
+            rs.render_element(NumberInput("n", value=sv), slot="0")
+            assert st.session_state[sv.key] == 9.0
+
+
+def test_render_image_use_container_width_kw() -> None:
+    st = _make_st()
+    png = b"x"
+    with _patched_st(st), render_context("im"):
+        rs.render_element(Image(png, use_container_width=True), slot="0")
+    st.image.assert_called_once_with(png, use_container_width=True)
+
+
+def test_render_image_use_column_width_kw() -> None:
+    st = _make_st()
+    png = b"y"
+    with _patched_st(st), render_context("im2"):
+        rs.render_element(Image(png, use_column_width="auto"), slot="0")
+    st.image.assert_called_once_with(png, use_column_width="auto")
 
 
 def test_render_selectbox_statevar_updates() -> None:

@@ -3,15 +3,22 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Mapping
-from typing import Annotated, Any, TypeVar, get_args, get_origin
+from collections.abc import Callable, Mapping
+from types import UnionType
+from typing import Annotated, Any, TypeVar, Union, cast, get_args, get_origin
 
 from pydantic import BaseModel, ValidationError
+from pydantic.fields import FieldInfo
+from pydantic_core import PydanticUndefined
 
 from streamtree.elements.widgets import NumberInput, TextInput
 from streamtree.state import StateVar, state
 
 M = TypeVar("M", bound=BaseModel)
+
+NumericStateVar = (
+    StateVar[int] | StateVar[float] | StateVar[int | None] | StateVar[float | None]
+)
 
 
 def _unwrap_annotation(ann: Any) -> Any:
@@ -56,6 +63,42 @@ def _numeric_base(ann: Any) -> type[int] | type[float] | None:
     if args[0] is float:
         return float
     return None
+
+
+def _is_optional_numeric_union(ann: Any) -> bool:
+    """True when annotation is a union that includes ``None`` (e.g. ``int | None``)."""
+    u = _unwrap_annotation(ann)
+    origin = get_origin(u)
+    if origin is None:
+        return False
+    if origin is UnionType or origin is Union:
+        return any(a is type(None) for a in get_args(u))
+    return False
+
+
+def _initial_numeric_for_field(
+    finfo: FieldInfo, base: type[int] | type[float], optional: bool
+) -> int | float | None:
+    """Resolve first session value from field default / factory (Pydantic v2)."""
+    raw: Any
+    if finfo.default_factory is not None:
+        raw = cast(Callable[[], Any], finfo.default_factory)()
+    elif finfo.default is not PydanticUndefined:
+        raw = finfo.default
+    else:
+        raw = PydanticUndefined
+
+    if optional:
+        if raw is PydanticUndefined or raw is None:
+            return None
+        if isinstance(raw, (int, float)):
+            return raw
+        return None
+    if raw is PydanticUndefined:
+        return 0 if base is int else 0.0
+    if isinstance(raw, (int, float)):
+        return raw
+    return 0 if base is int else 0.0
 
 
 def str_field_names(model_cls: type[BaseModel]) -> tuple[str, ...]:
@@ -112,18 +155,27 @@ def bind_numeric_fields(
     model_cls: type[BaseModel],
     *,
     key_prefix: str = "model_form",
-) -> dict[str, StateVar[int] | StateVar[float]]:
-    """Create numeric ``StateVar`` values for each ``int`` / ``float`` (or optional) field."""
+) -> dict[str, NumericStateVar]:
+    """Create numeric ``StateVar`` values for each ``int`` / ``float`` (or optional) field.
+
+    Required ``int`` / ``float`` fields use the model field default when set, otherwise ``0`` /
+    ``0.0``. Optional ``int | None`` / ``float | None`` fields use the field default when set,
+    otherwise ``None`` (empty number input until the user enters a value).
+    """
     if not key_prefix.strip():
         raise ValueError("key_prefix must be a non-empty string")
     p = key_prefix.strip()
-    out: dict[str, StateVar[int] | StateVar[float]] = {}
+    out: dict[str, NumericStateVar] = {}
     for n, finfo in model_cls.model_fields.items():
         base = _numeric_base(finfo.annotation)
         if base is int:
-            out[n] = state(0, key=f"{p}.{n}")
+            opt = _is_optional_numeric_union(finfo.annotation)
+            init = _initial_numeric_for_field(finfo, int, opt)
+            out[n] = state(init, key=f"{p}.{n}")
         elif base is float:
-            out[n] = state(0.0, key=f"{p}.{n}")
+            opt = _is_optional_numeric_union(finfo.annotation)
+            init = _initial_numeric_for_field(finfo, float, opt)
+            out[n] = state(init, key=f"{p}.{n}")
     return out
 
 
@@ -155,13 +207,13 @@ def str_text_inputs(
 def number_inputs(
     model_cls: type[BaseModel],
     *,
-    bindings: Mapping[str, StateVar[int] | StateVar[float]] | None = None,
+    bindings: Mapping[str, NumericStateVar] | None = None,
     key_prefix: str = "model_form",
     field_labels: Mapping[str, str] | None = None,
 ) -> tuple[NumberInput, ...]:
     """Build ``NumberInput`` widgets for each numeric field."""
     names = numeric_field_names(model_cls)
-    b: dict[str, StateVar[int] | StateVar[float]] = (
+    b: dict[str, NumericStateVar] = (
         dict(bindings)
         if bindings is not None
         else bind_numeric_fields(model_cls, key_prefix=key_prefix)
@@ -178,6 +230,7 @@ def number_inputs(
 
 
 __all__ = [
+    "NumericStateVar",
     "bind_numeric_fields",
     "bind_str_fields",
     "format_validation_errors",

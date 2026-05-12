@@ -9,6 +9,20 @@ from typing import Any, Literal
 from streamtree.core.element import Element
 from streamtree.state import FormState, StateVar, ToggleState
 
+NumberValue = (
+    int
+    | float
+    | StateVar[int]
+    | StateVar[float]
+    | StateVar[int | None]
+    | StateVar[float | None]
+    | FormState[int]
+    | FormState[float]
+    | FormState[int | None]
+    | FormState[float | None]
+    | None
+)
+
 
 @dataclass(frozen=True)
 class Text(Element):
@@ -91,7 +105,7 @@ class TextInput(Element):
 @dataclass(frozen=True)
 class NumberInput(Element):
     label: str = ""
-    value: int | float | StateVar[int] | StateVar[float] | None = None
+    value: NumberValue = None
     min_value: int | float | None = None
     max_value: int | float | None = None
     step: int | float | None = None
@@ -102,7 +116,7 @@ class NumberInput(Element):
         self,
         label: str,
         *,
-        value: int | float | StateVar[int] | StateVar[float] | None = None,
+        value: NumberValue = None,
         min_value: int | float | None = None,
         max_value: int | float | None = None,
         step: int | float | None = None,
@@ -223,6 +237,7 @@ class Image(Element):
     caption: str | None = None
     width: int | None = None
     use_column_width: bool | Literal["auto", "always", "never"] | None = None
+    use_container_width: bool | None = None
 
     def __init__(
         self,
@@ -231,6 +246,7 @@ class Image(Element):
         caption: str | None = None,
         width: int | None = None,
         use_column_width: bool | Literal["auto", "always", "never"] | None = None,
+        use_container_width: bool | None = None,
         key: str | None = None,
     ) -> None:
         object.__setattr__(self, "key", key)
@@ -238,6 +254,7 @@ class Image(Element):
         object.__setattr__(self, "caption", caption)
         object.__setattr__(self, "width", width)
         object.__setattr__(self, "use_column_width", use_column_width)
+        object.__setattr__(self, "use_container_width", use_container_width)
 
 
 @dataclass(frozen=True)

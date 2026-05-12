@@ -60,6 +60,10 @@ class Columns(Element):
         if weights is None:
             object.__setattr__(self, "weights", tuple(1.0 for _ in ch))
         else:
+            if len(weights) != len(ch):
+                raise ValueError(
+                    f"Columns weights length ({len(weights)}) must match children ({len(ch)})"
+                )
             object.__setattr__(self, "weights", weights)
 
 
@@ -105,6 +109,8 @@ class Tabs(Element):
     tabs: tuple[tuple[str, Element], ...] = ()
 
     def __init__(self, *tabs: tuple[str, Element], key: str | None = None) -> None:
+        if not tabs:
+            raise ValueError("Tabs requires at least one (title, child) pair")
         object.__setattr__(self, "key", key)
         object.__setattr__(self, "tabs", tabs)
 

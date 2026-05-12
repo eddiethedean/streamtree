@@ -3,7 +3,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/streamtree)](https://pypi.org/project/streamtree/)
 [![Python versions](https://img.shields.io/pypi/pyversions/streamtree)](https://pypi.org/project/streamtree/)
 [![License](https://img.shields.io/pypi/l/streamtree)](https://github.com/streamtree-dev/streamtree/blob/main/LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/eddiethedean/streamtree/ci.yml?branch=main&label=CI)](https://github.com/eddiethedean/streamtree/actions/workflows/ci.yml?query=branch%3Amain)
+[![CI](https://img.shields.io/github/actions/workflow/status/streamtree-dev/streamtree/ci.yml?branch=main&label=CI)](https://github.com/streamtree-dev/streamtree/actions/workflows/ci.yml?query=branch%3Amain)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://docs.astral.sh/ruff/)
 
 Declarative, typed composition for [Streamlit](https://streamlit.io/). StreamTree adds components, layout primitives, scoped session state, and test-friendly tree rendering while keeping Streamlit’s execution model and widgets. No JavaScript or separate frontend build is required.
@@ -24,7 +24,7 @@ StreamTree is an **architecture layer** for Streamlit, not a React-style web fra
 - **App shell (0.3+)** — `App` with a guarded `st.set_page_config`, plus optional sidebar and main composition via `render_app`.
 - **Theming (0.3+)** — `Theme`, `ThemeRoot`, `theme()`, `theme_css()`, and `app_context.provider(theme=...)`.
 - **Background work (0.3+)** — `streamtree.asyncio.submit` and `TaskHandle` for stdlib-thread jobs you poll across reruns.
-- **Forms (0.3+)** — Pydantic-oriented helpers: `bind_str_fields` / `str_text_inputs`, plus **`bind_numeric_fields` / `number_inputs`** (0.4+) for `int` / `float` fields.
+- **Forms (0.3+)** — Pydantic-oriented helpers: `bind_str_fields` / `str_text_inputs`, plus **`bind_numeric_fields` / `number_inputs`** (0.4+) for `int` / `float` fields (optional `int | None` / `float | None` use model defaults or `None` for an empty number input).
 - **CLI (0.4+)** — Optional **`streamtree[cli]`**: `streamtree run` delegates to Streamlit; `streamtree doctor` prints versions (see [examples/streamtree_run_demo.md](examples/streamtree_run_demo.md)).
 - **State** — `state`, `toggle_state`, `form_state`, `memo`, `cache`.
 - **Routing and context** — Query-param routing (`streamtree.routing`), `ErrorBoundary`, `streamtree.forms` utilities, and `app_context.provider` / `lookup` for shared values.

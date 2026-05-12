@@ -121,6 +121,14 @@ def _render_number_input(el: NumberInput, slot: str) -> None:
     if el.format is not None:
         kwargs["format"] = el.format
 
+    if isinstance(val, FormState):
+        fs = cast(FormState[Any], val)
+        kwargs["key"] = fs.edit_key
+        out = st.number_input(**kwargs)
+        if out != fs.edit_value():
+            fs.set_edit(cast(Any, out))
+        return
+
     if isinstance(val, StateVar):
         kwargs["key"] = val.key
         out = st.number_input(**kwargs)
@@ -132,7 +140,7 @@ def _render_number_input(el: NumberInput, slot: str) -> None:
     if val is not None:
         kwargs["value"] = val
     else:
-        kwargs["value"] = 0
+        kwargs["value"] = None
     st.number_input(**kwargs)
 
 
@@ -244,8 +252,6 @@ def render_element(el: Element, *, slot: str = "0") -> None:
     if isinstance(el, Columns):
         n = max(len(el.children), 1)
         weights = list(el.weights) if el.weights else [1.0] * n
-        if len(weights) != len(el.children):
-            weights = [1.0] * len(el.children)
         cols = st.columns(weights)
         for i, ch in enumerate(el.children):
             with cols[i]:
@@ -320,6 +326,8 @@ def render_element(el: Element, *, slot: str = "0") -> None:
         return
 
     if isinstance(el, Routes):
+        # sync_route picks the active route name; resolve child by name, then default name,
+        # then the first declared route (covers unknown query values when default has no entry).
         active = sync_route(el.default, param=el.query_param)
         by_name = dict(el.routes)
         child = by_name.get(active) or by_name.get(el.default)
@@ -409,8 +417,9 @@ def render_element(el: Element, *, slot: str = "0") -> None:
             kw["caption"] = el.caption
         if el.width is not None:
             kw["width"] = el.width
-        if el.use_column_width is not None:
-            # Streamlit prefers use_container_width; keep legacy mapping.
+        if el.use_container_width is not None:
+            kw["use_container_width"] = el.use_container_width
+        elif el.use_column_width is not None:
             kw["use_column_width"] = el.use_column_width
         st.image(el.image, **kw)
         return

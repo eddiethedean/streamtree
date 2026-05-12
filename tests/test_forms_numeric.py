@@ -29,6 +29,46 @@ class AnnotatedInt(BaseModel):
     k: Annotated[int, Field(ge=0)] = 0
 
 
+class WithSeven(BaseModel):
+    n: int = 7
+
+
+class OptionalNonNoneDefault(BaseModel):
+    n: int | None = 15
+
+
+class IntDefaultFactory(BaseModel):
+    n: int = Field(default_factory=lambda: 9)
+
+
+class OptionalIntFactory(BaseModel):
+    n: int | None = Field(default_factory=lambda: 4)
+
+
+class OptionalBare(BaseModel):
+    n: int | None
+
+
+class BareInt(BaseModel):
+    n: int
+
+
+class IntCoerceFactory(BaseModel):
+    n: int = Field(default_factory=list)
+
+
+class OptionalCoerceFactory(BaseModel):
+    n: int | None = Field(default_factory=list)
+
+
+class BareFloat(BaseModel):
+    x: float
+
+
+class FloatBadFactory(BaseModel):
+    x: float = Field(default_factory=list)
+
+
 def test_numeric_field_names_order() -> None:
     assert numeric_field_names(PricedItem) == ("count", "unit_price")
 
@@ -68,6 +108,91 @@ def test_optional_numeric_fields_included() -> None:
         b = bind_numeric_fields(OptionalNums, key_prefix="on")
         assert set(b) == {"n", "x"}
         assert len(number_inputs(OptionalNums, bindings=b)) == 2
+
+
+def test_optional_numeric_initial_session_is_none() -> None:
+    with render_context("onone"):
+        b = bind_numeric_fields(OptionalNums, key_prefix="onz")
+        assert b["n"]() is None
+        assert b["x"]() is None
+
+
+def test_bind_numeric_respects_model_defaults() -> None:
+    with render_context("pdef"):
+        b = bind_numeric_fields(PricedItem, key_prefix="pf")
+        assert b["count"]() == 0
+        assert b["unit_price"]() == 0.0
+
+
+def test_bind_numeric_nonzero_int_default() -> None:
+    with render_context("s7"):
+        b = bind_numeric_fields(WithSeven, key_prefix="w7")
+        assert b["n"]() == 7
+
+
+def test_optional_numeric_respects_non_none_default() -> None:
+    with render_context("ond"):
+        b = bind_numeric_fields(OptionalNonNoneDefault, key_prefix="x")
+        assert b["n"]() == 15
+
+
+def test_bind_numeric_default_factory() -> None:
+    with render_context("dff"):
+        b = bind_numeric_fields(IntDefaultFactory, key_prefix="df")
+        assert b["n"]() == 9
+
+
+def test_optional_numeric_default_factory() -> None:
+    with render_context("oidf"):
+        b = bind_numeric_fields(OptionalIntFactory, key_prefix="oif")
+        assert b["n"]() == 4
+
+
+def test_optional_numeric_no_field_default_uses_none() -> None:
+    with render_context("obare"):
+        b = bind_numeric_fields(OptionalBare, key_prefix="ob")
+        assert b["n"]() is None
+
+
+def test_required_int_no_default_uses_zero() -> None:
+    with render_context("bi"):
+        b = bind_numeric_fields(BareInt, key_prefix="b")
+        assert b["n"]() == 0
+
+
+def test_required_int_factory_non_numeric_coerces_to_zero() -> None:
+    with render_context("icf"):
+        b = bind_numeric_fields(IntCoerceFactory, key_prefix="ic")
+        assert b["n"]() == 0
+
+
+def test_optional_int_factory_non_numeric_yields_none() -> None:
+    with render_context("ocf"):
+        b = bind_numeric_fields(OptionalCoerceFactory, key_prefix="oc")
+        assert b["n"]() is None
+
+
+def test_required_float_no_default_uses_zero() -> None:
+    with render_context("bf"):
+        b = bind_numeric_fields(BareFloat, key_prefix="bf")
+        assert b["x"]() == 0.0
+
+
+def test_required_float_factory_non_numeric_coerces_to_zero() -> None:
+    with render_context("fbf"):
+        b = bind_numeric_fields(FloatBadFactory, key_prefix="fb")
+        assert b["x"]() == 0.0
+
+
+def test_internal_optional_union_detection() -> None:
+    from typing import Literal, Union
+
+    from streamtree.forms import _is_optional_numeric_union
+
+    assert _is_optional_numeric_union(int | None) is True
+    assert _is_optional_numeric_union(Union[int, None]) is True  # noqa: UP007
+    assert _is_optional_numeric_union(int) is False
+    assert _is_optional_numeric_union(Literal[1]) is False
 
 
 def test_numeric_field_names_rejects_multi_union() -> None:
