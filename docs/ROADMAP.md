@@ -22,10 +22,14 @@ _Last updated: 2026-05-12._
 |-------|--------|--------|
 | Phase 0 — Foundation | Mostly complete | Package layout, Streamlit renderer, design docs in `docs/`. |
 | Phase 1 — MVP | In progress | **0.1.0** core tree + state; **0.2.0** Pydantic + stub extras; deeper memoization / `streamlit-extras` curation still open. |
-| Phase 2 — Application | In progress | **Shipped through 0.4.0:** routing, `Routes`, `ErrorBoundary`, `app_context`, forms (str + numeric), **`App` / `render_app`** (+ sidebar/menu/sidebar state passthrough), theme, **`streamtree.asyncio`**, **`PageLink`**, **`streamtree.helpers.runner`**, optional **`[cli]`** (`streamtree run` / `doctor`). **Next:** auth, portals, `streamlit-extras` behind names, async progress, **`[pages]`** helpers, richer shell. |
+| Phase 2 — Application | In progress | **Shipped through 0.4.1:** routing, `Routes`, `ErrorBoundary`, `app_context`, forms (str + numeric), **`App` / `render_app`** (+ sidebar/menu/sidebar state passthrough), theme, **`streamtree.asyncio`**, **`PageLink`**, **`streamtree.helpers.runner`**, optional **`[cli]`** (`streamtree run` / `doctor`). **Next:** auth, portals, `streamlit-extras` behind names, async progress, **`[pages]`** helpers, richer shell. |
 | Phase 3 — Data toolkit | Planned | Tables, charts, performance playbooks; follows Phase 2. |
 | Phase 4 — Tooling | Planned | Testing, dev introspection; **`streamtree` CLI** MVP shipped in **0.4.0**; overlaps RTD handoff. |
 | Docs — Read the Docs | Planned | [Manual, guides, API](#documentation-platform-read-the-docs); **stable** / **latest**; CI doc builds. |
+
+### 0.4.1 (shipped)
+
+- **Patch:** version **0.4.1**; README / changelog release metadata; CI badge target alignment (fork).
 
 ### 0.4.0 (shipped)
 
@@ -54,7 +58,7 @@ _Last updated: 2026-05-12._
 
 ## Phase 2 backlog & near-term themes
 
-### Backlog (post-0.4.0)
+### Backlog (post-0.4.1)
 
 - Richer **App** / **navigation** (beyond shell + `Routes` + `PageLink`).
 - **Auth** + **`[auth]`** wrappers.
@@ -168,7 +172,7 @@ StreamTree is **not** React and will **not** ship a browser VDOM. The list below
 
 ### Release notes
 
-Shipped scope for **0.2.0**, **0.3.0**, and **0.4.0** is in the [Release index](#release-index) and subsections above. **Open** work is in the [backlog](#phase-2-backlog--near-term-themes).
+Shipped scope for **0.2.0**, **0.3.0**, **0.4.0**, and **0.4.1** is in the [Release index](#release-index) and subsections above. **Open** work is in the [backlog](#phase-2-backlog--near-term-themes).
 
 ### Optional dependency alignment
 

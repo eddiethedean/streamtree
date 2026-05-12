@@ -40,7 +40,7 @@ Python **3.10+**, with **Streamlit ≥ 1.30** (for `st.page_link` used by `PageL
 ## Installation
 
 ```bash
-pip install streamtree==0.4.0
+pip install streamtree==0.4.1
 pip install "streamtree[cli]"   # Typer + ``streamtree run`` / ``streamtree doctor``
 ```
 
@@ -200,7 +200,7 @@ Equivalent with **pip**: `pip install -e ".[dev]"`, then `ruff`, `ty check src`,
 
 ## Releases
 
-**Automated:** Add a **`PYPI_API_TOKEN`** secret to the repository. When `main` is green, push a tag of the form **`v0.4.0`**. The [release workflow](https://github.com/streamtree-dev/streamtree/blob/main/.github/workflows/release.yml) runs lint, type check, pytest (including coverage), builds with `uv build`, and publishes to PyPI.
+**Automated:** Add a **`PYPI_API_TOKEN`** secret to the repository. When `main` is green, push a tag of the form **`v0.4.1`**. The [release workflow](https://github.com/streamtree-dev/streamtree/blob/main/.github/workflows/release.yml) runs lint, type check, pytest (including coverage), builds with `uv build`, and publishes to PyPI.
 
 **Manual:** `uv build` (or `python -m build`), then upload `dist/` with **twine** or **`uv publish`**. Keep `pyproject.toml`, `streamtree.__version__`, `tests/test_package_meta.py`, and `CHANGELOG.md` in sync when cutting a release.
 

@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] — 2026-05-12
+
+### Changed
+
+- **Packaging:** version **0.4.1** (patch); README install pin and release tag example updated to **`v0.4.1`**.
+
 ## [0.4.0] — 2026-05-12
 
 ### Added
@@ -86,6 +92,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Runnable example: `examples/counter.py`.
 - Design docs under `docs/` (plan, roadmap, dependency strategy).
 
+[0.4.1]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.4.1
 [0.4.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.4.0
 [0.3.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.3.0
 [0.2.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.2.0
