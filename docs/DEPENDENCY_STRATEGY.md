@@ -231,6 +231,8 @@ Optional dependency under **`async`**, wrapped entirely behind **`streamtree.asy
 
 **As of 0.3.0:** `streamtree.asyncio` ships in the **default** install with a **stdlib** `submit` / `TaskHandle` implementation (daemon threads + `st.session_state` boxes). The **`asyncio`** optional extra in `pyproject.toml` remains an empty stub reserved for a future backend (for example asynclit) without changing import paths.
 
+**As of 0.5.0:** workers may call **`set_task_progress(key=..., value=...)`** (same `key` as **`submit`**) and the UI thread may read **`TaskHandle.progress()`**; updates use the same per-task lock as status/result/error (see module docstring in `streamtree.asyncio`).
+
 ```toml
 [project.optional-dependencies]
 async = [
@@ -252,7 +254,7 @@ pip install "streamtree[cli]"
 
 **Why:** A small **Typer**-based **`streamtree`** console entrypoint ships in **0.4.0** (`streamtree run`, `streamtree doctor`). Typer is **not** a core dependency so `pip install streamtree` stays lean.
 
-**Recommendation:** Optional extra **`[cli]`** plus **`[project.scripts]`** `streamtree = "streamtree.cli:main"`. The **`[runner]`** extra remains an **empty metadata stub** (stdlib `streamtree.helpers.runner` ships in the default wheel); **`[pages]`** is reserved for future multipage helpers—see [ROADMAP.md](./ROADMAP.md).
+**Recommendation:** Optional extra **`[cli]`** plus **`[project.scripts]`** `streamtree = "streamtree.cli:main"`. The **`[runner]`** extra remains an **empty metadata stub** (stdlib `streamtree.helpers.runner` ships in the default wheel); **`[pages]`** remains reserved for future pinned multipage deps while **`streamtree.helpers.pages`** (stdlib) ships in the default install as of **0.5.0**—see [ROADMAP.md](./ROADMAP.md).
 
 ```toml
 [project.optional-dependencies]
@@ -260,6 +262,10 @@ cli = ["typer>=0.12.3"]
 runner = []
 pages = []
 ```
+
+### Multipage helpers (`streamtree.helpers.pages`)
+
+**As of 0.5.0:** **`streamtree.helpers.pages`** ships in the **default** wheel (stdlib + pathlib). It exposes **`discover_pages`**, **`list_page_entries`**, **`pages_dir_next_to`**, and **`PageEntry`** so apps can align StreamTree trees with Streamlit’s `pages/` layout (labels, sort keys, and paths for **`PageLink`**). The **`[pages]`** extra remains **empty** until optional third-party multipage dependencies are pinned—see [ROADMAP.md](./ROADMAP.md).
 
 ---
 

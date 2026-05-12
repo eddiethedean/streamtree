@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from streamtree.asyncio import TaskHandle, submit
+from streamtree.asyncio import TaskHandle, set_task_progress, submit
 
 
 def test_submit_completes() -> None:
@@ -27,6 +27,44 @@ def test_submit_completes() -> None:
         assert h.status() == "done"
         assert h.result() == 7
         assert h.error() is None
+        assert h.progress() is None
+
+
+def test_submit_worker_sets_progress() -> None:
+    st = SimpleNamespace(session_state={})
+    done = threading.Event()
+
+    def work() -> int:
+        set_task_progress(key="prog_job", value="step-a")
+        set_task_progress(key="prog_job", value="step-b")
+        done.set()
+        return 42
+
+    with patch("streamtree.asyncio.st", st):
+        h = submit(work, key="prog_job")
+        assert done.wait(timeout=2.0)
+        assert h.status() == "done"
+        assert h.progress() == "step-b"
+        assert h.result() == 42
+
+
+def test_set_task_progress_noop_when_task_missing() -> None:
+    st = SimpleNamespace(session_state={})
+    with patch("streamtree.asyncio.st", st):
+        set_task_progress(key="nope", value=1)
+
+
+def test_task_handle_progress_missing_session() -> None:
+    st = SimpleNamespace(session_state={})
+    h = TaskHandle(_session_key="streamtree.asyncio.task.none")
+    with patch("streamtree.asyncio.st", st):
+        assert h.progress() is None
+
+
+def test_set_task_progress_rejects_blank_key() -> None:
+    st = SimpleNamespace(session_state={})
+    with patch("streamtree.asyncio.st", st), pytest.raises(ValueError):
+        set_task_progress(key="  ", value=1)  # type: ignore[arg-type]
 
 
 def test_submit_rejects_blank_key() -> None:

@@ -1,4 +1,8 @@
-"""Background task demo: ``streamtree.asyncio.submit`` + poll status."""
+"""Background task demo: ``streamtree.asyncio.submit`` + poll ``status`` / ``result``.
+
+For rerun-polled **progress** from the worker (0.5+), use ``set_task_progress(key=..., value=...)``
+with the same ``key`` as ``submit``, and read ``TaskHandle.progress()`` on the main thread.
+"""
 
 from __future__ import annotations
 

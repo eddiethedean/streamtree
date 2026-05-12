@@ -59,6 +59,8 @@ Per the dependency strategy, the base package should standardize on:
 
 **0.4.0:** Optional **`[cli]`** (`streamtree run`, `streamtree doctor`), **`streamtree.helpers.runner`**, **`PageLink`** (Streamlit **≥ 1.30**), **`App`** `initial_sidebar_state` / `menu_items`, and numeric form helpers (`bind_numeric_fields`, `number_inputs`)—see [CHANGELOG.md](../CHANGELOG.md).
 
+**0.5.0:** **`streamtree.helpers.pages`** (stdlib discovery for Streamlit’s `pages/` directory), plus **`set_task_progress`** / **`TaskHandle.progress()`** on **`streamtree.asyncio`** for rerun-polled worker progress—see [CHANGELOG.md](../CHANGELOG.md).
+
 ## Optional extras (target)
 
 | Extra | Purpose (summary) |

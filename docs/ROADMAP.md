@@ -22,10 +22,16 @@ _Last updated: 2026-05-12._
 |-------|--------|--------|
 | Phase 0 — Foundation | Mostly complete | Package layout, Streamlit renderer, design docs in `docs/`. |
 | Phase 1 — MVP | In progress | **0.1.0** core tree + state; **0.2.0** Pydantic + stub extras; deeper memoization / `streamlit-extras` curation still open. |
-| Phase 2 — Application | In progress | **Shipped through 0.4.1:** routing, `Routes`, `ErrorBoundary`, `app_context`, forms (str + numeric), **`App` / `render_app`** (+ sidebar/menu/sidebar state passthrough), theme, **`streamtree.asyncio`**, **`PageLink`**, **`streamtree.helpers.runner`**, optional **`[cli]`** (`streamtree run` / `doctor`). **Next:** auth, portals, `streamlit-extras` behind names, async progress, **`[pages]`** helpers, richer shell. |
+| Phase 2 — Application | In progress | **Shipped through 0.5.0:** routing, `Routes`, `ErrorBoundary`, `app_context`, forms (str + numeric), **`App` / `render_app`** (+ sidebar/menu/sidebar state passthrough), theme, **`streamtree.asyncio`** (incl. **progress** API), **`PageLink`**, **`streamtree.helpers.runner`**, **`streamtree.helpers.pages`**, optional **`[cli]`** (`streamtree run` / `doctor`). **Next:** auth, portals, `streamlit-extras` behind names, richer shell / **`streamtree init`**, multipage DX polish. |
 | Phase 3 — Data toolkit | Planned | Tables, charts, performance playbooks; follows Phase 2. |
 | Phase 4 — Tooling | Planned | Testing, dev introspection; **`streamtree` CLI** MVP shipped in **0.4.0**; overlaps RTD handoff. |
 | Docs — Read the Docs | Planned | [Manual, guides, API](#documentation-platform-read-the-docs); **stable** / **latest**; CI doc builds. |
+
+### 0.5.0 (shipped)
+
+- **`streamtree.helpers.pages`:** `PageEntry`, `pages_dir_next_to`, `list_page_entries`, `discover_pages` for Streamlit `pages/` scripts (labels + sort keys + `PageLink` paths); exported from **`streamtree.helpers`**.
+- **`streamtree.asyncio`:** `set_task_progress` and **`TaskHandle.progress()`**; task session dict stores **`progress`** (lock-serialized with status/result/error).
+- **Examples:** **`examples/pages_helpers_demo.py`**, stub **`examples/pages/1_About_demo.py`**.
 
 ### 0.4.1 (shipped)
 
@@ -58,11 +64,11 @@ _Last updated: 2026-05-12._
 
 ## Phase 2 backlog & near-term themes
 
-### Backlog (post-0.4.1)
+### Backlog (post-0.5.0)
 
 - Richer **App** / **navigation** (beyond shell + `Routes` + `PageLink`).
 - **Auth** + **`[auth]`** wrappers.
-- **Portals**, **imperative handles**, **route prefetch**, **async progress** on `streamtree.asyncio`.
+- **Portals**, **imperative handles**, **route prefetch**, richer **async orchestration** beyond progress (e.g. composition, cancellation UX) on `streamtree.asyncio`.
 - **`streamlit-extras`** curation behind stable StreamTree names.
 - **Form builder** beyond string + scalar numeric fields (layout, batch submit).
 
@@ -70,7 +76,7 @@ _Last updated: 2026-05-12._
 
 Reserved **empty extras** (same pattern as **`[pages]`**) until deps/APIs are pinned:
 
-- **`[pages]`** + **`streamtree.helpers.pages`** (working name) — multipage / `pages/` + navigation APIs ↔ **`Routes`**, **`App`**; Streamlit version matrix; **no second web server**.
+- **`[pages]`** — optional extra stays **empty** until pinned third-party deps land; **`streamtree.helpers.pages`** (stdlib discovery) ships in the default install as of **0.5.0** — multipage / `pages/` + navigation APIs ↔ **`Routes`**, **`App`**; Streamlit version matrix; **no second web server**.
 - **`[runner]`** — metadata-only companion to **`streamtree.helpers.runner`** (stdlib **`streamlit run`** helpers ship in the default install; **`[cli]`** adds Typer for the **`streamtree`** console script).
 
 ### End-to-end app experience (optional Streamlit CLI)
@@ -172,7 +178,7 @@ StreamTree is **not** React and will **not** ship a browser VDOM. The list below
 
 ### Release notes
 
-Shipped scope for **0.2.0**, **0.3.0**, **0.4.0**, and **0.4.1** is in the [Release index](#release-index) and subsections above. **Open** work is in the [backlog](#phase-2-backlog--near-term-themes).
+Shipped scope for **0.2.0** through **0.5.0** is in the [Release index](#release-index) and subsections above. **Open** work is in the [backlog](#phase-2-backlog--near-term-themes).
 
 ### Optional dependency alignment
 

@@ -23,7 +23,8 @@ StreamTree is an **architecture layer** for Streamlit, not a React-style web fra
 - **Components and elements** — `@component`, `render` / `render_app`, layouts (`Page`, `Card`, `Grid`, `VStack`, `Form`, `Tabs`, `Sidebar`, `Routes`, `ErrorBoundary`, and more), and widget wrappers.
 - **App shell (0.3+)** — `App` with a guarded `st.set_page_config`, plus optional sidebar and main composition via `render_app`.
 - **Theming (0.3+)** — `Theme`, `ThemeRoot`, `theme()`, `theme_css()`, and `app_context.provider(theme=...)`.
-- **Background work (0.3+)** — `streamtree.asyncio.submit` and `TaskHandle` for stdlib-thread jobs you poll across reruns.
+- **Background work (0.3+)** — `streamtree.asyncio.submit` and `TaskHandle` for stdlib-thread jobs you poll across reruns; **`set_task_progress` / `TaskHandle.progress()`** (0.5+) for rerun-polled worker progress.
+- **Multipage helpers (0.5+)** — **`streamtree.helpers.pages`** (`discover_pages`, `PageLink`-friendly paths) for Streamlit’s `pages/` layout; ships in the default install (the **`[pages]`** extra remains reserved for future pinned deps).
 - **Forms (0.3+)** — Pydantic-oriented helpers: `bind_str_fields` / `str_text_inputs`, plus **`bind_numeric_fields` / `number_inputs`** (0.4+) for `int` / `float` fields (optional `int | None` / `float | None` use model defaults or `None` for an empty number input).
 - **CLI (0.4+)** — Optional **`streamtree[cli]`**: `streamtree run` delegates to Streamlit; `streamtree doctor` prints versions (see [examples/streamtree_run_demo.md](examples/streamtree_run_demo.md)).
 - **State** — `state`, `toggle_state`, `form_state`, `memo`, `cache`.
@@ -31,7 +32,7 @@ StreamTree is an **architecture layer** for Streamlit, not a React-style web fra
 - **Interop** — Inside `@component`, your function body runs during render; you may call `st.*` (columns, metrics, charts, third-party components) and still return an element tree, or `fragment()` when the subtree is fully imperative.
 - **Quality** — Pydantic v2 in the default install, typing-first APIs, and `render_to_tree` for structural tests.
 
-Optional extras (`tables`, `charts`, `ui`, `auth`, `asyncio`, `async`, `pages`, `runner`) are mostly stubs for future wrappers; **`[cli]`** adds **Typer** and the **`streamtree`** console script (`run`, `doctor`). See [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md). The `streamtree.asyncio` module and **`streamtree.helpers.runner`** ship in the default package.
+Optional extras (`tables`, `charts`, `ui`, `auth`, `asyncio`, `async`, `pages`, `runner`) are mostly stubs for future wrappers; **`[cli]`** adds **Typer** and the **`streamtree`** console script (`run`, `doctor`). See [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md). The `streamtree.asyncio` module, **`streamtree.helpers.runner`**, and **`streamtree.helpers.pages`** ship in the default package.
 
 ## Requirements
 
@@ -40,7 +41,7 @@ Python **3.10+**, with **Streamlit ≥ 1.30** (for `st.page_link` used by `PageL
 ## Installation
 
 ```bash
-pip install streamtree==0.4.1
+pip install streamtree==0.5.0
 pip install "streamtree[cli]"   # Typer + ``streamtree run`` / ``streamtree doctor``
 ```
 
@@ -84,6 +85,7 @@ streamlit run examples/app_shell.py
 streamlit run examples/async_bg.py
 streamlit run examples/model_form.py
 streamlit run examples/numeric_nav_demo.py
+streamlit run examples/pages_helpers_demo.py
 # With Typer installed (``pip install "streamtree[cli]"``):
 streamtree run examples/counter.py
 ```
@@ -131,7 +133,7 @@ if __name__ == "__main__":
 
 ## App shell, theme, and background tasks
 
-`App` plus `render_app()` centralize page configuration. Combine `ThemeRoot` with `provider(theme=Theme(...))` for CSS variables, and use `streamtree.asyncio.submit` for non-blocking work you observe via `TaskHandle.status` on reruns.
+`App` plus `render_app()` centralize page configuration. Combine `ThemeRoot` with `provider(theme=Theme(...))` for CSS variables, and use `streamtree.asyncio.submit` for non-blocking work you observe via `TaskHandle.status` (and optionally **`TaskHandle.progress()`**) on reruns. From inside the worker, call **`streamtree.asyncio.set_task_progress`** with the same **`key`** you passed to **`submit`**.
 
 ```python
 from streamtree import asyncio, component, render_app
@@ -146,7 +148,7 @@ def Body():
     handle = asyncio.submit(lambda: 7, key="demo_job")
     return VStack(
         ThemeRoot(),
-        Text(f"status={handle.status()} result={handle.result()}"),
+        Text(f"status={handle.status()} progress={handle.progress()!r} result={handle.result()}"),
     )
 
 
@@ -175,14 +177,18 @@ search = state("")
 TextInput(label="Search", value=search)
 ```
 
+**Multipage discovery (0.5+)**
+
+Use **`streamtree.helpers.pages.discover_pages(__file__)`** to list scripts under Streamlit’s **`pages/`** folder next to your entry script. Each **`PageEntry`** has **`label`** and **`page`** for **`PageLink`**. See **`examples/pages_helpers_demo.py`**.
+
 ## Documentation
 
 | Resource | Description |
 |----------|-------------|
-| [Plan](https://github.com/streamtree-dev/streamtree/blob/main/docs/PLAN.md) | Vision, architecture, risks |
-| [Roadmap](https://github.com/streamtree-dev/streamtree/blob/main/docs/ROADMAP.md) | Phased delivery |
-| [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md) | Dependencies and optional extras |
-| [CHANGELOG](https://github.com/streamtree-dev/streamtree/blob/main/CHANGELOG.md) | Release history |
+| [Plan](https://github.com/streamtree-dev/streamtree/blob/main/docs/PLAN.md) | Vision, architecture, dependency timeline (incl. **0.5.0**) |
+| [Roadmap](https://github.com/streamtree-dev/streamtree/blob/main/docs/ROADMAP.md) | Phased delivery and release index |
+| [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md) | Optional extras, **default-install** helpers (`runner`, `pages`), and CI typing notes |
+| [CHANGELOG](https://github.com/streamtree-dev/streamtree/blob/main/CHANGELOG.md) | Release history (e.g. **0.5.0** `helpers.pages` + asyncio progress) |
 
 ## Contributing
 
@@ -200,7 +206,7 @@ Equivalent with **pip**: `pip install -e ".[dev]"`, then `ruff`, `ty check src`,
 
 ## Releases
 
-**Automated:** Add a **`PYPI_API_TOKEN`** secret to the repository. When `main` is green, push a tag of the form **`v0.4.1`**. The [release workflow](https://github.com/streamtree-dev/streamtree/blob/main/.github/workflows/release.yml) runs lint, type check, pytest (including coverage), builds with `uv build`, and publishes to PyPI.
+**Automated:** Add a **`PYPI_API_TOKEN`** secret to the repository. When `main` is green, push a tag of the form **`v0.5.0`**. The [release workflow](https://github.com/streamtree-dev/streamtree/blob/main/.github/workflows/release.yml) runs lint, type check, pytest (including coverage), builds with `uv build`, and publishes to PyPI.
 
 **Manual:** `uv build` (or `python -m build`), then upload `dist/` with **twine** or **`uv publish`**. Keep `pyproject.toml`, `streamtree.__version__`, `tests/test_package_meta.py`, and `CHANGELOG.md` in sync when cutting a release.
 

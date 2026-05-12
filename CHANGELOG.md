@@ -5,6 +5,21 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] — 2026-05-12
+
+### Added
+
+- **`streamtree.helpers.pages`:** `PageEntry`, `pages_dir_next_to`, `list_page_entries`, and `discover_pages` for Streamlit `pages/` discovery (stdlib + pathlib); re-exported from **`streamtree.helpers`**.
+- **`streamtree.asyncio`:** `set_task_progress` and **`TaskHandle.progress()`** for lock-safe, rerun-polled worker progress (task dict includes `progress`).
+- **Example:** `examples/pages_helpers_demo.py` with `examples/pages/1_About_demo.py` stub page.
+
+### Documentation
+
+- README: **0.5.0** install pin, capabilities for multipage helpers + async progress, example command; releases tag example **`v0.5.0`**.
+- [ROADMAP.md](docs/ROADMAP.md): release index **0.5.0**; Phase 2 “Next” backlog adjusted.
+- [PLAN.md](docs/PLAN.md): packaging timeline **0.5.0** bullet.
+- [DEPENDENCY_STRATEGY.md](docs/DEPENDENCY_STRATEGY.md): asyncio progress note; **`helpers.pages`** + **`[pages]`** stub subsection.
+
 ## [0.4.1] — 2026-05-12
 
 ### Changed
@@ -92,6 +107,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Runnable example: `examples/counter.py`.
 - Design docs under `docs/` (plan, roadmap, dependency strategy).
 
+[0.5.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.5.0
 [0.4.1]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.4.1
 [0.4.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.4.0
 [0.3.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.3.0

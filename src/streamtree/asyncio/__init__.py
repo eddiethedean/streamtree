@@ -3,8 +3,11 @@
 ``TaskHandle`` reads and the worker thread both touch the same ``dict`` stored in
 ``st.session_state``. Streamlit does not document thread-safe ``session_state``
 access from background threads; StreamTree uses a per-task :class:`threading.Lock`
-around shared dict fields so status, result, and error updates stay consistent
-when polled from the main rerun thread.
+around shared dict fields so status, result, error, and **progress** updates stay
+consistent when polled from the main rerun thread.
+
+Workers may call :func:`set_task_progress` with the same ``key`` passed to :func:`submit`
+to publish rerun-polled progress values.
 
 Treat handles as **rerun-polled**: do not assume every intermediate status is
 visible between bytecode steps; wait for the next Streamlit rerun to observe
@@ -36,6 +39,23 @@ def _with_box_lock(box: dict[str, Any], fn: Callable[[], T]) -> T:
         with lk:
             return fn()
     return fn()
+
+
+def set_task_progress(*, key: str, value: Any) -> None:
+    """Set the ``progress`` field for the task identified by ``key`` (same as :func:`submit`).
+
+    Intended for use **inside** the worker function or helpers it calls. Updates are
+    serialized with the same per-task lock as status/result/error.
+    """
+    sk = _task_session_key(key)
+    box = st.session_state.get(sk)
+    if not isinstance(box, dict):
+        return
+
+    def write() -> None:
+        box["progress"] = value
+
+    _with_box_lock(box, write)
 
 
 @dataclass(frozen=True)
@@ -75,6 +95,17 @@ class TaskHandle(Generic[T]):
 
         return _with_box_lock(box, read)
 
+    def progress(self) -> Any | None:
+        """Last progress value set via :func:`set_task_progress`, or ``None``."""
+        box = st.session_state.get(self._session_key)
+        if not isinstance(box, dict):
+            return None
+
+        def read() -> Any | None:
+            return box.get("progress")
+
+        return _with_box_lock(box, read)
+
     def cancel(self) -> None:
         """Request cancellation before work starts; running threads are not force-killed."""
         box = st.session_state.get(self._session_key)
@@ -107,6 +138,7 @@ def submit(fn: Callable[..., T], /, *args: Any, key: str, **kwargs: Any) -> Task
         "status": "pending",
         "result": None,
         "error": None,
+        "progress": None,
         "_submitted": True,
         "_lock": threading.Lock(),
     }
@@ -144,4 +176,4 @@ def submit(fn: Callable[..., T], /, *args: Any, key: str, **kwargs: Any) -> Task
     return TaskHandle(_session_key=sk)
 
 
-__all__ = ["TaskHandle", "submit"]
+__all__ = ["TaskHandle", "set_task_progress", "submit"]

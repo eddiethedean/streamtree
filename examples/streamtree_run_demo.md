@@ -11,6 +11,7 @@ The **`streamtree`** script delegates to Streamlit’s own CLI:
 ```bash
 streamtree run examples/counter.py
 streamtree run examples/numeric_nav_demo.py -- --server.headless true
+streamtree run examples/pages_helpers_demo.py
 ```
 
 Arguments after the script path are forwarded unchanged to `python -m streamlit run …`. The working directory and exit code are those of the child process.
@@ -27,4 +28,5 @@ The always-supported path remains:
 
 ```bash
 streamlit run examples/counter.py
+streamlit run examples/pages_helpers_demo.py
 ```

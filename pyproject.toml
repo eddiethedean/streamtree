@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "streamtree"
-version = "0.4.1"
+version = "0.5.0"
 description = "StreamTree: declarative, typed composition for Streamlit."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -41,7 +41,7 @@ asyncio = []
 "async" = []
 # Typer powers ``streamtree run`` / ``streamtree doctor``; keep default ``pip install streamtree`` lean.
 cli = ["typer>=0.12.3"]
-# Reserved for multipage helpers (see roadmap); empty until APIs land.
+# Reserved for future pinned multipage deps; ``streamtree.helpers.pages`` ships in the default install (0.5+).
 pages = []
 # Stdlib ``streamtree.helpers.runner`` ships in the default install; this extra is metadata-only for now.
 runner = []
