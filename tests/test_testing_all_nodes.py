@@ -10,6 +10,7 @@ from streamtree.elements import (
     Columns,
     DataFrame,
     Divider,
+    ErrorBoundary,
     Expander,
     Form,
     Grid,
@@ -18,6 +19,7 @@ from streamtree.elements import (
     Markdown,
     NumberInput,
     Page,
+    Routes,
     Selectbox,
     Sidebar,
     Spacer,
@@ -61,6 +63,8 @@ def test_render_to_tree_exercises_all_node_types() -> None:
                 Checkbox("c"),
                 DataFrame([]),
                 Image("x.png"),
+                ErrorBoundary(child=Text("safe"), fallback=Text("fb")),
+                Routes(routes=(("home", Text("home body")),), default="home"),
             ),
         )
     )

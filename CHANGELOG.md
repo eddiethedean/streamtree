@@ -5,6 +5,17 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] — 2026-05-12
+
+### Added
+
+- **Pydantic** and **typing-extensions** as core dependencies; stub optional extras (`tables`, `charts`, `ui`, `auth`, `asyncio`, `cli`, `all`) per dependency strategy.
+- **`streamtree.app_context`**: `provider()` / `lookup()` / `current_bag()` for rerun-scoped DI-style values.
+- **`streamtree.routing`**: `sync_route`, `set_route`, and `Routes` layout element (query param + session alignment).
+- **`ErrorBoundary`** element with Streamlit renderer fallback and optional `on_error` callback.
+- **`streamtree.forms`**: `str_field_names`, `model_validate_json`, `format_validation_errors` for Pydantic-first forms.
+- Example **`examples/routed_app.py`**: multi-page navigation + JSON profile validation.
+
 ## [0.1.0] — 2026-05-12
 
 ### Added
@@ -16,4 +27,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Runnable example: `examples/counter.py`.
 - Design docs under `docs/` (plan, roadmap, dependency strategy).
 
+[0.2.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.2.0
 [0.1.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.1.0

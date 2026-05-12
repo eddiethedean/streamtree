@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 from streamtree.core.element import Element, ElementChild, normalize_children
@@ -162,3 +163,33 @@ class Spacer(Element):
     """Vertical breathing room."""
 
     height: int | None = None
+
+
+@dataclass(frozen=True)
+class ErrorBoundary(Element):
+    """Render ``child``; on exception render ``fallback`` instead."""
+
+    child: Element = field(kw_only=True)
+    fallback: Element = field(kw_only=True)
+    on_error: Callable[[BaseException], None] | None = field(default=None, kw_only=True)
+
+
+@dataclass(frozen=True)
+class Routes(Element):
+    """Render exactly one child tree based on :func:`streamtree.routing.sync_route`."""
+
+    routes: tuple[tuple[str, Element], ...] = field(kw_only=True)
+    default: str = "home"
+    query_param: str = "route"
+
+    def __post_init__(self) -> None:
+        if not self.routes:
+            raise ValueError("Routes requires at least one (name, element) pair")
+        qp = self.query_param.strip() if isinstance(self.query_param, str) else ""
+        if not qp:
+            raise ValueError("Routes.query_param must be a non-empty string")
+        dflt = self.default.strip() if isinstance(self.default, str) else ""
+        if not dflt:
+            raise ValueError("Routes.default must be a non-empty string")
+        object.__setattr__(self, "query_param", qp)
+        object.__setattr__(self, "default", dflt)

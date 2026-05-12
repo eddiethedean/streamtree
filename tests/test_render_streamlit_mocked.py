@@ -18,6 +18,7 @@ from streamtree.elements import (
     Columns,
     DataFrame,
     Divider,
+    ErrorBoundary,
     Expander,
     Form,
     Grid,
@@ -26,6 +27,7 @@ from streamtree.elements import (
     Markdown,
     NumberInput,
     Page,
+    Routes,
     Selectbox,
     Sidebar,
     Spacer,
@@ -115,9 +117,11 @@ def _make_st(
     sb = selectbox_returns
     if sb is None:
         st.selectbox = MagicMock(
-            side_effect=lambda **k: k["options"][min(k.get("index", 0), len(k["options"]) - 1)]
-            if k.get("options")
-            else None
+            side_effect=lambda **k: (
+                k["options"][min(k.get("index", 0), len(k["options"]) - 1)]
+                if k.get("options")
+                else None
+            )
         )
     else:
         st.selectbox = MagicMock(side_effect=iter(sb))
@@ -353,3 +357,86 @@ def test_render_component_with_lambda() -> None:
         with render_context("r"):
             call = ComponentCall(fn=lambda: Text("L"), args=(), kwargs={})
             rs.render_element(call, slot="0")
+
+
+def test_render_error_boundary_fallback() -> None:
+    def boom() -> Element:
+        raise RuntimeError("boom")
+
+    st = _make_st()
+    with _patched_st(st):
+        with render_context("r"):
+            rs.render_element(
+                ErrorBoundary(
+                    child=ComponentCall(fn=boom, args=(), kwargs={}),
+                    fallback=Text("recovered"),
+                ),
+                slot="0",
+            )
+    st.write.assert_any_call("recovered")
+
+
+def test_render_error_boundary_on_error_callback() -> None:
+    def boom() -> Element:
+        raise ValueError("x")
+
+    seen: list[BaseException] = []
+
+    def on_error(exc: BaseException) -> None:
+        seen.append(exc)
+
+    st = _make_st()
+    with _patched_st(st):
+        with render_context("r"):
+            rs.render_element(
+                ErrorBoundary(
+                    child=ComponentCall(fn=boom, args=(), kwargs={}),
+                    fallback=Text("fb"),
+                    on_error=on_error,
+                ),
+                slot="0",
+            )
+    assert len(seen) == 1
+    assert isinstance(seen[0], ValueError)
+
+
+def test_render_routes_selects_active_child() -> None:
+    st = _make_st()
+    with _patched_st(st), patch("streamtree.renderers.streamlit.sync_route", return_value="two"):
+        with render_context("r"):
+            rs.render_element(
+                Routes(
+                    routes=(("one", Text("1")), ("two", Text("2"))),
+                    default="one",
+                ),
+                slot="0",
+            )
+    st.write.assert_any_call("2")
+
+
+def test_render_routes_falls_back_to_first_when_default_missing() -> None:
+    st = _make_st()
+    with _patched_st(st), patch("streamtree.renderers.streamlit.sync_route", return_value="weird"):
+        with render_context("r"):
+            rs.render_element(
+                Routes(routes=(("only", Text("O")),), default="missing"),
+                slot="0",
+            )
+    st.write.assert_any_call("O")
+
+
+def test_render_routes_unknown_route_falls_back_to_default() -> None:
+    st = _make_st()
+    with (
+        _patched_st(st),
+        patch(
+            "streamtree.renderers.streamlit.sync_route",
+            return_value="missing",
+        ),
+    ):
+        with render_context("r"):
+            rs.render_element(
+                Routes(routes=(("home", Text("H")),), default="home"),
+                slot="0",
+            )
+    st.write.assert_any_call("H")

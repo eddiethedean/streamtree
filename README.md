@@ -23,7 +23,8 @@ Streamtree is **not** a React clone, a browser framework, or a JS build step. It
 ## Features
 
 - **Python-first** — decorators, plain functions, standard typing
-- **Declarative layouts** — `Page`, `Card`, `Grid`, `VStack`, `Form`, `Tabs`, `Sidebar`, …
+- **Pydantic v2** in the default install for typed models and validation helpers
+- **Declarative layouts** — `Page`, `Card`, `Grid`, `VStack`, `Form`, `Tabs`, `Sidebar`, `Routes`, `ErrorBoundary`, …
 - **Session-backed state** — `state`, `toggle_state`, `form_state`, `memo`, `cache`
 - **Streamlit renderer** — virtual tree → `st.*` on each rerun
 - **Testing helpers** — serialize trees for snapshots (`render_to_tree`)
@@ -34,7 +35,7 @@ Streamtree is **not** a React clone, a browser framework, or a JS build step. It
 ## Requirements
 
 - **Python 3.10+**
-- **Streamlit ≥ 1.28** (declared in `pyproject.toml`)
+- **Streamlit ≥ 1.28**, **Pydantic v2**, and **typing-extensions** (declared in `pyproject.toml`)
 
 ---
 
@@ -43,7 +44,7 @@ Streamtree is **not** a React clone, a browser framework, or a JS build step. It
 **From PyPI** (after you publish this version):
 
 ```bash
-pip install streamtree==0.1.0
+pip install streamtree==0.2.0
 ```
 
 **From a clone** (editable, with dev tools):
@@ -56,7 +57,7 @@ pip install -e ".[dev]"
 uv sync --extra dev
 ```
 
-Optional install groups (`tables`, `charts`, `ui`, `auth`, `all`) are specified in the [dependency strategy](docs/STREAMTREE_DEPENDENCY_STRATEGY.md) and will appear in `pyproject.toml` as those integrations ship.
+Optional install groups (`tables`, `charts`, `ui`, `auth`, `asyncio`, `cli`) are stub extras today; see [STREAMTREE_DEPENDENCY_STRATEGY.md](docs/STREAMTREE_DEPENDENCY_STRATEGY.md). Combine with e.g. `pip install "streamtree[tables,charts]"` as wrappers land.
 
 ---
 
@@ -87,6 +88,7 @@ Run the bundled demo from the repo root:
 
 ```bash
 streamlit run examples/counter.py
+streamlit run examples/routed_app.py
 ```
 
 ---
@@ -115,19 +117,32 @@ search = state("")
 TextInput(label="Search", value=search)
 ```
 
+## Routing, error boundaries, and forms (0.2+)
+
+**Query-param routing** — keep the active page in sync with `st.query_params` (see `streamtree.routing.sync_route` and the `Routes` element).
+
+**Error boundaries** — wrap fragile subtrees: `ErrorBoundary(child=..., fallback=..., on_error=optional)`.
+
+**Pydantic helpers** — `streamtree.forms.str_field_names`, `model_validate_json`, and `format_validation_errors` for small JSON or string-keyed forms.
+
+**App context** — `streamtree.app_context.provider(theme="dark")` / `lookup("theme")` for values you do not want to thread through every `@component` signature.
+
 ---
 
 ## Project layout
 
 ```text
 src/streamtree/     # installable package
-  core/             # elements, @component, render, context
+  app_context.py    # provider / lookup DI bag (contextvars)
+  routing.py        # query-param route sync + set_route
+  forms.py          # Pydantic str-field + JSON validation helpers
+  core/             # elements, @component, render, render_context
   elements/         # layouts + widgets
   state/            # session state helpers
   renderers/        # Streamlit backend
   testing/          # tree serialization for tests
 docs/               # plan, roadmap, dependency strategy
-examples/           # runnable Streamlit examples
+examples/           # counter.py, routed_app.py
 tests/              # pytest
 ```
 
@@ -168,7 +183,7 @@ CI runs the same checks on Python 3.10–3.12 (see `.github/workflows/ci.yml`).
 
 ### Publishing
 
-**Automated (recommended):** configure the **`PYPI_API_TOKEN`** repository secret (PyPI → Account → API tokens, scoped to this project). Push a **version tag** matching `v*` (for example `v0.1.1`); [`.github/workflows/release.yml`](.github/workflows/release.yml) builds with **`uv build`** and publishes via **`pypa/gh-action-pypi-publish`**.
+**Automated (recommended):** configure the **`PYPI_API_TOKEN`** repository secret (PyPI → Account → API tokens, scoped to this project). Push a **version tag** matching `v*` (for example `v0.2.1`); [`.github/workflows/release.yml`](.github/workflows/release.yml) builds with **`uv build`** and publishes via **`pypa/gh-action-pypi-publish`**.
 
 **Manual:** build artifacts with `uv build` (or `python -m build`), then upload the contents of `dist/` to PyPI using **twine** or **uv publish**. Keep `version` in `pyproject.toml`, `streamtree.__version__`, `tests/test_package_meta.py`, and [CHANGELOG.md](CHANGELOG.md) aligned when you cut releases.
 

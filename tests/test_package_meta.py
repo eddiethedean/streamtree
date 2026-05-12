@@ -6,4 +6,4 @@ import streamtree
 
 
 def test_version_matches_release_series() -> None:
-    assert streamtree.__version__ == "0.1.0"
+    assert streamtree.__version__ == "0.2.0"

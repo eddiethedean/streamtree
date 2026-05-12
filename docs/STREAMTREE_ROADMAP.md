@@ -3,6 +3,34 @@
 
 This roadmap is aligned with the dependency and packaging approach in [STREAMTREE_DEPENDENCY_STRATEGY.md](./STREAMTREE_DEPENDENCY_STRATEGY.md) (base vs optional extras, wrapper-first public API) and with the **async model** in [STREAMTREE_PLAN.md](./STREAMTREE_PLAN.md#async-model-first-class-data-plane).
 
+## Progress and release alignment
+
+_Last updated: 2026-05-12._
+
+| Phase | Status | Release notes |
+|-------|--------|---------------|
+| Phase 0 — Foundation | Mostly complete | Package layout, Streamlit renderer, plan / roadmap / strategy docs. |
+| Phase 1 — MVP | In progress | **0.1.0**: core elements, state, `render`, `render_to_tree`. **0.2.0**: adds **Pydantic** + **typing-extensions** and stub extras; `streamlit-extras` and deeper memoization APIs still open. |
+| Phase 2 — Application features | In progress | **0.2.0** delivers the first tranche (see Phase 2 subsections below). Theme, auth, portals, async tasks, and full form builder remain for **0.3+**. |
+| Phase 3+ | Planned | Scope unchanged; timing follows Phase 2. |
+
+### 0.2.0 (first Phase 2 tranche, shipped)
+
+- **Dependencies:** Pydantic v2 and typing-extensions in the default install; stub optional extras (`tables`, `charts`, `ui`, `auth`, `asyncio`, `cli`, `all`). The `asyncio` extra name matches the roadmap’s `[async]` slot (reserved keyword workaround in TOML).
+- **Routing + query params:** `streamtree.routing.sync_route`, `set_route`, and the `Routes` layout element; see `examples/routed_app.py`.
+- **Error boundaries:** `ErrorBoundary` with fallback subtree, optional `on_error`, and `logging` on the default path.
+- **Context / DI (minimal):** `streamtree.app_context` with `provider`, `lookup`, and `current_bag`.
+- **Typed forms (slice):** `streamtree.forms` (`str_field_names`, `model_validate_json`, `format_validation_errors`).
+
+### Phase 2 — deferred to 0.3+ (intent unchanged)
+
+- Full **App** object and richer **navigation framework**; **theme engine**
+- **Authentication** abstractions and **`[auth]`** wrappers
+- **Portals / layout targets**, **imperative handles**
+- **Session-scoped async tasks**, **`streamtree.asyncio`**, **route-level async prefetch**
+- **`streamlit-extras`** curation behind Streamtree names
+- **Form builder** beyond the 0.2.0 validation helpers
+
 ---
 
 # Patterns from React ergonomics (non-VDOM, rerun-native)
@@ -125,6 +153,10 @@ Streamtree is **not** React and will **not** ship a browser virtual DOM. The ite
 
 ## Goals
 - Support real production applications
+
+### Release notes
+
+What shipped in **0.2.0** versus what stays on the **Phase 2** backlog for **0.3+** is summarized under [Progress and release alignment](#progress-and-release-alignment).
 
 ## Features
 - Routing

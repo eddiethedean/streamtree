@@ -8,11 +8,13 @@ from streamtree.core.element import ComponentCall, Element, Fragment
 from streamtree.elements.layout import (
     Card,
     Columns,
+    ErrorBoundary,
     Expander,
     Form,
     Grid,
     HStack,
     Page,
+    Routes,
     Sidebar,
     Spacer,
     Tabs,
@@ -84,6 +86,24 @@ def _node(el: Element, *, expand_components: bool) -> dict[str, Any]:
             "kind": _kind(el),
             "key": el.key,
             "children": [_node(c, expand_components=expand_components) for c in el.children],
+        }
+
+    if isinstance(el, ErrorBoundary):
+        return {
+            "kind": "ErrorBoundary",
+            "key": el.key,
+            "child": _node(el.child, expand_components=expand_components),
+            "fallback": _node(el.fallback, expand_components=expand_components),
+            "has_on_error": el.on_error is not None,
+        }
+
+    if isinstance(el, Routes):
+        return {
+            "kind": "Routes",
+            "key": el.key,
+            "default": el.default,
+            "query_param": el.query_param,
+            "route_names": [n for n, _ in el.routes],
         }
 
     if isinstance(el, Columns):

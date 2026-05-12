@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any, cast
 
 import streamlit as st
@@ -11,11 +12,13 @@ from streamtree.core.element import ComponentCall, Element, Fragment
 from streamtree.elements.layout import (
     Card,
     Columns,
+    ErrorBoundary,
     Expander,
     Form,
     Grid,
     HStack,
     Page,
+    Routes,
     Sidebar,
     Spacer,
     Tabs,
@@ -35,6 +38,7 @@ from streamtree.elements.widgets import (
     TextInput,
     Title,
 )
+from streamtree.routing import sync_route
 from streamtree.state import FormState, StateVar, ToggleState
 
 __all__ = ["render_element"]
@@ -259,6 +263,26 @@ def render_element(el: Element, *, slot: str = "0") -> None:
             st.markdown(f"<div style='height:{el.height}px'></div>", unsafe_allow_html=True)
         else:
             st.write("")
+        return
+
+    if isinstance(el, ErrorBoundary):
+        try:
+            render_element(el.child, slot=f"{slot}.eb_c")
+        except Exception as exc:
+            if el.on_error is not None:
+                el.on_error(exc)
+            logging.getLogger("streamtree.render").exception("ErrorBoundary")
+            render_element(el.fallback, slot=f"{slot}.eb_f")
+        return
+
+    if isinstance(el, Routes):
+        active = sync_route(el.default, param=el.query_param)
+        by_name = dict(el.routes)
+        child = by_name.get(active) or by_name.get(el.default)
+        if child is None:
+            child = el.routes[0][1]
+        with push_segment("routes"):
+            render_element(child, slot=slot)
         return
 
     if isinstance(el, Text):

@@ -36,7 +36,7 @@ jobs:
         run: uv run ty check src
 
       - name: Pytest with coverage
-        run: uv run pytest tests/ -q --cov=streamtree --cov-fail-under=100
+        run: uv run pytest tests/ -q
 
   build:
     runs-on: ubuntu-latest

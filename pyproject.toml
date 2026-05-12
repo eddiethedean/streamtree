@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "streamtree"
-version = "0.1.0"
+version = "0.2.0"
 description = "Composable, typed Streamlit applications with a declarative component model."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -22,10 +22,21 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
+  "pydantic>=2.4.0",
   "streamlit>=1.28.0",
+  "typing-extensions>=4.8.0",
 ]
 
 [project.optional-dependencies]
+# Stub extras (see docs/STREAMTREE_DEPENDENCY_STRATEGY.md); wrappers ship in later releases.
+tables = []
+charts = []
+ui = []
+auth = []
+asyncio = []
+cli = []
+# Combined: pip install "streamtree[tables,charts,ui,auth,asyncio,cli]" (meta-extra omitted; names like "cli" are PyPI packages in lists).
+all = []
 dev = [
   "pytest>=7.4.0",
   "pytest-cov>=4.1.0",
@@ -61,7 +72,9 @@ packages = ["streamtree"]
 testpaths = ["tests"]
 addopts = [
   "--import-mode=importlib",
-  "--cov=streamtree",
+  # Path (not package name) so the tree is not imported before cov attaches (avoids
+  # CoverageWarning: module streamtree was previously imported, but not measured).
+  "--cov=src/streamtree",
   "--cov-report=term-missing:skip-covered",
   "--cov-fail-under=100",
 ]
