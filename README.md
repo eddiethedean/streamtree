@@ -206,6 +206,8 @@ Equivalent with **pip**: `pip install -e ".[dev]"`, then `ruff`, `ty check src`,
 
 ## Releases
 
+Before tagging **`v0.5.0`**, confirm **`uv build`** succeeds, **`uv run pytest`** passes with coverage, and **`pyproject.toml`**, **`streamtree.__version__`**, **`tests/test_package_meta.py`**, and **`CHANGELOG.md`** all agree on **0.5.0**.
+
 **Automated:** Add a **`PYPI_API_TOKEN`** secret to the repository. When `main` is green, push a tag of the form **`v0.5.0`**. The [release workflow](https://github.com/streamtree-dev/streamtree/blob/main/.github/workflows/release.yml) runs lint, type check, pytest (including coverage), builds with `uv build`, and publishes to PyPI.
 
 **Manual:** `uv build` (or `python -m build`), then upload `dist/` with **twine** or **`uv publish`**. Keep `pyproject.toml`, `streamtree.__version__`, `tests/test_package_meta.py`, and `CHANGELOG.md` in sync when cutting a release.

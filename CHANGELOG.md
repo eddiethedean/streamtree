@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`streamtree.helpers.pages`:** `PageEntry`, `pages_dir_next_to`, `list_page_entries`, and `discover_pages` for Streamlit `pages/` discovery (stdlib + pathlib); re-exported from **`streamtree.helpers`**.
 - **`streamtree.asyncio`:** `set_task_progress` and **`TaskHandle.progress()`** for lock-safe, rerun-polled worker progress (task dict includes `progress`).
 - **Example:** `examples/pages_helpers_demo.py` with `examples/pages/1_About_demo.py` stub page.
+- **Tests:** expanded coverage for **`streamtree.helpers.pages`** (paths, unicode, ordering, symlinks) and **`streamtree.asyncio`** progress (poll while running, error path, main-thread updates).
 
 ### Documentation
 
