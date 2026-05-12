@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from importlib import import_module
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
@@ -13,10 +14,13 @@ from streamtree.elements import Page, Sidebar, Text
 
 
 def test_render_app_applies_config_and_renders_root() -> None:
+    # Import the submodule by name so we do not resolve ``streamtree.core.component``
+    # to the ``component`` function re-exported from ``streamtree.core``.
+    _core_component = import_module("streamtree.core.component")
     with (
         patch("streamtree.app.apply_page_config") as ap,
         patch("streamtree.app.app_root_element", return_value=Text("root")) as ar,
-        patch("streamtree.core.component._render_streamlit") as rr,
+        patch.object(_core_component, "_render_streamlit") as rr,
     ):
         render_app(App(body=Text("ignored"), page_title="T"))
     ap.assert_called_once()
