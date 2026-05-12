@@ -11,8 +11,9 @@ _Last updated: 2026-05-12._
 |-------|--------|---------------|
 | Phase 0 — Foundation | Mostly complete | Package layout, Streamlit renderer, plan / roadmap / strategy docs. |
 | Phase 1 — MVP | In progress | **0.1.0**: core elements, state, `render`, `render_to_tree`. **0.2.0**: adds **Pydantic** + **typing-extensions** and stub extras; `streamlit-extras` and deeper memoization APIs still open. |
-| Phase 2 — Application features | In progress | **0.2.0**: routing, `Routes`, `ErrorBoundary`, `app_context`, forms helpers. **0.3.0**: `App` + `render_app`, `theme` / `ThemeRoot`, `streamtree.asyncio` (stdlib thread MVP), `bind_str_fields` / `str_text_inputs`. **Still open for 0.3.1+ / 0.4.0:** richer **App** navigation, **auth**, **portals**, **imperative handles**, **route prefetch**, **`streamlit-extras`** curation, deeper **form builder** / async progress. |
+| Phase 2 — Application features | In progress | **0.2.0**: routing, `Routes`, `ErrorBoundary`, `app_context`, forms helpers. **0.3.0**: `App` + `render_app`, `theme` / `ThemeRoot`, `streamtree.asyncio` (stdlib thread MVP), `bind_str_fields` / `str_text_inputs`. **Still open for 0.3.1+ / 0.4.0:** richer **App** navigation, **auth**, **portals**, **imperative handles**, **route prefetch**, **`streamlit-extras`** curation, deeper **form builder** / async progress, **optional dedicated helpers** (`[pages]`, `[runner]`; see backlog), **StreamTree–first app create/run** (see [End-to-end app experience](#end-to-end-app-experience-optional-streamlit-cli)). |
 | Phase 3+ | Planned | Data toolkit and performance work; timing follows Phase 2 closure. |
+| Docs — Read the Docs | Planned | Full **user manual**, **how-to guides**, and **API reference** on **Read the Docs** (versioned **stable** / **latest**); CI doc builds; see [Documentation platform](#documentation-platform-read-the-docs). |
 
 ### 0.3.0 (Phase 2 — second tranche, shipped)
 
@@ -38,6 +39,18 @@ _Last updated: 2026-05-12._
 - **Route-level async prefetch** and optional **progress** surfaces on `streamtree.asyncio`
 - **`streamlit-extras`** curation behind StreamTree names
 - **Form builder** beyond string `TextInput` grids (numeric fields, layout presets, submit batching)
+- **Optional dedicated helpers** (small opt-in modules; empty **`pyproject.toml` extras** reserved first, same pattern as **`[cli]`** / **`[tables]`**):
+  - **`[pages]`** + **`streamtree.helpers.pages`** (working name) — bridge Streamlit **multipage** / `pages/` and stable navigation APIs with **`Routes`**, **`sync_route` / `set_route`**, and **`App`**; ship with a documented Streamlit version matrix (no second web server).
+  - **`[runner]`** + **`streamtree.helpers.runner`** (working name) — optional **`streamlit run`** orchestration (defaults, workspace-relative entrypoints); evolves toward a **primary `streamtree run` / `serve` story** so authors are not required to invoke the Streamlit CLI. Complements the Typer **`streamtree`** **`[cli]`** surface (`preview`, `doctor`, `tree`, …). **Streamlit remains the execution engine** on this path until multi-renderer hosts (Phase 5) exist.
+
+### End-to-end app experience (optional Streamlit CLI)
+
+**Goal** — Teams can **author and run full StreamTree apps** through a **single documented StreamTree workflow** (scaffold → configure → run) **without needing** the Streamlit CLI, `streamlit run …`, or hand-wired entry scripts **if they prefer not to**.
+
+- **Baseline (always supported)** — Calling **`streamlit run app.py`** (or equivalent) stays valid for transparency, CI, and power users.
+- **Streamlined path (planned)** — **`streamtree init`** (or similar) plus **`streamtree run` / `streamtree serve`** (names TBD) under the **`[cli]`** + **`[runner]`** story: resolve the app entry from project metadata or conventions, apply **sane defaults** (host, port, headless flags), and delegate to Streamlit under the hood so **“full app” development and running** feel first-party to StreamTree.
+- **Scope boundary** — This is **not** a second web server in Phase 2–4; it is a **developer-experience and packaging layer** on top of Streamlit. **Phase 5** multi-renderer work may add true alternate hosts later; until then, “no Streamlit CLI” means **no obligation to learn Streamlit’s CLI surface**, not removing Streamlit from the stack.
+- **Read the Docs** — The **full user manual and guides** for this workflow (and for the rest of StreamTree) are planned on **RTD** under [Documentation platform](#documentation-platform-read-the-docs); README stays a short entry point.
 
 ---
 
@@ -232,6 +245,8 @@ What shipped in **0.2.0** and **0.3.0** versus what stays on the **Phase 2** bac
 
 ## Goals
 - Enable enterprise-scale development workflows
+- **Optional StreamTree–first app lifecycle** — `streamtree run` / `serve` (planned) wraps Streamlit so full apps ship without authors touching `streamlit run` unless they want to
+- **Read the Docs as the canonical learning surface** — README + repo markdown remain summaries; the **fleshed-out manual and guides** live on RTD (see [Documentation platform](#documentation-platform-read-the-docs))
 
 ## Features
 - Snapshot testing
@@ -239,7 +254,7 @@ What shipped in **0.2.0** and **0.3.0** versus what stays on the **Phase 2** bac
 - **Component tree visualization** — interactive inspector (expand/collapse, keys, component names) in devtools, a dev sidebar, or the preview server; optional export (e.g. Mermaid/graph) from the same tree walk
 - **Dev-only introspection** — props snapshots, component names, and bound `session_state` / StreamTree state keys surfaced in devtools or the preview server (React DevTools–style signal, rerun-native)
 - **In-flight async inspection** — surface pending **`streamtree.asyncio`** tasks (status, key, age) next to the component tree in dev mode
-- **Typer CLI (`streamtree`)** — optional **`[cli]`** extra: subcommands aligned with devtools (e.g. **`preview`** for the component preview server, **`doctor`** for versions/extras, **`tree`** to dump or export `render_to_tree` JSON/Mermaid, optional **`init`** scaffolding once templates stabilize); keeps the default library install free of CLI dependencies
+- **Typer CLI (`streamtree`)** — optional **`[cli]`** extra: subcommands for **app lifecycle** (e.g. **`run` / `serve`** wrapping `streamlit run` with stable defaults and project-aware entry resolution) and **devtools** (`preview` for the component preview server, **`doctor`** for versions/extras, **`tree`** to dump or export `render_to_tree` JSON/Mermaid, optional **`init`** scaffolding once templates stabilize); keeps the default library install free of CLI dependencies
 - Component assertions
 - Storybook-style previews
 - Devtools
@@ -247,7 +262,7 @@ What shipped in **0.2.0** and **0.3.0** versus what stays on the **Phase 2** bac
 
 ## Optional dependency alignment
 - **`[dev]` extra:** `pytest`, `ruff`, `mypy` as the standard contributor and CI toolchain (see dependency strategy)
-- **`[cli]` extra (when shipped):** `typer` (and minimal related deps) for the `streamtree` console entry — **not** required for `import streamtree` or `streamlit run` workflows
+- **`[cli]` extra (when shipped):** `typer` (and minimal related deps) for the `streamtree` console entry — **not** required for `import streamtree`; **`streamlit run`** remains the documented fallback when the CLI is not installed
 
 ## Deliverables
 - pytest integration
@@ -255,7 +270,46 @@ What shipped in **0.2.0** and **0.3.0** versus what stays on the **Phase 2** bac
 - Visual regression tooling
 - **Introspection deliverables** — devtools or server views that expose props snapshots and state-key bindings alongside the tree inspector
 - **Async testing kit** — examples and helpers for **Streamlit AppTest** (or equivalent) with tasks completing between reruns; guidance on mocking `streamtree.asyncio` boundaries
-- **Typer CLI deliverable** — `project.scripts` entry for `streamtree`, user-facing command reference, and CI-friendly non-interactive flags where applicable
+- **Typer CLI deliverable** — `project.scripts` entry for `streamtree`, user-facing command reference (including **run/serve** and **init**), and CI-friendly non-interactive flags where applicable
+- **Documentation handoff** — CLI help text and **RTD** cross-links stay aligned with the [Documentation platform](#documentation-platform-read-the-docs) manual and guides
+
+---
+
+# Documentation platform (Read the Docs)
+
+## Goals
+- Publish a **versioned, searchable documentation site** on [**Read the Docs**](https://readthedocs.org/) as the **primary home** for learning StreamTree beyond the README and design docs in `docs/`.
+
+## Scope (fully fleshed out over several releases)
+
+### User manual (narrative)
+- **Concepts** — rerun execution, virtual trees vs raw `st.*`, `@component`, keys and identity, `render` / `render_app`, `App` shell.
+- **Core libraries** — layouts and widgets, `state` / forms / routing / `app_context`, `ErrorBoundary`, `Theme` / `ThemeRoot`, `streamtree.asyncio`, testing with `render_to_tree`.
+- **Optional extras** — what each stub extra (`[tables]`, `[charts]`, `[ui]`, `[auth]`, `[cli]`, `[pages]`, `[runner]`, …) is for and when to opt in; matrix vs Streamlit versions where APIs differ.
+- **Interop** — documented patterns for mixing Streamlit primitives inside components, performance cautions, and deployment notes (Community Cloud, containers, reverse proxies).
+
+### How-to guides (task-oriented)
+- **First full app** — from `pip install` to `App` + sidebar + theme + one background task.
+- **Routing** — query params, `Routes`, syncing URLs, error boundaries in real apps.
+- **Forms** — Pydantic models, validation UX, `bind_str_fields` / `str_text_inputs` and future builder slices.
+- **Async work** — `submit` / `TaskHandle`, polling, cancellation semantics, testing async boundaries.
+- **Lifecycle** — once `streamtree run` / `init` exist, end-to-end “create → run → ship” tutorials tied to the [End-to-end app experience](#end-to-end-app-experience-optional-streamlit-cli) roadmap.
+
+### API reference
+- **Autogenerated** from Python docstrings (Sphinx **autodoc** or MkDocs **mkdocstrings**—toolchain choice recorded in-repo).
+- **Cross-linking** — intersphinx (or equivalent) to **Streamlit**, **Pydantic**, and stdlib where it reduces duplicate prose.
+- **Stable URLs** — per-symbol pages suitable for bookmarking from the manual.
+
+### Operations & contributor docs
+- **Stable vs latest** — RTD versions aligned with **PyPI** and **git tags**; policy for when `latest` tracks `main`.
+- **CI** — doc build on pull requests; **fail on broken references / build warnings** where practical.
+- **Contributing** — how to preview docs locally, style guide for prose, and how roadmap items become manual chapters.
+
+## Deliverables
+- **RTD project** wired to the GitHub repository (webhooks, maintainers, canonical project slug—e.g. `streamtree` on readthedocs.io, subject to naming availability).
+- **Doc site skeleton** — navigation (Manual · Guides · API · release notes on-site or prominent link to `CHANGELOG.md`), search, accessible theme (incl. dark mode if the doc theme supports it), mobile-friendly layouts.
+- **MVP publication** — minimum viable **manual** + **one end-to-end guide** + **API index** before calling the platform “1.0”; then iterative expansion until the scope above is covered.
+- **`pyproject.toml` / PyPI URLs** — **Documentation** link pointing at RTD **stable** once the first public release of the site ships.
 
 ---
 
@@ -286,7 +340,8 @@ What shipped in **0.2.0** and **0.3.0** versus what stays on the **Phase 2** bac
 StreamTree becomes:
 - the architecture layer for Streamlit
 - a Python-native UI framework ecosystem
-- a production-grade application platform
+- a production-grade application platform where **full apps can be authored and run through StreamTree’s own workflow** (CLI + templates + runner helpers), with **Streamlit as the default execution engine** and **direct `streamlit run` always available** for those who want it
+- a project whose **user manual, guides, and API reference** live on **Read the Docs** as the canonical, versioned learning surface (see [Documentation platform](#documentation-platform-read-the-docs))
 
 Potential ecosystem packages:
 - streamtree-auth
