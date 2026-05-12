@@ -30,6 +30,7 @@ pip install streamtree[tables]
 pip install streamtree[charts]
 pip install streamtree[ui]
 pip install streamtree[auth]
+pip install streamtree[async]
 pip install streamtree[dev]
 pip install streamtree[all]
 ```
@@ -196,6 +197,46 @@ dependencies = [
 # Recommended Optional Dependencies
 
 These should be installed through extras.
+
+---
+
+# Async extra
+
+```bash
+pip install streamtree[async]
+```
+
+## asynclit (or equivalent)
+
+### Why
+
+Streamlit’s main script is **synchronous** and **rerun-driven**. Heavy **async** or **blocking** I/O on that thread hurts responsiveness. Small worker-loop libraries (for example [asynclit](https://github.com/eddiethedean/asynclit)) submit **sync or async** jobs to a **background event loop** and expose **poll-friendly** task handles (`done`, `result`, `error`, `cancel`, optional **progress**) that fit naturally between reruns.
+
+### Usefulness
+
+Useful for:
+
+- parallel API or database fetches before rendering dashboards
+- long-running jobs with **progress** without blocking `st` calls
+- cooperative **cancellation** when users navigate away
+- aligning with Streamtree’s **`streamtree.asyncio`** surface (see [STREAMTREE_PLAN.md](./STREAMTREE_PLAN.md#async-model-first-class-data-plane))
+
+### Strategic value
+
+Keeps the **default** `streamtree` install free of extra threading/async infrastructure while giving data apps a **supported** path for async orchestration.
+
+### Recommendation
+
+Optional dependency under **`async`**, wrapped entirely behind **`streamtree.asyncio`**. Application code should not depend on vendor imports as the primary API.
+
+```toml
+[project.optional-dependencies]
+async = [
+    "asynclit",
+]
+```
+
+*(Exact package pin TBD; alternatives may be evaluated as long as they match poll-on-rerun semantics.)*
 
 ---
 
@@ -647,6 +688,10 @@ auth = [
     "extra-streamlit-components",
 ]
 
+async = [
+    "asynclit",
+]
+
 dev = [
     "pytest",
     "ruff",
@@ -661,6 +706,7 @@ all = [
     "streamlit-shadcn-ui",
     "extra-streamlit-components",
     "streamlit-authenticator",
+    "asynclit",
 ]
 ```
 
@@ -680,6 +726,7 @@ Badge(...)
 Alert(...)
 Chart(...)
 AuthProvider(...)
+# Async orchestration stays under streamtree.asyncio (not direct vendor imports)
 ```
 
 Avoid:
@@ -688,6 +735,7 @@ Avoid:
 from st_aggrid import AgGrid
 from streamlit_shadcn_ui import ...
 from streamlit_extras import ...
+import asynclit  # in app code as the primary pattern
 ```
 
 Users should be able to stay inside the Streamtree mental model.
@@ -712,6 +760,7 @@ Users should be able to stay inside the Streamtree mental model.
 5. extra-streamlit-components
 6. streamlit-authenticator
 7. altair
+8. asynclit (via **`[async]`** and `streamtree.asyncio`)
 
 ---
 
@@ -736,6 +785,7 @@ tables = ["streamlit-aggrid"]
 charts = ["plotly", "streamlit-echarts", "altair"]
 ui = ["streamlit-shadcn-ui", "extra-streamlit-components"]
 auth = ["streamlit-authenticator", "extra-streamlit-components"]
+async = ["asynclit"]
 dev = ["pytest", "ruff", "mypy"]
 ```
 

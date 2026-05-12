@@ -15,6 +15,7 @@ Core philosophy:
 - Streamlit-native rendering
 - Minimal boilerplate
 - Enterprise-friendly architecture
+- **Async where it earns its keep** — first-class support for **data and orchestration** (parallel I/O, background work, cancellation), not a replacement for Streamlit’s **sync, rerun-driven** UI thread
 
 ---
 
@@ -38,6 +39,7 @@ pip install streamtree[tables]
 pip install streamtree[charts]
 pip install streamtree[ui]
 pip install streamtree[auth]
+pip install streamtree[async]
 pip install streamtree[dev]
 pip install streamtree[all]
 ```
@@ -61,6 +63,7 @@ Per the dependency strategy, the base package should standardize on:
 | **charts** | plotly, streamlit-echarts, altair behind elements like `Chart` / `LineChart` / `EChart` |
 | **ui** | Polished components (e.g. streamlit-shadcn-ui, extra-streamlit-components) behind names like `Badge`, `Alert`, `ModernCard` |
 | **auth** | streamlit-authenticator (+ shared helpers) behind abstractions like `AuthProvider` / protected routes |
+| **async** | Optional background task / poll integration (e.g. worker loop helpers) behind **`streamtree.asyncio`** — see plan async model |
 | **dev** | pytest, ruff, mypy for contributors and typed app authors |
 
 ## Public API rule
@@ -98,6 +101,7 @@ Streamtree solves these issues by introducing:
 4. Enable reusable UI systems
 5. Support strong typing and IDE tooling
 6. Eliminate the need for JavaScript in most use cases
+7. **First-class async for data and orchestration** — parallel and non-blocking I/O, task lifecycle, and loading/error UX, without fighting Streamlit’s rerun model
 
 ## Non-Goals (Initial Versions)
 
@@ -105,6 +109,7 @@ Streamtree solves these issues by introducing:
 - Recreating React exactly
 - Building a browser virtual DOM runtime
 - Supporting arbitrary frontend frameworks in v1
+- An **async-first UI reconciler** or fine-grained concurrent widget tree (Streamlit remains **one synchronous script run per rerun** for the main UI path)
 
 ---
 
@@ -117,6 +122,23 @@ Component -> Virtual Tree -> Renderer -> Streamlit
 Users define components as Python functions that return UI elements.
 
 The renderer converts those elements into Streamlit primitives.
+
+## Async model (first-class, data-plane)
+
+Streamtree treats **async** as a **first-class concern for work that must not block the rerun thread** and for **composing long-running or parallel data fetches**, while keeping **element construction and the Streamlit renderer path synchronous** unless and until Streamlit’s own model evolves.
+
+**Principles**
+
+1. **Sync tree, async data** — Components still **return** element trees synchronously on each rerun; async is used to **populate** state or props via **explicit** primitives (loaders, tasks, gathers), not by making every `@component` implicitly `async def`.
+2. **Rerun-native completion** — Results land in **`st.session_state`** (or Streamtree state keyed the same way) so the **next** rerun picks up `done` / `error` / `cancelled` / partial progress without blocking `render()`.
+3. **Cancellation and stale runs** — Any first-class async API must define what happens when a new rerun supersedes an in-flight request (ignore stale results, cooperative cancel, keyed by request generation).
+4. **Progress and errors** — First-class paths for **loading**, **terminal error**, and optional **progress** streams (mirroring “Suspense-shaped” boundaries in the roadmap) without requiring users to wire threads by hand.
+5. **Interoperability** — Ecosystem libraries that follow the same **background loop + poll on rerun** pattern (for example [asynclit](https://github.com/eddiethedean/asynclit)) are candidates for an **optional extra** or documented integration, wrapped behind Streamtree names so apps do not depend on vendor imports as their primary API.
+
+**Non-goals for async**
+
+- Replacing Streamlit’s **top-level** script execution model with `asyncio.run()` per page as the default.
+- Hiding **race conditions** behind magic; users should see **clear** task identity and state keys.
 
 ---
 
@@ -169,6 +191,18 @@ Provides:
 - snapshot testing
 - component assertions
 
+## streamtree.asyncio (planned name)
+
+Provides **first-class async orchestration** for Streamlit apps (exact module path may evolve):
+
+- Task submission and **polling** APIs aligned with rerun semantics (`done`, `result`, `error`, `cancel`)
+- Optional **progress** bridging for long async jobs
+- **`gather`-style** parallel async/sync work for dashboards
+- Session-scoped task registries keyed consistently with render context
+- Documentation for **testing** async-augmented trees (mocks, `AppTest`, timing between reruns)
+
+Implementation may wrap a small third-party layer or ship a minimal in-tree runtime; either way the **public** surface stays `streamtree.*`.
+
 ---
 
 # Design Principles
@@ -210,6 +244,19 @@ def UserCard(user: User):
 Strong IDE support is a core goal.
 
 **Pydantic** (see dependency strategy) is the intended backbone for typed props, form models, and validation—not ad-hoc dicts.
+
+## Async API style
+
+Preferred:
+
+- Explicit **task** or **loader** objects with **poll-on-rerun** semantics tied to `session_state`
+- **`gather`-style** composition for parallel independent fetches before building the tree
+- Clear **loading / error / cancelled** branches in the returned element tree
+
+Avoid:
+
+- Implicit global asyncio policies that hide which rerun a result belongs to
+- Blocking `await` in the middle of `render()` unless Streamlit’s runtime explicitly supports that pattern for your target version
 
 ---
 
@@ -256,11 +303,20 @@ Mitigation:
 - explicit key support
 - automatic scoped naming
 
+## Async vs Streamlit reruns
+
+Concurrent fetches and background tasks can **race** user input and reruns; stale results can overwrite fresh state if not keyed and generation-scoped.
+
+Mitigation:
+- **request / task generation** counters per logical loader
+- **documented** cancellation and “stale result discarded” behavior in `streamtree.asyncio` APIs
+- integration tests that simulate **multiple rapid reruns** and assert final UI state
+
 ---
 
 # Long-Term Opportunities
 
-- FastAPI integration
+- FastAPI integration and **native async** request handlers feeding the same virtual-tree abstractions where the renderer allows
 - Multi-renderer architecture
 - Design systems
 - Storybook-style tooling
@@ -269,6 +325,7 @@ Mitigation:
 - Data application tooling
 - Authentication layers
 - Component marketplaces
+- **Streaming and live data** (WebSockets, server-sent style updates) behind optional backends, still bridged through session-safe state
 
 ---
 
@@ -280,6 +337,7 @@ A successful Streamtree application should:
 - improve maintainability
 - scale to large teams
 - require minimal frontend knowledge
+- handle **async data and parallel I/O** through first-class, documented primitives without blocking the rerun thread or relying on ad-hoc threading patterns
 
 ---
 
