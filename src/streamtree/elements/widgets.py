@@ -121,6 +121,37 @@ class NumberInput(Element):
 
 
 @dataclass(frozen=True)
+class PageLink(Element):
+    """Multipage navigation via ``st.page_link`` (Streamlit ≥ 1.30)."""
+
+    label: str = ""
+    page: str = ""
+    icon: str | None = None
+    help: str | None = None
+    disabled: bool = False
+    use_container_width: bool | None = None
+
+    def __init__(
+        self,
+        label: str,
+        *,
+        page: str,
+        icon: str | None = None,
+        help: str | None = None,
+        disabled: bool = False,
+        use_container_width: bool | None = None,
+        key: str | None = None,
+    ) -> None:
+        object.__setattr__(self, "key", key)
+        object.__setattr__(self, "label", label)
+        object.__setattr__(self, "page", page)
+        object.__setattr__(self, "icon", icon)
+        object.__setattr__(self, "help", help)
+        object.__setattr__(self, "disabled", disabled)
+        object.__setattr__(self, "use_container_width", use_container_width)
+
+
+@dataclass(frozen=True)
 class Selectbox(Element):
     label: str = ""
     options: Sequence[Any] = ()

@@ -6,7 +6,7 @@ import streamtree
 
 
 def test_version_matches_release_series() -> None:
-    assert streamtree.__version__ == "0.3.0"
+    assert streamtree.__version__ == "0.4.0"
 
 
 def test_public_exports_are_importable() -> None:
@@ -18,5 +18,5 @@ def test_public_exports_are_importable() -> None:
 def test_asyncio_and_forms_submodules_exposed() -> None:
     assert hasattr(streamtree.asyncio, "submit")
     assert hasattr(streamtree.asyncio, "TaskHandle")
-    assert hasattr(streamtree.forms, "bind_str_fields")
-    assert hasattr(streamtree.forms, "str_text_inputs")
+    assert hasattr(streamtree.forms, "bind_numeric_fields")
+    assert hasattr(streamtree.forms, "number_inputs")

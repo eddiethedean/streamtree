@@ -51,7 +51,32 @@ def test_app_root_with_sidebar() -> None:
     assert root.children[1] is body
 
 
-def test_apply_page_config_without_icon() -> None:
+def test_apply_page_config_with_sidebar_menu_and_state() -> None:
+    calls: list[dict[str, object]] = []
+
+    def fake_set_page_config(**kwargs: object) -> None:
+        calls.append(dict(kwargs))
+
+    st = SimpleNamespace(session_state={}, set_page_config=fake_set_page_config)
+    app = App(
+        body=Text("x"),
+        page_title="Full",
+        page_icon="🌲",
+        layout="wide",
+        initial_sidebar_state="expanded",
+        menu_items={"Get help": "https://example.invalid/help"},
+    )
+    with patch("streamtree.app.st", st):
+        apply_page_config(app)
+    assert len(calls) == 1
+    assert calls[0]["page_title"] == "Full"
+    assert calls[0]["layout"] == "wide"
+    assert calls[0]["page_icon"] == "🌲"
+    assert calls[0]["initial_sidebar_state"] == "expanded"
+    assert calls[0]["menu_items"] == {"Get help": "https://example.invalid/help"}
+
+
+def test_apply_page_config_omits_unset_optional_page_keys() -> None:
     calls: list[tuple[str, object]] = []
 
     def fake_set_page_config(**kwargs: object) -> None:

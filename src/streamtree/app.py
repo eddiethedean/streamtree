@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal
 
 import streamlit as st
 
@@ -26,20 +26,25 @@ class App:
     page_title: str = "StreamTree"
     page_icon: str | None = None
     layout: Literal["centered", "wide"] = "centered"
+    initial_sidebar_state: Literal["auto", "expanded", "collapsed"] | None = None
+    menu_items: dict[str, Any] | None = None
 
 
 def apply_page_config(app: App) -> None:
     """Call ``st.set_page_config`` at most once per session (Streamlit allows one early call)."""
     if st.session_state.get(_SESSION_PAGE_CONFIG):
         return
+    kwargs: dict[str, Any] = {
+        "page_title": app.page_title,
+        "layout": app.layout,
+    }
     if app.page_icon is not None:
-        st.set_page_config(
-            page_title=app.page_title,
-            layout=app.layout,
-            page_icon=app.page_icon,
-        )
-    else:
-        st.set_page_config(page_title=app.page_title, layout=app.layout)
+        kwargs["page_icon"] = app.page_icon
+    if app.initial_sidebar_state is not None:
+        kwargs["initial_sidebar_state"] = app.initial_sidebar_state
+    if app.menu_items is not None:
+        kwargs["menu_items"] = app.menu_items
+    st.set_page_config(**kwargs)
     st.session_state[_SESSION_PAGE_CONFIG] = True
 
 

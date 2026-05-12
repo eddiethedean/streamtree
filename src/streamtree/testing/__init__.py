@@ -28,6 +28,7 @@ from streamtree.elements.widgets import (
     Image,
     Markdown,
     NumberInput,
+    PageLink,
     Selectbox,
     Subheader,
     Text,
@@ -209,6 +210,14 @@ def _node(el: Element, *, expand_components: bool) -> dict[str, Any]:
         }
     if isinstance(el, NumberInput):
         return {"kind": "NumberInput", "key": el.key, "label": el.label}
+    if isinstance(el, PageLink):
+        return {
+            "kind": "PageLink",
+            "key": el.key,
+            "label": el.label,
+            "page": el.page,
+            "disabled": el.disabled,
+        }
     if isinstance(el, Selectbox):
         return {
             "kind": "Selectbox",

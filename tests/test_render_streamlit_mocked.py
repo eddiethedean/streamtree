@@ -27,6 +27,7 @@ from streamtree.elements import (
     Markdown,
     NumberInput,
     Page,
+    PageLink,
     Routes,
     Selectbox,
     Sidebar,
@@ -88,6 +89,8 @@ def _make_st(
     btn_iter = iter(button_returns or [False])
     st.button = MagicMock(side_effect=lambda *a, **k: next(btn_iter, False))
     st.form_submit_button = MagicMock(return_value=False)
+
+    st.page_link = MagicMock()
 
     ti = text_input_side_effect
     if ti is None:
@@ -207,6 +210,7 @@ def test_render_element_full_tree_mocked() -> None:
                     ),
                     NumberInput("ni2", value=None),
                     NumberInput("nix", value=42),
+                    PageLink("Other", page="pages/other.py", icon="🔭"),
                     Selectbox("sb", options=["a", "b"], index=sv_idx),
                     Selectbox("sb2", options=["z"], index=0, format_func=lambda x: f"_{x}"),
                     Checkbox("cb", value=sv_cb),
@@ -218,6 +222,34 @@ def test_render_element_full_tree_mocked() -> None:
                 ),
             )
             rs.render_element(tree)
+            assert st.page_link.called
+
+
+def test_render_page_link_minimal_and_full_kwargs() -> None:
+    st = _make_st()
+    with _patched_st(st):
+        with render_context("pl"):
+            rs.render_element(PageLink("Home", page="app.py"), slot="0")
+            st.page_link.assert_called_with(page="app.py", label="Home", disabled=False)
+            st.page_link.reset_mock()
+            rs.render_element(
+                PageLink(
+                    "Docs",
+                    page="docs.py",
+                    icon="📖",
+                    help="Open docs",
+                    use_container_width=True,
+                ),
+                slot="1",
+            )
+            st.page_link.assert_called_with(
+                page="docs.py",
+                label="Docs",
+                disabled=False,
+                icon="📖",
+                help="Open docs",
+                use_container_width=True,
+            )
 
 
 def test_render_text_input_updates_form_and_statevar() -> None:

@@ -242,6 +242,27 @@ async = [
 
 ---
 
+## CLI extra (`streamtree[cli]`)
+
+```bash
+pip install "streamtree[cli]"
+```
+
+### Typer
+
+**Why:** A small **Typer**-based **`streamtree`** console entrypoint ships in **0.4.0** (`streamtree run`, `streamtree doctor`). Typer is **not** a core dependency so `pip install streamtree` stays lean.
+
+**Recommendation:** Optional extra **`[cli]`** plus **`[project.scripts]`** `streamtree = "streamtree.cli:main"`. The **`[runner]`** extra remains an **empty metadata stub** (stdlib `streamtree.helpers.runner` ships in the default wheel); **`[pages]`** is reserved for future multipage helpers—see [ROADMAP.md](./ROADMAP.md).
+
+```toml
+[project.optional-dependencies]
+cli = ["typer>=0.12.3"]
+runner = []
+pages = []
+```
+
+---
+
 # Tables Extra
 
 ```bash

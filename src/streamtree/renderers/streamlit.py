@@ -33,6 +33,7 @@ from streamtree.elements.widgets import (
     Image,
     Markdown,
     NumberInput,
+    PageLink,
     Selectbox,
     Subheader,
     Text,
@@ -368,6 +369,21 @@ def render_element(el: Element, *, slot: str = "0") -> None:
 
     if isinstance(el, NumberInput):
         _render_number_input(el, slot)
+        return
+
+    if isinstance(el, PageLink):
+        kw: dict[str, Any] = {
+            "page": el.page,
+            "label": el.label,
+            "disabled": el.disabled,
+        }
+        if el.icon is not None:
+            kw["icon"] = el.icon
+        if el.help is not None:
+            kw["help"] = el.help
+        if el.use_container_width is not None:
+            kw["use_container_width"] = el.use_container_width
+        st.page_link(**kw)
         return
 
     if isinstance(el, Selectbox):

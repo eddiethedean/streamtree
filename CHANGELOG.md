@@ -5,6 +5,28 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] — 2026-05-12
+
+### Added
+
+- **CLI (optional `[cli]`):** **`streamtree run`** delegates to **`python -m streamlit run`** with forwarded argv; **`streamtree doctor`** prints versions and Typer availability. **`[project.scripts]`** entry **`streamtree`**.
+- **`streamtree.helpers.runner`:** **`build_streamlit_run_argv`**, **`run_streamlit_sync`** (stdlib subprocess; **`FileNotFoundError`** → exit code **127**; empty args → **2**).
+- **`PageLink`** element mapping to **`st.page_link`** (Streamlit **≥ 1.30** in core dependencies).
+- **`App`:** **`initial_sidebar_state`** and **`menu_items`** passed through to **`st.set_page_config`** when set.
+- **`streamtree.forms`:** **`numeric_field_names`**, **`bind_numeric_fields`**, **`number_inputs`** for **`int`** / **`float`** and optional numeric fields.
+- Example **`examples/numeric_nav_demo.py`** and **`examples/streamtree_run_demo.md`** (CLI usage).
+
+### Changed
+
+- **Minimum Streamlit** raised to **`>=1.30.0`** (for **`st.page_link`**).
+- **`[cli]`** extra now lists **Typer**; stub extras **`[pages]`** and **`[runner]`** documented (runner helper ships in the default install; **`[runner]`** remains metadata-only).
+
+### Documentation
+
+- README: **`streamtree[cli]`**, **`streamtree run`**, Streamlit **1.30+** requirement, **`v0.4.0`** release tag example.
+- [DEPENDENCY_STRATEGY.md](docs/DEPENDENCY_STRATEGY.md): CLI / **`[pages]`** / **`[runner]`** notes.
+- [ROADMAP.md](docs/ROADMAP.md): **0.4.0** release index; Phase 2 “Next” adjusted.
+
 ## [0.3.0] — 2026-05-12
 
 ### Added
@@ -60,6 +82,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Runnable example: `examples/counter.py`.
 - Design docs under `docs/` (plan, roadmap, dependency strategy).
 
+[0.4.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.4.0
 [0.3.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.3.0
 [0.2.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.2.0
 [0.1.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.1.0

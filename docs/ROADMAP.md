@@ -22,10 +22,19 @@ _Last updated: 2026-05-12._
 |-------|--------|--------|
 | Phase 0 — Foundation | Mostly complete | Package layout, Streamlit renderer, design docs in `docs/`. |
 | Phase 1 — MVP | In progress | **0.1.0** core tree + state; **0.2.0** Pydantic + stub extras; deeper memoization / `streamlit-extras` curation still open. |
-| Phase 2 — Application | In progress | **Shipped (0.2–0.3):** routing, `Routes`, `ErrorBoundary`, `app_context`, forms helpers, **`App` / `render_app`**, theme, **`streamtree.asyncio`**, `bind_str_fields` / `str_text_inputs`. **Next:** navigation, auth, portals, `streamlit-extras` behind names, richer forms/async, **[pages]/[runner]** helpers, **StreamTree–first run** ([below](#end-to-end-app-experience-optional-streamlit-cli)). |
+| Phase 2 — Application | In progress | **Shipped through 0.4.0:** routing, `Routes`, `ErrorBoundary`, `app_context`, forms (str + numeric), **`App` / `render_app`** (+ sidebar/menu/sidebar state passthrough), theme, **`streamtree.asyncio`**, **`PageLink`**, **`streamtree.helpers.runner`**, optional **`[cli]`** (`streamtree run` / `doctor`). **Next:** auth, portals, `streamlit-extras` behind names, async progress, **`[pages]`** helpers, richer shell. |
 | Phase 3 — Data toolkit | Planned | Tables, charts, performance playbooks; follows Phase 2. |
-| Phase 4 — Tooling | Planned | Testing, Typer **`streamtree`** CLI, dev introspection; overlaps RTD handoff. |
+| Phase 4 — Tooling | Planned | Testing, dev introspection; **`streamtree` CLI** MVP shipped in **0.4.0**; overlaps RTD handoff. |
 | Docs — Read the Docs | Planned | [Manual, guides, API](#documentation-platform-read-the-docs); **stable** / **latest**; CI doc builds. |
+
+### 0.4.0 (shipped)
+
+- **CLI:** optional **`[cli]`** (Typer) + **`streamtree run`** / **`streamtree doctor`**; delegates to **`streamlit run`**.
+- **`streamtree.helpers.runner`:** argv builder + **`run_streamlit_sync`** (stdlib). **`[runner]`** extra remains a metadata stub; **`[pages]`** reserved for multipage helpers.
+- **`PageLink`** + **`st.page_link`** renderer path; **Streamlit ≥ 1.30** required.
+- **`App`:** **`initial_sidebar_state`**, **`menu_items`** for **`st.set_page_config`**.
+- **Forms:** **`bind_numeric_fields`**, **`number_inputs`**, **`numeric_field_names`**.
+- **Examples:** **`examples/numeric_nav_demo.py`**, **`examples/streamtree_run_demo.md`**.
 
 ### 0.3.0 (shipped)
 
@@ -45,27 +54,28 @@ _Last updated: 2026-05-12._
 
 ## Phase 2 backlog & near-term themes
 
-### Backlog (post-0.3.0)
+### Backlog (post-0.4.0)
 
-- Richer **App** / **navigation** (beyond shell + `Routes`).
+- Richer **App** / **navigation** (beyond shell + `Routes` + `PageLink`).
 - **Auth** + **`[auth]`** wrappers.
 - **Portals**, **imperative handles**, **route prefetch**, **async progress** on `streamtree.asyncio`.
 - **`streamlit-extras`** curation behind stable StreamTree names.
-- **Form builder** beyond string fields (numeric, layout, batch submit).
+- **Form builder** beyond string + scalar numeric fields (layout, batch submit).
 
 ### Optional dedicated helpers
 
-Reserved **empty extras** (same pattern as `[cli]`, `[tables]`) until deps/APIs are pinned:
+Reserved **empty extras** (same pattern as **`[pages]`**) until deps/APIs are pinned:
 
 - **`[pages]`** + **`streamtree.helpers.pages`** (working name) — multipage / `pages/` + navigation APIs ↔ **`Routes`**, **`App`**; Streamlit version matrix; **no second web server**.
-- **`[runner]`** + **`streamtree.helpers.runner`** (working name) — `streamlit run` orchestration → **`streamtree run` / `serve`** story; Streamlit stays the engine until Phase 5 hosts.
+- **`[runner]`** — metadata-only companion to **`streamtree.helpers.runner`** (stdlib **`streamlit run`** helpers ship in the default install; **`[cli]`** adds Typer for the **`streamtree`** console script).
 
 ### End-to-end app experience (optional Streamlit CLI)
 
 **Goal** — One StreamTree-shaped workflow (scaffold → configure → run) **without** requiring the Streamlit CLI for teams that opt in.
 
 - **Always supported:** `streamlit run app.py` (CI, debugging, power users).
-- **Planned:** `streamtree init` + **`streamtree run` / `serve`** (`[cli]` + `[runner]`), project-aware entrypoints, defaults; still delegates to Streamlit.
+- **Shipped (0.4.0):** **`streamtree run`** / **`streamtree doctor`** behind **`pip install "streamtree[cli]"`**, delegating to **`python -m streamlit run`** (see **`streamtree.helpers.runner`**).
+- **Planned:** `streamtree init` + project-aware entrypoints, defaults; still delegates to Streamlit.
 - **Boundary:** DX/packaging layer in Phases 2–4, not a new server. “No Streamlit CLI” = **no obligation to use Streamlit’s CLI**, not removing Streamlit from the stack.
 - **Docs:** Full manual/guides on **RTD** ([Documentation platform](#documentation-platform-read-the-docs)); README stays short.
 

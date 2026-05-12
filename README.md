@@ -24,22 +24,24 @@ StreamTree is an **architecture layer** for Streamlit, not a React-style web fra
 - **App shell (0.3+)** — `App` with a guarded `st.set_page_config`, plus optional sidebar and main composition via `render_app`.
 - **Theming (0.3+)** — `Theme`, `ThemeRoot`, `theme()`, `theme_css()`, and `app_context.provider(theme=...)`.
 - **Background work (0.3+)** — `streamtree.asyncio.submit` and `TaskHandle` for stdlib-thread jobs you poll across reruns.
-- **Forms (0.3+)** — Pydantic-oriented helpers such as `bind_str_fields` and `str_text_inputs` for string fields.
+- **Forms (0.3+)** — Pydantic-oriented helpers: `bind_str_fields` / `str_text_inputs`, plus **`bind_numeric_fields` / `number_inputs`** (0.4+) for `int` / `float` fields.
+- **CLI (0.4+)** — Optional **`streamtree[cli]`**: `streamtree run` delegates to Streamlit; `streamtree doctor` prints versions (see [examples/streamtree_run_demo.md](examples/streamtree_run_demo.md)).
 - **State** — `state`, `toggle_state`, `form_state`, `memo`, `cache`.
 - **Routing and context** — Query-param routing (`streamtree.routing`), `ErrorBoundary`, `streamtree.forms` utilities, and `app_context.provider` / `lookup` for shared values.
 - **Interop** — Inside `@component`, your function body runs during render; you may call `st.*` (columns, metrics, charts, third-party components) and still return an element tree, or `fragment()` when the subtree is fully imperative.
 - **Quality** — Pydantic v2 in the default install, typing-first APIs, and `render_to_tree` for structural tests.
 
-Stub optional extras (`tables`, `charts`, `ui`, `auth`, `asyncio`, `async`, `cli`) are reserved for future wrappers; see [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md). The `streamtree.asyncio` module ships in the default package.
+Optional extras (`tables`, `charts`, `ui`, `auth`, `asyncio`, `async`, `pages`, `runner`) are mostly stubs for future wrappers; **`[cli]`** adds **Typer** and the **`streamtree`** console script (`run`, `doctor`). See [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md). The `streamtree.asyncio` module and **`streamtree.helpers.runner`** ship in the default package.
 
 ## Requirements
 
-Python **3.10+**, with **Streamlit ≥ 1.28**, **Pydantic v2**, and **typing-extensions** (see `pyproject.toml`).
+Python **3.10+**, with **Streamlit ≥ 1.30** (for `st.page_link` used by `PageLink`), **Pydantic v2**, and **typing-extensions** (see `pyproject.toml`).
 
 ## Installation
 
 ```bash
-pip install streamtree==0.3.0
+pip install streamtree==0.4.0
+pip install "streamtree[cli]"   # Typer + ``streamtree run`` / ``streamtree doctor``
 ```
 
 From a clone, with dev dependencies:
@@ -81,6 +83,9 @@ streamlit run examples/routed_app.py
 streamlit run examples/app_shell.py
 streamlit run examples/async_bg.py
 streamlit run examples/model_form.py
+streamlit run examples/numeric_nav_demo.py
+# With Typer installed (``pip install "streamtree[cli]"``):
+streamtree run examples/counter.py
 ```
 
 ## Using Streamlit inside components
@@ -195,7 +200,7 @@ Equivalent with **pip**: `pip install -e ".[dev]"`, then `ruff`, `ty check src`,
 
 ## Releases
 
-**Automated:** Add a **`PYPI_API_TOKEN`** secret to the repository. When `main` is green, push a tag of the form **`v0.3.0`**. The [release workflow](https://github.com/streamtree-dev/streamtree/blob/main/.github/workflows/release.yml) runs lint, type check, pytest (including coverage), builds with `uv build`, and publishes to PyPI.
+**Automated:** Add a **`PYPI_API_TOKEN`** secret to the repository. When `main` is green, push a tag of the form **`v0.4.0`**. The [release workflow](https://github.com/streamtree-dev/streamtree/blob/main/.github/workflows/release.yml) runs lint, type check, pytest (including coverage), builds with `uv build`, and publishes to PyPI.
 
 **Manual:** `uv build` (or `python -m build`), then upload `dist/` with **twine** or **`uv publish`**. Keep `pyproject.toml`, `streamtree.__version__`, `tests/test_package_meta.py`, and `CHANGELOG.md` in sync when cutting a release.
 

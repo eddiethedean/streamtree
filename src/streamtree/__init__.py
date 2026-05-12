@@ -21,7 +21,7 @@ from streamtree.core import (
 )
 from streamtree.theme import Theme, ThemeRoot, theme, theme_css
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 __all__ = [
     "App",
