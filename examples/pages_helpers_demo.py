@@ -8,7 +8,7 @@ Run from the repository root (so ``examples/pages/`` sits next to this file):
 from __future__ import annotations
 
 from streamtree import component, render
-from streamtree.elements import Markdown, Page, PageLink, Text, VStack
+from streamtree.elements import Markdown, Page, PageLink, VStack
 from streamtree.helpers.pages import discover_pages
 
 

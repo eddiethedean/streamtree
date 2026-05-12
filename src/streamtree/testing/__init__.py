@@ -4,22 +4,26 @@ from __future__ import annotations
 
 from typing import Any
 
+from streamtree.elements.auth_gate import AuthGate
 from streamtree.core.element import ComponentCall, Element, Fragment
 from streamtree.elements.layout import (
     Card,
     Columns,
+    Dialog,
     ErrorBoundary,
     Expander,
     Form,
     Grid,
     HStack,
     Page,
+    Popover,
     Routes,
     Sidebar,
     Spacer,
     Tabs,
     VStack,
 )
+from streamtree.elements.ui_extra import ColoredHeader, VerticalSpaceLines
 from streamtree.elements.widgets import (
     Button,
     Checkbox,
@@ -86,6 +90,24 @@ def _node(el: Element, *, expand_components: bool) -> dict[str, Any]:
             "name": getattr(el.fn, "__name__", "component"),
             "args": _safe_repr(el.args),
             "kwargs": {k: _safe_repr(v) for k, v in el.kwargs.items()},
+        }
+
+    if isinstance(el, Dialog):
+        return {
+            "kind": "Dialog",
+            "key": el.key,
+            "title": el.title,
+            "open_type": type(el.open).__name__,
+            "children": [_node(c, expand_components=expand_components) for c in el.children],
+        }
+
+    if isinstance(el, Popover):
+        return {
+            "kind": "Popover",
+            "key": el.key,
+            "label": el.label,
+            "disabled": el.disabled,
+            "children": [_node(c, expand_components=expand_components) for c in el.children],
         }
 
     if isinstance(el, (VStack, Page, Card)):
@@ -231,6 +253,27 @@ def _node(el: Element, *, expand_components: bool) -> dict[str, Any]:
         return {"kind": "DataFrame", "key": el.key}
     if isinstance(el, Image):
         return {"kind": "Image", "key": el.key}
+
+    if isinstance(el, AuthGate):
+        return {
+            "kind": "AuthGate",
+            "key": el.key,
+            "config_keys": sorted(el.config.keys()),
+            "child": _node(el.child, expand_components=expand_components),
+            "login_location": el.login_location,
+        }
+
+    if isinstance(el, ColoredHeader):
+        return {
+            "kind": "ColoredHeader",
+            "key": el.key,
+            "label": el.label,
+            "description": el.description,
+            "color_name": el.color_name,
+        }
+
+    if isinstance(el, VerticalSpaceLines):
+        return {"kind": "VerticalSpaceLines", "key": el.key, "num_lines": el.num_lines}
 
     raise TypeError(f"Unsupported element type: {type(el)!r}")
 

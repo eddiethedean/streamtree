@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import sys
+from pathlib import Path
 
 import click
 
@@ -22,6 +23,7 @@ def _cli_app():
 
     from streamtree import __version__
     from streamtree.helpers.runner import run_streamlit_sync
+    from streamtree.helpers.scaffold import write_init_project
 
     app = typer.Typer(help="StreamTree developer commands.", no_args_is_help=True)
 
@@ -47,6 +49,33 @@ def _cli_app():
         typer.echo(f"python {sys.version.split()[0]}")
         typer_installed = importlib.util.find_spec("typer") is not None
         typer.echo(f"typer (cli extra) installed: {typer_installed}")
+
+    @app.command("init")
+    def init_cmd(
+        path: Path | None = typer.Argument(
+            default=None,
+            help="Directory to write into (default: current directory)",
+        ),
+        *,
+        name: str = typer.Option("StreamTree app", help="App page title / window name"),
+        with_pages: bool = typer.Option(
+            False,
+            help="Also create ``pages/`` with a sample page script",
+        ),
+        force: bool = typer.Option(False, help="Overwrite existing generated files"),
+    ) -> None:
+        """Scaffold ``app.py`` (and optional ``pages/``) for ``streamtree run``."""
+        root = Path.cwd() if path is None else path
+        try:
+            written = write_init_project(root, page_title=name, with_pages=with_pages, force=force)
+        except FileExistsError as exc:
+            typer.echo(f"Refusing to overwrite (use --force): {exc}", err=True)
+            raise typer.Exit(1) from exc
+        except ValueError as exc:
+            typer.echo(str(exc), err=True)
+            raise typer.Exit(1) from exc
+        for p in written:
+            typer.echo(f"Wrote {p.resolve()}")
 
     return app
 

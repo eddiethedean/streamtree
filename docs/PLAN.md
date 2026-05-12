@@ -59,6 +59,8 @@ Per the dependency strategy, the base package should standardize on:
 
 **0.4.0:** Optional **`[cli]`** (`streamtree run`, `streamtree doctor`), **`streamtree.helpers.runner`**, **`PageLink`** (Streamlit **≥ 1.30**), **`App`** `initial_sidebar_state` / `menu_items`, and numeric form helpers (`bind_numeric_fields`, `number_inputs`)—see [CHANGELOG.md](../CHANGELOG.md).
 
+**0.6.0:** **`streamtree init`** (CLI scaffold), **`AuthGate`** + **`[auth]`** (`streamlit-authenticator`), **`Dialog` / `Popover`**, **`[ui]`** first **`streamlit-extras`** wrappers (`ColoredHeader`, `VerticalSpaceLines`); Streamlit **≥ 1.33** in core deps—see [CHANGELOG.md](../CHANGELOG.md).
+
 **0.5.0:** **`streamtree.helpers.pages`** (stdlib discovery for Streamlit’s `pages/` directory), plus **`set_task_progress`** / **`TaskHandle.progress()`** on **`streamtree.asyncio`** for rerun-polled worker progress—see [CHANGELOG.md](../CHANGELOG.md).
 
 ## Optional extras (target)
@@ -67,8 +69,8 @@ Per the dependency strategy, the base package should standardize on:
 |-------|-------------------|
 | **tables** | Rich grids (e.g. streamlit-aggrid) for sortable/filterable/editable tables |
 | **charts** | plotly, streamlit-echarts, altair behind elements like `Chart` / `LineChart` / `EChart` |
-| **ui** | Polished components (e.g. streamlit-shadcn-ui, extra-streamlit-components) behind names like `Badge`, `Alert`, `ModernCard` |
-| **auth** | streamlit-authenticator (+ shared helpers) behind abstractions like `AuthProvider` / protected routes |
+| **ui** | Polished components (e.g. streamlit-shadcn-ui, extra-streamlit-components) behind names like `Badge`, `Alert`, `ModernCard`; **0.6+** ships curated **`streamlit-extras`** wrappers under the same extra |
+| **auth** | streamlit-authenticator (+ shared helpers) behind **`AuthGate`** / optional extras (**shipped 0.6+**) |
 | **async** | Optional background task / poll integration (e.g. worker loop helpers) behind **`streamtree.asyncio`** — see plan async model |
 | **dev** | pytest, ruff, **ty** (canonical in CI), **mypy** (optional local) for contributors and typed app authors |
 

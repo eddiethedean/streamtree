@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "streamtree"
-version = "0.5.0"
+version = "0.6.0"
 description = "StreamTree: declarative, typed composition for Streamlit."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -24,7 +24,7 @@ classifiers = [
 ]
 dependencies = [
   "pydantic>=2.4.0",
-  "streamlit>=1.30.0",
+  "streamlit>=1.33.0",
   "typing-extensions>=4.8.0",
 ]
 
@@ -35,8 +35,8 @@ streamtree = "streamtree.cli:main"
 # Stub extras (see docs/DEPENDENCY_STRATEGY.md); wrappers ship in later releases.
 tables = []
 charts = []
-ui = []
-auth = []
+ui = ["streamlit-extras>=0.4.3"]
+auth = ["streamlit-authenticator>=0.3.3"]
 asyncio = []
 # TOML-quoted key: matches documented ``pip install streamtree[async]`` (alias of the asyncio stub extra).
 "async" = []
@@ -56,6 +56,8 @@ dev = [
   "ruff>=0.2.0",
   "ty>=0.0.30",
   "typer>=0.12.3",
+  "streamlit-authenticator>=0.3.3",
+  "streamlit-extras>=0.4.3",
 ]
 
 [project.urls]
@@ -72,8 +74,8 @@ where = ["src"]
 line-length = 100
 target-version = "py310"
 
-[tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B"]
+[tool.ruff.lint.per-file-ignores]
+"src/streamtree/cli.py" = ["B008"]
 
 [tool.mypy]
 # CI uses ``ty check src`` (``.github/workflows/ci.yml``). mypy remains configured for optional local runs.

@@ -8,23 +8,27 @@ from typing import Any, cast
 
 import streamlit as st
 
+from streamtree.elements.auth_gate import AuthGate
 from streamtree.core.context import current_context, push_segment
 from streamtree.core.element import ComponentCall, Element, Fragment
 from streamtree.elements.layout import (
     Card,
     Columns,
+    Dialog,
     ErrorBoundary,
     Expander,
     Form,
     Grid,
     HStack,
     Page,
+    Popover,
     Routes,
     Sidebar,
     Spacer,
     Tabs,
     VStack,
 )
+from streamtree.elements.ui_extra import ColoredHeader, VerticalSpaceLines
 from streamtree.elements.widgets import (
     Button,
     Checkbox,
@@ -45,6 +49,16 @@ from streamtree.state import FormState, StateVar, ToggleState
 from streamtree.theme import ThemeRoot, theme_css
 
 __all__ = ["render_element"]
+
+
+def _coerce_open_flag(open_v: object) -> bool:
+    from streamtree.state import StateVar, ToggleState
+
+    if isinstance(open_v, StateVar):
+        return bool(open_v())
+    if isinstance(open_v, ToggleState):
+        return bool(open_v())
+    return bool(open_v)
 
 
 def _ensure_component_result(tree: object, fn: Callable[..., Any]) -> Element:
@@ -439,6 +453,73 @@ def render_element(el: Element, *, slot: str = "0") -> None:
         elif el.use_column_width is not None:
             kw["use_column_width"] = el.use_column_width
         st.image(el.image, **kw)
+        return
+
+    if isinstance(el, Dialog):
+        if not _coerce_open_flag(el.open):
+            return
+        if hasattr(st, "dialog"):
+
+            @st.dialog(el.title)
+            def _dialog_body() -> None:
+                for i, ch in enumerate(el.children):
+                    render_element(ch, slot=f"{slot}.dlg{i}")
+
+            _dialog_body()
+        else:
+            st.warning("st.dialog is not available in this Streamlit version.")
+            for i, ch in enumerate(el.children):
+                render_element(ch, slot=f"{slot}.dlgf{i}")
+        return
+
+    if isinstance(el, Popover):
+        if hasattr(st, "popover"):
+            with st.popover(el.label, disabled=el.disabled):
+                for i, ch in enumerate(el.children):
+                    render_element(ch, slot=f"{slot}.pop{i}")
+        else:
+            with st.expander(el.label, expanded=False):
+                for i, ch in enumerate(el.children):
+                    render_element(ch, slot=f"{slot}.popex{i}")
+        return
+
+    if isinstance(el, AuthGate):
+        try:
+            from streamtree.auth import build_authenticator
+
+            auth = build_authenticator(el.config)
+        except ImportError:
+            raise ImportError(
+                "AuthGate requires streamlit-authenticator. "
+                'Install with: pip install "streamtree[auth]"'
+            ) from None
+        auth.login(location=el.login_location, key=el.login_key)
+        if st.session_state.get("authentication_status"):
+            render_element(el.child, slot=f"{slot}.auth_ok")
+        return
+
+    if isinstance(el, ColoredHeader):
+        try:
+            from streamlit_extras.colored_header import colored_header
+
+            colored_header(el.label, description=el.description, color_name=el.color_name)
+        except ImportError:
+            raise ImportError(
+                "ColoredHeader requires streamlit-extras. "
+                'Install with: pip install "streamtree[ui]"'
+            ) from None
+        return
+
+    if isinstance(el, VerticalSpaceLines):
+        try:
+            from streamlit_extras.add_vertical_space import add_vertical_space
+
+            add_vertical_space(el.num_lines)
+        except ImportError:
+            raise ImportError(
+                "VerticalSpaceLines requires streamlit-extras. "
+                'Install with: pip install "streamtree[ui]"'
+            ) from None
         return
 
     raise TypeError(f"Unsupported element type: {type(el)!r}")

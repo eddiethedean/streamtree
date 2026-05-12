@@ -24,6 +24,24 @@ streamtree doctor
 
 This prints **streamtree**, **streamlit**, and **Python** versions, and whether **Typer** is importable.
 
+## Scaffolding a new app (`streamtree init`)
+
+Generate **`app.py`** (and optionally **`pages/`**) in the current directory or under a target path:
+
+```bash
+mkdir myapp && cd myapp
+streamtree init --with-pages
+streamtree run app.py
+```
+
+Or pass a directory explicitly:
+
+```bash
+streamtree init myapp
+```
+
+Use **`--force`** to overwrite existing generated files. **`--name`** sets the **`App.page_title`** string in the template.
+
 The always-supported path remains:
 
 ```bash

@@ -1,21 +1,25 @@
 """Declarative layout and widget primitives."""
 
 from streamtree.core.element import Element, Fragment, fragment
+from streamtree.elements.auth_gate import AuthGate
 from streamtree.elements.layout import (
     Card,
     Columns,
+    Dialog,
     ErrorBoundary,
     Expander,
     Form,
     Grid,
     HStack,
     Page,
+    Popover,
     Routes,
     Sidebar,
     Spacer,
     Tabs,
     VStack,
 )
+from streamtree.elements.ui_extra import ColoredHeader, VerticalSpaceLines
 from streamtree.elements.widgets import (
     Button,
     Checkbox,
@@ -34,11 +38,14 @@ from streamtree.elements.widgets import (
 from streamtree.theme import Theme, ThemeRoot
 
 __all__ = [
+    "AuthGate",
     "Button",
     "Card",
     "Checkbox",
+    "ColoredHeader",
     "Columns",
     "DataFrame",
+    "Dialog",
     "Divider",
     "Element",
     "ErrorBoundary",
@@ -52,6 +59,7 @@ __all__ = [
     "NumberInput",
     "Page",
     "PageLink",
+    "Popover",
     "Routes",
     "Selectbox",
     "Sidebar",
@@ -64,5 +72,6 @@ __all__ = [
     "ThemeRoot",
     "Title",
     "VStack",
+    "VerticalSpaceLines",
     "fragment",
 ]

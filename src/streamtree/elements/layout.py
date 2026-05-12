@@ -6,6 +6,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 
 from streamtree.core.element import Element, ElementChild, normalize_children
+from streamtree.state import StateVar, ToggleState
 
 
 @dataclass(frozen=True)
@@ -173,6 +174,51 @@ class Spacer(Element):
     """Vertical breathing room."""
 
     height: int | None = None
+
+
+DialogOpen = bool | StateVar[bool] | ToggleState
+
+
+@dataclass(frozen=True)
+class Dialog(Element):
+    """Modal dialog when ``open`` is true (Streamlit ``st.dialog``; Streamlit **≥ 1.33**)."""
+
+    title: str = ""
+    open: DialogOpen = False
+    children: tuple[Element, ...] = field(default_factory=tuple)
+
+    def __init__(
+        self,
+        title: str,
+        *children: ElementChild,
+        open: DialogOpen = False,
+        key: str | None = None,
+    ) -> None:
+        object.__setattr__(self, "key", key)
+        object.__setattr__(self, "title", title)
+        object.__setattr__(self, "open", open)
+        object.__setattr__(self, "children", normalize_children(children))
+
+
+@dataclass(frozen=True)
+class Popover(Element):
+    """Trigger + panel (``st.popover`` when available; falls back to expander)."""
+
+    label: str = ""
+    disabled: bool = False
+    children: tuple[Element, ...] = field(default_factory=tuple)
+
+    def __init__(
+        self,
+        label: str,
+        *children: ElementChild,
+        disabled: bool = False,
+        key: str | None = None,
+    ) -> None:
+        object.__setattr__(self, "key", key)
+        object.__setattr__(self, "label", label)
+        object.__setattr__(self, "disabled", disabled)
+        object.__setattr__(self, "children", normalize_children(children))
 
 
 @dataclass(frozen=True)

@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+from streamtree.auth import AuthGate
 from streamtree.core.element import fragment
 from streamtree.elements import (
     Button,
     Card,
     Checkbox,
+    ColoredHeader,
     Columns,
     DataFrame,
+    Dialog,
     Divider,
     ErrorBoundary,
     Expander,
@@ -20,6 +23,7 @@ from streamtree.elements import (
     NumberInput,
     Page,
     PageLink,
+    Popover,
     Routes,
     Selectbox,
     Sidebar,
@@ -30,6 +34,7 @@ from streamtree.elements import (
     TextInput,
     ThemeRoot,
     Title,
+    VerticalSpaceLines,
     VStack,
 )
 from streamtree.state import StateVar
@@ -69,6 +74,14 @@ def test_render_to_tree_exercises_all_node_types() -> None:
                 Image("x.png"),
                 ErrorBoundary(child=Text("safe"), fallback=Text("fb")),
                 Routes(routes=(("home", Text("home body")),), default="home"),
+                Dialog("dlg", Text("d"), open=True),
+                Popover("pop", Text("pv")),
+                AuthGate(
+                    config={"credentials": {}, "cookie": {"name": "n", "key": "k"}},
+                    child=Text("authed"),
+                ),
+                ColoredHeader("CH"),
+                VerticalSpaceLines(2),
             ),
         )
     )

@@ -1,16 +1,8 @@
 """StreamTree: declarative, typed composition for Streamlit."""
 
-from streamtree import (
-    app_context,
-    asyncio,
-    elements,
-    forms,
-    routing,
-    state,
-    testing,
-)
-from streamtree.app import App
-from streamtree.core import (
+from . import app_context, asyncio, auth, elements, forms, routing, state, testing
+from .app import App
+from .core import (
     ComponentCall,
     Element,
     Fragment,
@@ -19,9 +11,9 @@ from streamtree.core import (
     render,
     render_app,
 )
-from streamtree.theme import Theme, ThemeRoot, theme, theme_css
+from .theme import Theme, ThemeRoot, theme, theme_css
 
-__version__ = "0.5.0"
+__version__ = "0.6.0"
 
 __all__ = [
     "App",
@@ -33,6 +25,7 @@ __all__ = [
     "__version__",
     "app_context",
     "asyncio",
+    "auth",
     "component",
     "elements",
     "forms",

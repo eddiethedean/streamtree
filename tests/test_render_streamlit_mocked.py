@@ -8,6 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from streamtree.auth import AuthGate
 from streamtree.core.component import component
 from streamtree.core.context import render_context
 from streamtree.core.element import ComponentCall, Element
@@ -15,8 +16,10 @@ from streamtree.elements import (
     Button,
     Card,
     Checkbox,
+    ColoredHeader,
     Columns,
     DataFrame,
+    Dialog,
     Divider,
     ErrorBoundary,
     Expander,
@@ -28,6 +31,7 @@ from streamtree.elements import (
     NumberInput,
     Page,
     PageLink,
+    Popover,
     Routes,
     Selectbox,
     Sidebar,
@@ -37,6 +41,7 @@ from streamtree.elements import (
     Text,
     TextInput,
     Title,
+    VerticalSpaceLines,
     VStack,
 )
 from streamtree.renderers import streamlit as rs
@@ -149,6 +154,10 @@ def _make_st(
         st.checkbox = MagicMock(side_effect=_checkbox)
     else:
         st.checkbox = MagicMock(side_effect=iter(cb))
+
+    st.dialog = lambda title: lambda fn: fn
+    st.popover = lambda *a, **kw: nullcontext()
+    st.warning = MagicMock()
 
     return st
 
@@ -586,3 +595,142 @@ def test_render_theme_root_injects_css() -> None:
 def test_selectbox_empty_options_raises() -> None:
     with pytest.raises(ValueError, match="at least one option"):
         Selectbox("label", options=())
+
+
+def test_render_dialog_open_invokes_body() -> None:
+    st = _make_st()
+    with _patched_st(st):
+        with render_context("dlg"):
+            rs.render_element(Dialog("T", Text("inside"), open=True), slot="0")
+    st.write.assert_any_call("inside")
+
+
+def test_render_dialog_closed_is_noop() -> None:
+    st = _make_st()
+    with _patched_st(st):
+        with render_context("dlg2"):
+            rs.render_element(Dialog("T", Text("inside"), open=False), slot="0")
+    st.write.assert_not_called()
+
+
+def test_render_dialog_without_st_dialog_warns_and_inlines() -> None:
+    st = _make_st()
+    del st.dialog
+    with _patched_st(st):
+        with render_context("dlg3"):
+            rs.render_element(Dialog("T", Text("fb"), open=True), slot="0")
+    st.warning.assert_called_once()
+    st.write.assert_any_call("fb")
+
+
+def test_render_popover_renders_children() -> None:
+    st = _make_st()
+    with _patched_st(st):
+        with render_context("pop"):
+            rs.render_element(Popover("More", Text("pbody")), slot="0")
+    st.write.assert_any_call("pbody")
+
+
+def test_render_popover_expander_fallback() -> None:
+    st = _make_st()
+    del st.popover
+    with _patched_st(st):
+        with render_context("pop2"):
+            rs.render_element(Popover("M", Text("exb")), slot="0")
+    st.write.assert_any_call("exb")
+
+
+def test_render_auth_gate_shows_child_when_authenticated() -> None:
+    st = _make_st()
+
+    class FakeAuth:
+        def login(self, **kwargs: object) -> None:
+            st.session_state["authentication_status"] = True
+
+    cfg = {
+        "credentials": {"usernames": {}},
+        "cookie": {"name": "c", "key": "secretkey", "expiry_days": 1},
+    }
+    with _patched_st(st), patch("streamtree.auth.build_authenticator", return_value=FakeAuth()):
+        with render_context("ag"):
+            rs.render_element(AuthGate(config=cfg, child=Text("secret")), slot="0")
+    st.write.assert_any_call("secret")
+
+
+def test_render_auth_gate_missing_dependency_raises() -> None:
+    st = _make_st()
+    with (
+        _patched_st(st),
+        patch(
+            "streamtree.auth.build_authenticator",
+            side_effect=ImportError("no auth"),
+        ),
+    ):
+        with render_context("ag2"), pytest.raises(ImportError, match="streamtree\\[auth\\]"):
+            rs.render_element(
+                AuthGate(
+                    config={"credentials": {}, "cookie": {"name": "n", "key": "k"}},
+                    child=Text("x"),
+                ),
+                slot="0",
+            )
+
+
+def test_render_colored_header_delegates() -> None:
+    st = _make_st()
+    with _patched_st(st), patch("streamlit_extras.colored_header.colored_header") as ch:
+        with render_context("ch"):
+            rs.render_element(ColoredHeader("L", description="D", color_name="green-70"), slot="0")
+    ch.assert_called_once_with("L", description="D", color_name="green-70")
+
+
+def test_render_colored_header_missing_ui_extra_raises() -> None:
+    st = _make_st()
+    with (
+        _patched_st(st),
+        patch(
+            "streamlit_extras.colored_header.colored_header",
+            side_effect=ImportError("nope"),
+        ),
+    ):
+        with render_context("ch2"), pytest.raises(ImportError, match="streamtree\\[ui\\]"):
+            rs.render_element(ColoredHeader("L"), slot="0")
+
+
+def test_render_vertical_space_lines_delegates() -> None:
+    st = _make_st()
+    with _patched_st(st), patch("streamlit_extras.add_vertical_space.add_vertical_space") as av:
+        with render_context("vs"):
+            rs.render_element(VerticalSpaceLines(3), slot="0")
+    av.assert_called_once_with(3)
+
+
+def test_render_dialog_open_with_toggle_state() -> None:
+    st = _make_st()
+    with _patched_st(st):
+        with render_context("tg"):
+            tg = toggle_state(key="dlgopen", initial=True)
+            rs.render_element(Dialog("T", Text("tog"), open=tg), slot="0")
+    st.write.assert_any_call("tog")
+
+
+def test_render_dialog_open_with_statevar() -> None:
+    st = _make_st()
+    with _patched_st(st):
+        with render_context("svdlg"):
+            op = state(True, key="dlgsv")
+            rs.render_element(Dialog("T", Text("stvar"), open=op), slot="0")
+    st.write.assert_any_call("stvar")
+
+
+def test_render_vertical_space_import_error() -> None:
+    st = _make_st()
+    with (
+        _patched_st(st),
+        patch(
+            "streamlit_extras.add_vertical_space.add_vertical_space",
+            side_effect=ImportError("nope"),
+        ),
+    ):
+        with render_context("vs2"), pytest.raises(ImportError, match="streamtree\\[ui\\]"):
+            rs.render_element(VerticalSpaceLines(), slot="0")

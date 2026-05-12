@@ -22,10 +22,18 @@ _Last updated: 2026-05-12._
 |-------|--------|--------|
 | Phase 0 — Foundation | **Complete** | Package layout, Streamlit renderer, design docs in `docs/`. |
 | Phase 1 — MVP | In progress | **0.1.0** core tree + state; **0.2.0** Pydantic + stub extras; deeper memoization / `streamlit-extras` curation still open. |
-| Phase 2 — Application | In progress | **Shipped through 0.5.0:** routing, `Routes`, `ErrorBoundary`, `app_context`, forms (str + numeric), **`App` / `render_app`** (+ sidebar/menu/sidebar state passthrough), theme, **`streamtree.asyncio`** (submit / `TaskHandle` + **progress** API), **`PageLink`**, **`streamtree.helpers.runner`**, **`streamtree.helpers.pages`** (`pages/` discovery + `PageLink` paths), optional **`[cli]`** (`streamtree run` / `doctor`). **Next:** auth, portals, `streamlit-extras` behind stable names, richer shell / **`streamtree init`**, multipage polish beyond discovery helpers. |
+| Phase 2 — Application | In progress | **Shipped through 0.6.0:** routing, `Routes`, `ErrorBoundary`, `app_context`, forms (str + numeric), **`App` / `render_app`**, theme, **`streamtree.asyncio`** (submit / `TaskHandle` + progress), **`PageLink`**, **`streamtree.helpers.runner`**, **`streamtree.helpers.pages`**, optional **`[cli]`** (`run` / `doctor` / **`init`**), **`AuthGate`** + **`[auth]`**, **`Dialog` / `Popover`**, optional **`[ui]`** (`streamlit-extras` wrappers). **Next:** deeper navigation polish, portals beyond dialogs, more `streamlit-extras` names, richer async orchestration, **`streamtree init`** templates evolution — see [PHASE2_TAIL.md](./PHASE2_TAIL.md). |
 | Phase 3 — Data toolkit | Planned | Tables, charts, performance playbooks; follows Phase 2. |
 | Phase 4 — Tooling | Planned | Testing, dev introspection; **`streamtree` CLI** MVP shipped in **0.4.0**; overlaps RTD handoff. |
 | Docs — Read the Docs | Planned | [Manual, guides, API](#documentation-platform-read-the-docs); **stable** / **latest**; CI doc builds. |
+
+### 0.6.0 (shipped)
+
+- **`streamtree init`:** scaffold **`app.py`** (+ optional **`pages/`**) via **`[cli]`**; **`streamtree.helpers.scaffold`**.
+- **`AuthGate`** + **`streamtree.auth.build_authenticator`** behind **`[auth]`** (`streamlit-authenticator`).
+- **`Dialog`** / **`Popover`** overlay elements; Streamlit **≥ 1.33** dependency floor.
+- **`[ui]`:** **`ColoredHeader`**, **`VerticalSpaceLines`** (`streamlit-extras` wrappers).
+- **Docs / tests:** [`PHASE2_TAIL.md`](./PHASE2_TAIL.md); expanded renderer and CLI coverage.
 
 ### 0.5.0 (shipped)
 
@@ -66,12 +74,12 @@ _Last updated: 2026-05-12._
 
 ## Phase 2 backlog & near-term themes
 
-### Backlog (post-0.5.0)
+### Backlog (post-0.6.0)
 
-- Richer **App** / **navigation** (beyond shell + `Routes` + `PageLink`).
-- **Auth** + **`[auth]`** wrappers.
+- Richer **App** / **navigation** (beyond shell + `Routes` + `PageLink` + `init` template).
+- **Auth** hardening and alternative providers (beyond **`streamlit-authenticator`**).
 - **Portals**, **imperative handles**, **route prefetch**, richer **async orchestration** beyond progress (e.g. composition, cancellation UX) on `streamtree.asyncio`.
-- **`streamlit-extras`** curation behind stable StreamTree names.
+- **More** **`streamlit-extras`** curation behind stable StreamTree names (see [`PHASE2_TAIL.md`](./PHASE2_TAIL.md)).
 - **Form builder** beyond string + scalar numeric fields (layout, batch submit).
 
 ### Optional dedicated helpers
@@ -87,7 +95,7 @@ Reserved **empty extras** (same pattern as **`[pages]`**) until deps/APIs are pi
 
 - **Always supported:** `streamlit run app.py` (CI, debugging, power users).
 - **Shipped (0.4.0):** **`streamtree run`** / **`streamtree doctor`** behind **`pip install "streamtree[cli]"`**, delegating to **`python -m streamlit run`** (see **`streamtree.helpers.runner`**).
-- **Planned:** `streamtree init` + project-aware entrypoints, defaults; still delegates to Streamlit.
+- **Shipped (0.6.0):** **`streamtree init`** for **`app.py`** (+ optional **`pages/`**).
 - **Boundary:** DX/packaging layer in Phases 2–4, not a new server. “No Streamlit CLI” = **no obligation to use Streamlit’s CLI**, not removing Streamlit from the stack.
 - **Docs:** Full manual/guides on **RTD** ([Documentation platform](#documentation-platform-read-the-docs)); README stays short.
 
@@ -178,7 +186,7 @@ StreamTree is **not** React and will **not** ship a browser VDOM. The list below
 
 - Production-grade apps on Streamlit: routing, resilience, theming, async slice, forms.
 
-### Completed (through 0.5.0)
+### Completed (through 0.6.0)
 
 The following Phase 2 themes are **done** for the current minor line; details and version pins live in the [Release index](#release-index).
 
@@ -187,11 +195,14 @@ The following Phase 2 themes are **done** for the current minor line; details an
 - **App shell:** `App`, `apply_page_config`, `render_app`, sidebar composition, `PageLink` + `st.page_link`, `initial_sidebar_state` / `menu_items` passthrough.
 - **Theming:** `Theme` / `theme()` / `ThemeRoot`.
 - **Async worker slice:** `streamtree.asyncio` `submit` / `TaskHandle`, session task dict, **progress** field + **`set_task_progress`** / **`TaskHandle.progress()`**.
-- **Run / multipage DX (stdlib):** `streamtree.helpers.runner`, optional **`[cli]`** `streamtree run` / `doctor`, **`streamtree.helpers.pages`** for `pages/` discovery.
+- **Run / multipage DX (stdlib):** `streamtree.helpers.runner`, optional **`[cli]`** `streamtree run` / `doctor` / **`init`**, **`streamtree.helpers.pages`** for `pages/` discovery.
+- **Optional auth:** **`AuthGate`** + **`[auth]`** (`streamlit-authenticator`).
+- **Overlays:** **`Dialog`**, **`Popover`** (Streamlit-native; version floor **1.33**).
+- **Optional UI extras:** **`[ui]`** first wrappers (`ColoredHeader`, `VerticalSpaceLines`).
 
 ### Release notes
 
-Shipped scope for **0.2.0** through **0.5.0** is in the [Release index](#release-index) and subsections above. **Open** work is in the [backlog](#phase-2-backlog--near-term-themes).
+Shipped scope for **0.2.0** through **0.6.0** is in the [Release index](#release-index) and subsections above. **Open** work is in the [backlog](#phase-2-backlog--near-term-themes) and [PHASE2_TAIL.md](./PHASE2_TAIL.md).
 
 ### Optional dependency alignment
 
@@ -201,7 +212,7 @@ Shipped scope for **0.2.0** through **0.5.0** is in the [Release index](#release
 
 ### Deliverables (remaining / stretch)
 
-Everything listed under **Completed (through 0.5.0)** above is **closed** for the current release line; items below are still **open**.
+Everything listed under **Completed (through 0.6.0)** above is **closed** for the current release line; items below are still **open**.
 
 - Deeper navigation framework, auth, portals, richer theme/forms/async as backlog clears.
 - Example apps for error boundaries + context + parallel loads + async UI branches.

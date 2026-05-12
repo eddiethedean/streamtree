@@ -5,6 +5,26 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] — 2026-05-12
+
+### Added
+
+- **CLI (`[cli]`):** **`streamtree init`** scaffolds **`app.py`** and optional **`pages/`** (see **`streamtree.helpers.scaffold`**).
+- **Auth (`[auth]`):** **`streamtree.auth.build_authenticator`**, **`AuthGate`** element (in **`streamtree.elements.auth_gate`**), and Streamlit renderer integration for **`streamlit-authenticator`**.
+- **Overlays:** **`Dialog`** and **`Popover`** layout elements (``st.dialog`` / ``st.popover`` with fallbacks); **`streamlit>=1.33.0`** core floor.
+- **UI extras (`[ui]`):** **`ColoredHeader`** and **`VerticalSpaceLines`** wrapping **`streamlit-extras`** (lazy import + install hint).
+- **Examples:** **`examples/overlay_demo.py`**, **`examples/auth_demo.py`**.
+- **Docs:** [`docs/PHASE2_TAIL.md`](docs/PHASE2_TAIL.md) for post-0.6.0 Phase 2 grooming.
+
+### Changed
+
+- **Dependencies:** **`streamlit>=1.33.0`**; **`[auth]`** pins **`streamlit-authenticator`**, **`[ui]`** pins **`streamlit-extras`**; **`[dev]`** includes both for contributor / CI installs.
+
+### Documentation
+
+- README: **0.6.0** pin, Streamlit **1.33+**, **`streamtree init`**, auth / overlay / **`[ui]`** capabilities; releases tag **`v0.6.0`**.
+- [ROADMAP.md](docs/ROADMAP.md), [PLAN.md](docs/PLAN.md), [DEPENDENCY_STRATEGY.md](docs/DEPENDENCY_STRATEGY.md): **0.6.0** shipped scope and optional-extra notes.
+
 ## [0.5.0] — 2026-05-12
 
 ### Added
@@ -108,6 +128,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Runnable example: `examples/counter.py`.
 - Design docs under `docs/` (plan, roadmap, dependency strategy).
 
+[0.6.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.6.0
 [0.5.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.5.0
 [0.4.1]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.4.1
 [0.4.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.4.0
