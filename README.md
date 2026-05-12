@@ -166,7 +166,9 @@ CI runs the same checks on Python 3.10–3.12 (see `.github/workflows/ci.yml`).
 
 ### Publishing
 
-For **0.1.0**, build artifacts with `uv build` (or `python -m build`), then upload the contents of `dist/` to PyPI using **twine**, **uv publish**, or [Trusted Publishing](https://docs.pypi.org/trusted-publishers/). Tag the release commit `v0.1.0` on your default branch and record changes in [CHANGELOG.md](CHANGELOG.md). Keep `version` in `pyproject.toml`, `streamtree.__version__`, `tests/test_package_meta.py`, and the changelog entry aligned when you cut releases.
+**Automated (recommended):** configure the **`PYPI_API_TOKEN`** repository secret (PyPI → Account → API tokens, scoped to this project). Push a **version tag** matching `v*` (for example `v0.1.1`); [`.github/workflows/release.yml`](.github/workflows/release.yml) builds with **`uv build`** and publishes via **`pypa/gh-action-pypi-publish`**.
+
+**Manual:** build artifacts with `uv build` (or `python -m build`), then upload the contents of `dist/` to PyPI using **twine** or **uv publish**. Keep `version` in `pyproject.toml`, `streamtree.__version__`, `tests/test_package_meta.py`, and [CHANGELOG.md](CHANGELOG.md) aligned when you cut releases.
 
 ---
 
