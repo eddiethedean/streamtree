@@ -168,7 +168,7 @@ StreamTree is **not** React and will **not** ship a browser VDOM. The list below
 
 ### Release notes
 
-Shipped scope for **0.2.0** and **0.3.0** is in the [Release index](#release-index) and subsections above. **Open** work is in the [backlog](#phase-2-backlog--near-term-themes).
+Shipped scope for **0.2.0**, **0.3.0**, and **0.4.0** is in the [Release index](#release-index) and subsections above. **Open** work is in the [backlog](#phase-2-backlog--near-term-themes).
 
 ### Optional dependency alignment
 
