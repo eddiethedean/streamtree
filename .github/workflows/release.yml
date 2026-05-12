@@ -12,16 +12,31 @@ jobs:
   publish:
     name: Publish to PyPI
     runs-on: ubuntu-latest
+    env:
+      # Match CI: pinned interpreter so `uv run` does not follow `.python-version` alone.
+      UV_PYTHON: "3.11"
     steps:
       - uses: actions/checkout@v4
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
 
-      - name: Sync dev dependencies and run tests
-        run: |
-          uv sync --frozen --extra dev
-          uv run pytest tests/ -q --no-cov
+      - name: Python
+        run: uv python install 3.11
+
+      - name: Sync dev dependencies
+        run: uv sync --frozen --extra dev
+
+      - name: Ruff
+        run: uv run ruff check src tests
+
+      - name: ty
+        run: uv run ty check src
+
+      - name: Pytest with coverage
+        run: uv run pytest tests/ -q
 
       - name: Build sdist and wheel
         run: uv build
