@@ -183,7 +183,7 @@ CI runs the same checks on Python 3.10–3.12 (see `.github/workflows/ci.yml`).
 
 ### Publishing
 
-**Automated (recommended):** configure the **`PYPI_API_TOKEN`** repository secret (PyPI → Account → API tokens, scoped to this project). Push a **version tag** matching `v*` (for example `v0.2.1`); [`.github/workflows/release.yml`](.github/workflows/release.yml) builds with **`uv build`** and publishes via **`pypa/gh-action-pypi-publish`**.
+**Automated (recommended):** configure the **`PYPI_API_TOKEN`** repository secret (PyPI → Account → API tokens, scoped to this project). After **`main`** is green in CI, push a **version tag** matching `v*` (for example **`v0.2.0`** for this release); [`.github/workflows/release.yml`](.github/workflows/release.yml) runs tests, builds with **`uv build`**, and publishes via **`pypa/gh-action-pypi-publish`**.
 
 **Manual:** build artifacts with `uv build` (or `python -m build`), then upload the contents of `dist/` to PyPI using **twine** or **uv publish**. Keep `version` in `pyproject.toml`, `streamtree.__version__`, `tests/test_package_meta.py`, and [CHANGELOG.md](CHANGELOG.md) aligned when you cut releases.
 
