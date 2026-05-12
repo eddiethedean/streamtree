@@ -124,7 +124,7 @@ def submit(fn: Callable[..., T], /, *args: Any, key: str, **kwargs: Any) -> Task
             return
         try:
             result = fn(*args, **kwargs)
-        except BaseException as exc:
+        except Exception as exc:
             err = repr(exc)
 
             def mark_error() -> None:

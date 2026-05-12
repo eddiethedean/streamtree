@@ -64,7 +64,8 @@ def sync_route(default: str, *, param: str = _DEFAULT_PARAM) -> str:
     else:
         name = default
         st.session_state[sk] = name
-    if st.query_params.get(param) != name:
+    current = _first(st.query_params.get(param))
+    if current != name:
         st.query_params[param] = name
     return name
 

@@ -33,6 +33,8 @@ def test_state_explicit_key(mock_st: MagicMock) -> None:
             sv = state(10, key="counter")
             assert isinstance(sv, StateVar)
             assert sv() == 10
+            del mock_st.session_state[sv.key]
+            assert sv() == 10
             sv.set(11)
             assert sv() == 11
             sv.update(lambda x: x + 1)

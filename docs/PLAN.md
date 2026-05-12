@@ -68,7 +68,7 @@ Per the dependency strategy, the base package should standardize on:
 | **ui** | Polished components (e.g. streamlit-shadcn-ui, extra-streamlit-components) behind names like `Badge`, `Alert`, `ModernCard` |
 | **auth** | streamlit-authenticator (+ shared helpers) behind abstractions like `AuthProvider` / protected routes |
 | **async** | Optional background task / poll integration (e.g. worker loop helpers) behind **`streamtree.asyncio`** — see plan async model |
-| **dev** | pytest, ruff, mypy for contributors and typed app authors |
+| **dev** | pytest, ruff, **ty** (canonical in CI), **mypy** (optional local) for contributors and typed app authors |
 
 ## Public API rule
 

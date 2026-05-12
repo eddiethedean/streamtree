@@ -120,13 +120,20 @@ def _make_st(
 
     sb = selectbox_returns
     if sb is None:
-        st.selectbox = MagicMock(
-            side_effect=lambda **k: (
-                k["options"][min(k.get("index", 0), len(k["options"]) - 1)]
-                if k.get("options")
-                else None
-            )
-        )
+
+        def _selectbox(**k: object) -> object:
+            opts = k.get("options")
+            if not opts:
+                return None
+            raw_i = k.get("index", 0)
+            i = int(raw_i) if isinstance(raw_i, (int, float)) else 0
+            i = min(max(i, 0), len(opts) - 1)
+            ff = k.get("format_func")
+            if callable(ff):
+                ff(opts[i])
+            return opts[i]
+
+        st.selectbox = MagicMock(side_effect=_selectbox)
     else:
         st.selectbox = MagicMock(side_effect=iter(sb))
 
@@ -316,13 +323,24 @@ def test_render_image_use_column_width_kw() -> None:
 
 
 def test_render_selectbox_statevar_updates() -> None:
-    st = _make_st(selectbox_returns=["b"])
+    st = _make_st(selectbox_returns=[1])
     sv = StateVar[int](_key="ik", _default=0)
     st.session_state["ik"] = 0
     with _patched_st(st):
         with render_context("r"):
             rs.render_element(Selectbox("s", options=["a", "b"], index=sv), slot="0")
             assert st.session_state["ik"] == 1
+
+
+def test_render_selectbox_duplicate_options_statevar_syncs_by_index() -> None:
+    """StateVar-bound selectbox uses internal indices so duplicate option values stay distinct."""
+    st = _make_st(selectbox_returns=[1])
+    sv = StateVar[int](_key="dupidx", _default=0)
+    st.session_state["dupidx"] = 0
+    with _patched_st(st):
+        with render_context("r"):
+            rs.render_element(Selectbox("s", options=["x", "x"], index=sv), slot="0")
+            assert st.session_state["dupidx"] == 1
 
 
 def test_render_selectbox_out_not_in_options() -> None:
@@ -523,15 +541,19 @@ def test_render_routes_selects_active_child() -> None:
     st.write.assert_any_call("2")
 
 
-def test_render_routes_falls_back_to_first_when_default_missing() -> None:
+def test_render_routes_unknown_active_falls_back_to_default_child() -> None:
+    """When ``sync_route`` returns a name not in the map, renderer uses ``default``'s subtree."""
     st = _make_st()
     with _patched_st(st), patch("streamtree.renderers.streamlit.sync_route", return_value="weird"):
         with render_context("r"):
             rs.render_element(
-                Routes(routes=(("only", Text("O")),), default="missing"),
+                Routes(
+                    routes=(("home", Text("H")), ("about", Text("A"))),
+                    default="home",
+                ),
                 slot="0",
             )
-    st.write.assert_any_call("O")
+    st.write.assert_any_call("H")
 
 
 def test_render_routes_unknown_route_falls_back_to_default() -> None:

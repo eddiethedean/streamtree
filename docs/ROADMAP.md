@@ -221,7 +221,7 @@ Shipped scope for **0.2.0**, **0.3.0**, and **0.4.0** is in the [Release index](
 
 ### Optional dependency alignment
 
-- **`[dev]`:** pytest, ruff, mypy (contributor toolchain).
+- **`[dev]`:** pytest, ruff, **ty** (CI typecheck), **mypy** (optional local contributor toolchain).
 - **`[cli]`:** typer + minimal deps; **`streamlit run`** remains documented fallback.
 
 ### Deliverables

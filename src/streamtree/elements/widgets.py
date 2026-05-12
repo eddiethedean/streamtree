@@ -167,6 +167,13 @@ class PageLink(Element):
 
 @dataclass(frozen=True)
 class Selectbox(Element):
+    """Single-choice control.
+
+    When ``index`` is a :class:`streamtree.state.StateVar`, the Streamlit backend binds
+    using internal integer indices so duplicate *option values* (for example two identical
+    strings) remain distinct; use ``format_func`` for labels when needed.
+    """
+
     label: str = ""
     options: Sequence[Any] = ()
     index: int | StateVar[int] | None = None

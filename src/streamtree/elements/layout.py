@@ -204,5 +204,10 @@ class Routes(Element):
         dflt = self.default.strip() if isinstance(self.default, str) else ""
         if not dflt:
             raise ValueError("Routes.default must be a non-empty string")
+        route_names = {n for n, _ in self.routes}
+        if dflt not in route_names:
+            raise ValueError(
+                f"Routes.default {dflt!r} must match a route name; got {sorted(route_names)!r}"
+            )
         object.__setattr__(self, "query_param", qp)
         object.__setattr__(self, "default", dflt)

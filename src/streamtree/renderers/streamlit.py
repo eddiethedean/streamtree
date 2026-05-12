@@ -146,6 +146,39 @@ def _render_number_input(el: NumberInput, slot: str) -> None:
 
 def _render_selectbox(el: Selectbox, slot: str) -> None:
     opts = list(el.options)
+    idx = el.index
+    if isinstance(idx, StateVar):
+        idx_sv = cast(StateVar[int], idx)
+        wk = _widget_key(el, "selectbox", slot)
+        i = int(idx_sv())
+        bound = min(max(i, 0), max(len(opts) - 1, 0))
+        internal = list(range(len(opts)))
+        fmt = el.format_func
+        if fmt is not None:
+
+            def _fmt(j: int) -> str:
+                return str(fmt(opts[int(j)]))
+
+            format_func: Callable[[Any], str] = _fmt
+        else:
+
+            def _fmt_plain(j: int) -> str:
+                return str(opts[int(j)])
+
+            format_func = _fmt_plain
+        out = st.selectbox(
+            label=el.label,
+            options=internal,
+            index=bound,
+            format_func=format_func,
+            disabled=el.disabled,
+            key=wk,
+        )
+        new_i = int(out) if isinstance(out, int) else bound
+        if 0 <= new_i < len(opts) and new_i != i:
+            idx_sv.set(new_i)
+        return
+
     kwargs: dict[str, Any] = {
         "label": el.label,
         "options": opts,
@@ -153,19 +186,6 @@ def _render_selectbox(el: Selectbox, slot: str) -> None:
     }
     if el.format_func is not None:
         kwargs["format_func"] = el.format_func
-
-    idx = el.index
-    if isinstance(idx, StateVar):
-        idx_sv = cast(StateVar[int], idx)
-        wk = _widget_key(el, "selectbox", slot)
-        i = int(idx_sv())
-        kwargs["index"] = min(max(i, 0), max(len(opts) - 1, 0))
-        kwargs["key"] = wk
-        out = st.selectbox(**kwargs)
-        new_i = opts.index(out) if out in opts else kwargs["index"]
-        if new_i != i:
-            idx_sv.set(new_i)
-        return
 
     kwargs["key"] = _widget_key(el, "selectbox", slot)
     if isinstance(idx, int):
@@ -326,13 +346,10 @@ def render_element(el: Element, *, slot: str = "0") -> None:
         return
 
     if isinstance(el, Routes):
-        # sync_route picks the active route name; resolve child by name, then default name,
-        # then the first declared route (covers unknown query values when default has no entry).
+        # sync_route picks the active route name; resolve child by name, then default subtree.
         active = sync_route(el.default, param=el.query_param)
         by_name = dict(el.routes)
-        child = by_name.get(active) or by_name.get(el.default)
-        if child is None:
-            child = el.routes[0][1]
+        child = by_name.get(active) or by_name[el.default]
         with push_segment("routes"):
             render_element(child, slot=slot)
         return

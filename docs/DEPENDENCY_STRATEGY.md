@@ -651,6 +651,8 @@ dev = [
 
 ## mypy
 
+**CI:** GitHub Actions runs **`ty check src`** as the canonical static type check (see `.github/workflows/ci.yml`). **mypy** stays in the **`dev`** extra for optional local validation and IDE integration.
+
 ### Why
 
 StreamTree should care deeply about typing.
@@ -671,6 +673,7 @@ Development dependency.
 
 ```toml
 dev = [
+    "ty",
     "mypy",
 ]
 ```
@@ -718,6 +721,7 @@ async = [
 dev = [
     "pytest",
     "ruff",
+    "ty",
     "mypy",
 ]
 
@@ -809,7 +813,7 @@ charts = ["plotly", "streamlit-echarts", "altair"]
 ui = ["streamlit-shadcn-ui", "extra-streamlit-components"]
 auth = ["streamlit-authenticator", "extra-streamlit-components"]
 async = ["asynclit"]
-dev = ["pytest", "ruff", "mypy"]
+dev = ["pytest", "ruff", "ty", "mypy"]
 ```
 
 This gives StreamTree a useful base install while keeping heavier capabilities opt-in.

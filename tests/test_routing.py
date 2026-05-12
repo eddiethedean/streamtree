@@ -117,6 +117,34 @@ def test_two_params_use_independent_session_keys() -> None:
     assert st.session_state["streamtree.routing.active.tab"] == "settings"
 
 
+def test_sync_route_final_compare_normalizes_list_query_value() -> None:
+    """Avoid rewriting query when ``get`` returns a list that normalizes to the active name."""
+
+    class _TwoPhaseGet:
+        __slots__ = ("_n", "writes", "_store")
+
+        def __init__(self) -> None:
+            self._n = 0
+            self.writes = 0
+            self._store: dict[str, object] = {}
+
+        def get(self, param: str) -> object | None:
+            self._n += 1
+            if self._n == 1:
+                return None
+            return self._store.get(param, ["home"])
+
+        def __setitem__(self, key: str, value: object) -> None:
+            self.writes += 1
+            self._store[key] = value
+
+    qp = _TwoPhaseGet()
+    st = SimpleNamespace(session_state={}, query_params=qp)
+    with patch("streamtree.routing.st", st):
+        assert sync_route("home", param="route") == "home"
+    assert qp.writes == 0
+
+
 def test_first_returns_none_for_none() -> None:
     assert routing_mod._first(None) is None
 

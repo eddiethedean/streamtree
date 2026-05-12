@@ -113,26 +113,6 @@ def test_submit_passes_args_and_kwargs_to_fn() -> None:
         assert h.result() == 7
 
 
-class _SillyBaseExc(BaseException):
-    """Subclass of BaseException (not Exception) to exercise the broad except path."""
-
-
-def test_submit_base_exception_surfaces_as_error() -> None:
-    st = SimpleNamespace(session_state={})
-    done = threading.Event()
-
-    def boom() -> None:
-        done.set()
-        raise _SillyBaseExc("nope")
-
-    with patch("streamtree.asyncio.st", st):
-        h = submit(boom, key="job_base_exc")
-        assert done.wait(timeout=2.0)
-        assert h.status() == "error"
-        assert h.error() is not None
-        assert "_SillyBaseExc" in h.error()  # type: ignore[operator]
-
-
 def test_cancel_is_noop_when_not_pending() -> None:
     st = SimpleNamespace(session_state={})
     sk = "streamtree.asyncio.task.job_running"

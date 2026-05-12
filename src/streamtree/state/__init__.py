@@ -29,6 +29,8 @@ class StateVar(Generic[T]):
     _default: T
 
     def __call__(self) -> T:
+        if self._key not in st.session_state:
+            st.session_state[self._key] = self._default
         return cast(T, st.session_state[self._key])
 
     def set(self, value: T) -> None:
