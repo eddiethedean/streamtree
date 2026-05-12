@@ -171,6 +171,23 @@ def test_list_page_entries_internal_symlink_keeps_sidebar_name(tmp_path: Path) -
     assert by_stem["3_Linked"].label == "Linked"
 
 
+def test_list_page_entries_skips_symlink_outside_project_root(tmp_path: Path) -> None:
+    """A ``pages/*.py`` symlink whose target resolves outside the app dir is skipped."""
+    app = tmp_path / "app"
+    pages = app / "pages"
+    pages.mkdir(parents=True)
+    outside = tmp_path / "outside_target.py"
+    outside.write_text("# ext\n", encoding="utf-8")
+    link = pages / "9_Outside.py"
+    try:
+        link.symlink_to(outside.resolve())
+    except OSError:
+        pytest.skip("symlinks not supported")
+    (pages / "1_Valid.py").write_text("# ok\n", encoding="utf-8")
+    got = list_page_entries(pages)
+    assert [e.stem for e in got] == ["1_Valid"]
+
+
 def test_list_page_entries_accepts_str_path(tmp_path: Path) -> None:
     pages = tmp_path / "pages"
     pages.mkdir()

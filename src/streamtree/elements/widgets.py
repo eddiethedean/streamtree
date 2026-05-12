@@ -190,9 +190,12 @@ class Selectbox(Element):
         disabled: bool = False,
         key: str | None = None,
     ) -> None:
+        opts = tuple(options)
+        if not opts:
+            raise ValueError("Selectbox requires at least one option")
         object.__setattr__(self, "key", key)
         object.__setattr__(self, "label", label)
-        object.__setattr__(self, "options", tuple(options))
+        object.__setattr__(self, "options", opts)
         object.__setattr__(self, "index", index)
         object.__setattr__(self, "format_func", format_func)
         object.__setattr__(self, "disabled", disabled)

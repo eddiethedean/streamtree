@@ -6,11 +6,13 @@ and derive **sort order** and **human labels** from filenames so you can build
 ``PageLink`` / ``Routes`` metadata without hard-coding paths.
 
 This module does **not** start a second server or import page modules; it only
-inspects the filesystem.
+inspects the filesystem. Page scripts whose resolved path is not under the app
+directory (for example a symlink pointing elsewhere) are skipped.
 """
 
 from __future__ import annotations
 
+import logging
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -76,7 +78,14 @@ def list_page_entries(pages_dir: str | Path) -> list[PageEntry]:
             order = 1_000_000
             title_part = stem
         label = title_part.replace("_", " ").strip() or stem
-        rel = path.resolve().relative_to(project_root.resolve())
+        try:
+            rel = path.resolve().relative_to(project_root.resolve())
+        except ValueError:
+            logging.getLogger(__name__).debug(
+                "Skipping page script not under app directory: %s",
+                path,
+            )
+            continue
         page = rel.as_posix()
         entries.append(
             PageEntry(

@@ -133,6 +133,9 @@ def submit(fn: Callable[..., T], /, *args: Any, key: str, **kwargs: Any) -> Task
     existing = st.session_state.get(sk)
     if isinstance(existing, dict) and existing.get("_submitted"):
         return TaskHandle(_session_key=sk)
+    if isinstance(existing, dict):
+        # Corrupted or foreign mapping at our key: drop before installing a real task box.
+        del st.session_state[sk]
 
     box: dict[str, Any] = {
         "status": "pending",

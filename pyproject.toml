@@ -19,6 +19,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Typing :: Typed",
 ]
 dependencies = [
@@ -91,7 +92,7 @@ addopts = [
   "--cov-fail-under=100",
 ]
 filterwarnings = [
-  "ignore:.*async fixture 'ensure_greenlet_context'.*:pytest.PytestRemovedIn9Warning",
+  "ignore:.*ensure_greenlet.*:pytest.PytestRemovedIn9Warning",
 ]
 
 [tool.coverage.run]

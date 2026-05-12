@@ -581,3 +581,8 @@ def test_render_theme_root_injects_css() -> None:
     arg0 = st.markdown.call_args[0][0]
     assert "<style>" in arg0
     assert "--st-theme-primary" in arg0
+
+
+def test_selectbox_empty_options_raises() -> None:
+    with pytest.raises(ValueError, match="at least one option"):
+        Selectbox("label", options=())

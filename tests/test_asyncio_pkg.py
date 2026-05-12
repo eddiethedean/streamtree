@@ -116,6 +116,29 @@ def test_cancel_handles_missing_session() -> None:
         h.cancel()
 
 
+def test_submit_replaces_corrupted_session_dict() -> None:
+    """A non-task dict at the session key is removed and a real submit proceeds."""
+    st = SimpleNamespace(session_state={})
+    st.session_state["streamtree.asyncio.task.bad"] = {"not": "a task box"}
+    ran: list[int] = []
+
+    def work() -> int:
+        ran.append(1)
+        return 99
+
+    with patch("streamtree.asyncio.st", st):
+        h = submit(work, key="bad")
+        deadline = time.monotonic() + 2.0
+        while time.monotonic() < deadline:
+            if h.status() == "done":
+                break
+            time.sleep(0.01)
+        assert h.result() == 99
+        assert ran == [1]
+        box = st.session_state["streamtree.asyncio.task.bad"]
+        assert box.get("_submitted") is True
+
+
 def test_submit_idempotent_same_key() -> None:
     st = SimpleNamespace(session_state={})
     n = {"c": 0}
