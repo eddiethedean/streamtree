@@ -29,6 +29,9 @@ jobs:
       - name: Sync dev dependencies
         run: uv sync --frozen --extra dev
 
+      - name: Ruff format
+        run: uv run ruff format --check .
+
       - name: Ruff
         run: uv run ruff check src tests
 

@@ -26,6 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`Theme`:** ``primary_color`` is restricted to ``#RGB`` / ``#RRGGBB`` hex; ``font_stack`` rejects ``<``, ``>``, and backticks; ``custom_css`` rejects ``<script`` and ``expression(`` substrings (full ``custom_css`` remains trusted CSS).
 - **`HStack`:** non-empty ``gap`` inserts gutter columns between children (CSS ``min-width`` on a spacer).
 
+### Documentation
+
+- README refresh (badges, absolute GitHub links for design docs and workflows); install examples pin **0.3.0**.
+- Design docs live at `docs/PLAN.md`, `docs/ROADMAP.md`, and `docs/DEPENDENCY_STRATEGY.md` with updated cross-links.
+- **StreamTree** is used as the product name in metadata and user-facing defaults (the PyPI / import name remains **`streamtree`**).
+
 ## [0.2.0] — 2026-05-12
 
 ### Added

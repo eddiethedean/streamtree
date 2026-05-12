@@ -29,6 +29,9 @@ jobs:
       - name: Sync dev environment
         run: uv sync --frozen --python ${{ matrix.python-version }} --extra dev
 
+      - name: Ruff format
+        run: uv run ruff format --check .
+
       - name: Ruff
         run: uv run ruff check src tests
 

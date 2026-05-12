@@ -30,7 +30,7 @@ StreamTree is an **architecture layer** for Streamlit, not a React-style web fra
 - **Interop** — Inside `@component`, your function body runs during render; you may call `st.*` (columns, metrics, charts, third-party components) and still return an element tree, or `fragment()` when the subtree is fully imperative.
 - **Quality** — Pydantic v2 in the default install, typing-first APIs, and `render_to_tree` for structural tests.
 
-Stub optional extras (`tables`, `charts`, `ui`, `auth`, `asyncio`, `cli`) are reserved for future wrappers; see [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md). The `streamtree.asyncio` module ships in the default package.
+Stub optional extras (`tables`, `charts`, `ui`, `auth`, `asyncio`, `async`, `cli`) are reserved for future wrappers; see [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md). The `streamtree.asyncio` module ships in the default package.
 
 ## Requirements
 
