@@ -1,9 +1,9 @@
 
-# Streamtree Plan Document
+# StreamTree Plan Document
 
 ## Vision
 
-Streamtree is a Python-native component framework for building maintainable, composable, and typed Streamlit applications.
+StreamTree is a Python-native component framework for building maintainable, composable, and typed Streamlit applications.
 
 The framework introduces a declarative component architecture inspired by modern UI systems while remaining deeply Pythonic and fully compatible with Streamlit’s execution model.
 
@@ -21,14 +21,14 @@ Core philosophy:
 
 # Dependencies and packaging
 
-**Canonical detail:** [STREAMTREE_DEPENDENCY_STRATEGY.md](./STREAMTREE_DEPENDENCY_STRATEGY.md) (recommended hard vs optional packages, `pyproject.toml` shape, and risks).
+**Canonical detail:** [DEPENDENCY_STRATEGY.md](./DEPENDENCY_STRATEGY.md) (recommended hard vs optional packages, `pyproject.toml` shape, and risks).
 
 ## Philosophy
 
-- Keep the **base install small** and aligned with Streamtree’s identity (composable, typed, Streamlit-native).
+- Keep the **base install small** and aligned with StreamTree’s identity (composable, typed, Streamlit-native).
 - Treat **only** dependencies that support that identity as **hard** dependencies.
 - Put **heavier or specialized** stacks behind **optional extras** (`tables`, `charts`, `ui`, `auth`, `dev`, `all`).
-- **Wrap** third-party packages behind Streamtree elements and APIs where practical so users stay in one mental model.
+- **Wrap** third-party packages behind StreamTree elements and APIs where practical so users stay in one mental model.
 - Prefer **batteries-included, not dependency-bloated**: useful defaults without pulling every ecosystem package by default.
 
 ## Intended tiers (install)
@@ -53,7 +53,7 @@ Per the dependency strategy, the base package should standardize on:
 | **streamlit** | Primary runtime and render target |
 | **pydantic** | Typed props, forms, validation, config models |
 | **typing-extensions** | Portable modern typing (when Python version warrants it) |
-| **streamlit-extras** | Curated building blocks (badges, metric cards, helpers); **expose only through Streamtree**, not as a re-export surface |
+| **streamlit-extras** | Curated building blocks (badges, metric cards, helpers); **expose only through StreamTree**, not as a re-export surface |
 
 **0.3.0:** `streamtree.asyncio` (stdlib thread MVP), `streamtree.app` / `render_app`, `streamtree.theme`, and expanded `streamtree.forms` string bindings—see [CHANGELOG.md](../CHANGELOG.md). **`streamlit-extras`** remains a documented hard-dependency target, not yet pinned in the default install.
 
@@ -70,7 +70,7 @@ Per the dependency strategy, the base package should standardize on:
 
 ## Public API rule
 
-Users should prefer Streamtree primitives (`DataGrid`, `Badge`, `Chart`, `AuthProvider`, …). Avoid documenting patterns that require `from streamlit_extras import …` or similar as the primary workflow; wrappers and clear optional-extra gates are the default story.
+Users should prefer StreamTree primitives (`DataGrid`, `Badge`, `Chart`, `AuthProvider`, …). Avoid documenting patterns that require `from streamlit_extras import …` or similar as the primary workflow; wrappers and clear optional-extra gates are the default story.
 
 ---
 
@@ -84,7 +84,7 @@ Large Streamlit applications often become difficult to maintain because:
 - Layouts become deeply nested
 - Teams lack design-system consistency
 
-Streamtree solves these issues by introducing:
+StreamTree solves these issues by introducing:
 - composable UI components
 - centralized state abstractions
 - reusable layouts
@@ -127,15 +127,15 @@ The renderer converts those elements into Streamlit primitives.
 
 ## Async model (first-class, data-plane)
 
-Streamtree treats **async** as a **first-class concern for work that must not block the rerun thread** and for **composing long-running or parallel data fetches**, while keeping **element construction and the Streamlit renderer path synchronous** unless and until Streamlit’s own model evolves.
+StreamTree treats **async** as a **first-class concern for work that must not block the rerun thread** and for **composing long-running or parallel data fetches**, while keeping **element construction and the Streamlit renderer path synchronous** unless and until Streamlit’s own model evolves.
 
 **Principles**
 
 1. **Sync tree, async data** — Components still **return** element trees synchronously on each rerun; async is used to **populate** state or props via **explicit** primitives (loaders, tasks, gathers), not by making every `@component` implicitly `async def`.
-2. **Rerun-native completion** — Results land in **`st.session_state`** (or Streamtree state keyed the same way) so the **next** rerun picks up `done` / `error` / `cancelled` / partial progress without blocking `render()`.
+2. **Rerun-native completion** — Results land in **`st.session_state`** (or StreamTree state keyed the same way) so the **next** rerun picks up `done` / `error` / `cancelled` / partial progress without blocking `render()`.
 3. **Cancellation and stale runs** — Any first-class async API must define what happens when a new rerun supersedes an in-flight request (ignore stale results, cooperative cancel, keyed by request generation).
 4. **Progress and errors** — First-class paths for **loading**, **terminal error**, and optional **progress** streams (mirroring “Suspense-shaped” boundaries in the roadmap) without requiring users to wire threads by hand.
-5. **Interoperability** — Ecosystem libraries that follow the same **background loop + poll on rerun** pattern (for example [asynclit](https://github.com/eddiethedean/asynclit)) are candidates for an **optional extra** or documented integration, wrapped behind Streamtree names so apps do not depend on vendor imports as their primary API.
+5. **Interoperability** — Ecosystem libraries that follow the same **background loop + poll on rerun** pattern (for example [asynclit](https://github.com/eddiethedean/asynclit)) are candidates for an **optional extra** or documented integration, wrapped behind StreamTree names so apps do not depend on vendor imports as their primary API.
 
 **Non-goals for async**
 
@@ -333,7 +333,7 @@ Mitigation:
 
 # Success Criteria
 
-A successful Streamtree application should:
+A successful StreamTree application should:
 - feel natural to Python developers
 - reduce Streamlit boilerplate
 - improve maintainability
@@ -345,5 +345,5 @@ A successful Streamtree application should:
 
 # Related documents
 
-- [STREAMTREE_DEPENDENCY_STRATEGY.md](./STREAMTREE_DEPENDENCY_STRATEGY.md) — hard vs optional dependencies, extras, and wrapper-first API guidance
-- [STREAMTREE_ROADMAP.md](./STREAMTREE_ROADMAP.md) — phased delivery, including dependency alignment per phase
+- [DEPENDENCY_STRATEGY.md](./DEPENDENCY_STRATEGY.md) — hard vs optional dependencies, extras, and wrapper-first API guidance
+- [ROADMAP.md](./ROADMAP.md) — phased delivery, including dependency alignment per phase

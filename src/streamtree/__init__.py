@@ -1,4 +1,4 @@
-"""Streamtree: declarative, typed composition for Streamlit."""
+"""StreamTree: declarative, typed composition for Streamlit."""
 
 from streamtree import (
     app_context,

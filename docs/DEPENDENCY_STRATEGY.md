@@ -1,25 +1,25 @@
-# Streamtree Dependency Strategy
+# StreamTree Dependency Strategy
 
 ## Purpose
 
-This document outlines recommended dependencies for Streamtree, including which packages should be hard dependencies, which should be optional extras, and why each package is useful.
+This document outlines recommended dependencies for StreamTree, including which packages should be hard dependencies, which should be optional extras, and why each package is useful.
 
-The goal is to make Streamtree useful out of the box while keeping the core package lightweight, Pythonic, and easy to adopt.
+The goal is to make StreamTree useful out of the box while keeping the core package lightweight, Pythonic, and easy to adopt.
 
-**Product alignment:** The phased product plan and roadmap reference this document—see [STREAMTREE_PLAN.md](./STREAMTREE_PLAN.md) and [STREAMTREE_ROADMAP.md](./STREAMTREE_ROADMAP.md).
+**Product alignment:** The phased product plan and roadmap reference this document—see [PLAN.md](./PLAN.md) and [ROADMAP.md](./ROADMAP.md).
 
 ---
 
 # Dependency Philosophy
 
-Streamtree should avoid becoming a heavy framework that installs too much by default.
+StreamTree should avoid becoming a heavy framework that installs too much by default.
 
 The best approach is:
 
 1. Keep the base install small
 2. Include only dependencies that support the core package identity
 3. Use optional extras for heavier or specialized features
-4. Wrap third-party packages behind Streamtree APIs when possible
+4. Wrap third-party packages behind StreamTree APIs when possible
 5. Preserve a simple user experience
 
 Recommended install tiers:
@@ -45,16 +45,16 @@ These should be installed with the base package.
 
 ### Why
 
-Streamlit is the primary render target for Streamtree.
+Streamlit is the primary render target for StreamTree.
 
-Streamtree exists to provide a composable, typed, declarative component layer on top of Streamlit.
+StreamTree exists to provide a composable, typed, declarative component layer on top of Streamlit.
 
 ### Usefulness
 
 - Provides the core runtime
 - Handles app rendering
 - Provides widgets, layouts, session state, caching, and rerun behavior
-- Makes Streamtree immediately useful without additional setup
+- Makes StreamTree immediately useful without additional setup
 
 ### Recommendation
 
@@ -72,9 +72,9 @@ dependencies = [
 
 ### Why
 
-streamlit-extras provides many useful Streamlit extensions and utilities that can make Streamtree more powerful immediately.
+streamlit-extras provides many useful Streamlit extensions and utilities that can make StreamTree more powerful immediately.
 
-It can help Streamtree offer richer components without building every small utility from scratch.
+It can help StreamTree offer richer components without building every small utility from scratch.
 
 ### Usefulness
 
@@ -90,20 +90,20 @@ Potentially useful for:
 
 ### Strategic Value
 
-This dependency gives Streamtree a broader component toolbox early, while still keeping the framework Streamlit-native.
+This dependency gives StreamTree a broader component toolbox early, while still keeping the framework Streamlit-native.
 
 ### Risk
 
-The package is a grab bag, so Streamtree should not expose all of it directly without curation.
+The package is a grab bag, so StreamTree should not expose all of it directly without curation.
 
 Recommended approach:
 - depend on it
 - wrap only the most useful pieces
-- keep Streamtree’s public API clean
+- keep StreamTree’s public API clean
 
 ### Recommendation
 
-Hard dependency, but curated behind Streamtree abstractions.
+Hard dependency, but curated behind StreamTree abstractions.
 
 ```toml
 dependencies = [
@@ -117,9 +117,9 @@ dependencies = [
 
 ### Why
 
-Pydantic is central to Streamtree’s typed Python identity.
+Pydantic is central to StreamTree’s typed Python identity.
 
-Streamtree can use Pydantic for:
+StreamTree can use Pydantic for:
 - typed component props
 - typed forms
 - schema-based validation
@@ -142,7 +142,7 @@ Form(UserForm, on_submit=create_user)
 
 ### Strategic Value
 
-Pydantic helps differentiate Streamtree from a simple Streamlit utility package.
+Pydantic helps differentiate StreamTree from a simple Streamlit utility package.
 
 It supports the larger vision:
 
@@ -164,7 +164,7 @@ dependencies = [
 
 ### Why
 
-Streamtree should lean heavily into modern Python typing.
+StreamTree should lean heavily into modern Python typing.
 
 typing-extensions helps support modern typing features across Python versions.
 
@@ -184,7 +184,7 @@ Useful for:
 
 Hard dependency if supporting older Python versions.
 
-If Streamtree targets only very new Python versions, this can become optional or unnecessary.
+If StreamTree targets only very new Python versions, this can become optional or unnecessary.
 
 ```toml
 dependencies = [
@@ -219,7 +219,7 @@ Useful for:
 - parallel API or database fetches before rendering dashboards
 - long-running jobs with **progress** without blocking `st` calls
 - cooperative **cancellation** when users navigate away
-- aligning with Streamtree’s **`streamtree.asyncio`** surface (see [STREAMTREE_PLAN.md](./STREAMTREE_PLAN.md#async-model-first-class-data-plane))
+- aligning with StreamTree’s **`streamtree.asyncio`** surface (see [PLAN.md](./PLAN.md#async-model-first-class-data-plane))
 
 ### Strategic value
 
@@ -267,9 +267,9 @@ Useful for:
 - CRUD admin interfaces
 - dashboard tables
 
-### Streamtree Integration Ideas
+### StreamTree Integration Ideas
 
-Streamtree could expose:
+StreamTree could expose:
 
 ```python
 DataGrid(
@@ -286,7 +286,7 @@ Under the hood, this could use streamlit-aggrid when installed.
 
 This is one of the most important optional dependencies for serious business apps.
 
-Many internal tools are table-heavy. A strong table component makes Streamtree far more useful.
+Many internal tools are table-heavy. A strong table component makes StreamTree far more useful.
 
 ### Recommendation
 
@@ -323,7 +323,7 @@ Useful for:
 - business intelligence views
 - data exploration
 
-### Streamtree Integration Ideas
+### StreamTree Integration Ideas
 
 ```python
 Chart(fig)
@@ -363,7 +363,7 @@ Useful for:
 - tree charts
 - rich visualizations
 
-### Streamtree Integration Ideas
+### StreamTree Integration Ideas
 
 ```python
 EChart(options)
@@ -394,7 +394,7 @@ charts = [
 
 Altair is declarative and works naturally with Streamlit.
 
-It fits Streamtree’s declarative philosophy well.
+It fits StreamTree’s declarative philosophy well.
 
 ### Usefulness
 
@@ -428,7 +428,7 @@ pip install streamtree[ui]
 
 streamlit-shadcn-ui provides modern UI components inspired by shadcn/ui.
 
-This could make Streamtree apps look more polished without requiring custom frontend work.
+This could make StreamTree apps look more polished without requiring custom frontend work.
 
 ### Usefulness
 
@@ -441,9 +441,9 @@ Useful for:
 - modern app components
 - polished internal tools
 
-### Streamtree Integration Ideas
+### StreamTree Integration Ideas
 
-Streamtree should not expose this dependency directly everywhere.
+StreamTree should not expose this dependency directly everywhere.
 
 Instead, it could provide higher-level components:
 
@@ -482,15 +482,15 @@ Useful for:
 
 ### Strategic Value
 
-Cookies and routing-related utilities could be very useful for Streamtree’s longer-term app framework direction.
+Cookies and routing-related utilities could be very useful for StreamTree’s longer-term app framework direction.
 
 ### Risk
 
-Some features may overlap with Streamtree’s own planned abstractions.
+Some features may overlap with StreamTree’s own planned abstractions.
 
 Recommended approach:
 - use selectively
-- wrap behind Streamtree APIs
+- wrap behind StreamTree APIs
 - avoid exposing dependency-specific concepts directly
 
 ### Recommendation
@@ -517,7 +517,7 @@ pip install streamtree[auth]
 
 Many Streamlit apps need login and user management.
 
-streamlit-authenticator can provide useful authentication functionality for early versions of Streamtree.
+streamlit-authenticator can provide useful authentication functionality for early versions of StreamTree.
 
 ### Usefulness
 
@@ -527,7 +527,7 @@ Useful for:
 - simple internal app authentication
 - session-based user tracking
 
-### Streamtree Integration Ideas
+### StreamTree Integration Ideas
 
 ```python
 AuthProvider(
@@ -580,7 +580,7 @@ pip install streamtree[dev]
 
 ### Why
 
-Testing should be a first-class part of Streamtree.
+Testing should be a first-class part of StreamTree.
 
 ### Usefulness
 
@@ -632,7 +632,7 @@ dev = [
 
 ### Why
 
-Streamtree should care deeply about typing.
+StreamTree should care deeply about typing.
 
 mypy helps validate the package’s own type correctness and supports a strong typed API culture.
 
@@ -716,9 +716,9 @@ all = [
 
 # Recommended Public API Strategy
 
-Streamtree should avoid forcing users to learn the APIs of every dependency.
+StreamTree should avoid forcing users to learn the APIs of every dependency.
 
-Instead, Streamtree should provide clean wrappers.
+Instead, StreamTree should provide clean wrappers.
 
 Preferred:
 
@@ -740,7 +740,7 @@ from streamlit_extras import ...
 import asynclit  # in app code as the primary pattern
 ```
 
-Users should be able to stay inside the Streamtree mental model.
+Users should be able to stay inside the StreamTree mental model.
 
 ---
 
@@ -791,8 +791,8 @@ async = ["asynclit"]
 dev = ["pytest", "ruff", "mypy"]
 ```
 
-This gives Streamtree a useful base install while keeping heavier capabilities opt-in.
+This gives StreamTree a useful base install while keeping heavier capabilities opt-in.
 
 The guiding principle should be:
 
-> Streamtree should feel batteries-included, but not dependency-bloated.
+> StreamTree should feel batteries-included, but not dependency-bloated.

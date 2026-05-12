@@ -18,7 +18,7 @@ R = TypeVar("R", bound=Element)
 
 
 def component(fn: Callable[P, R]) -> Callable[P, ComponentCall]:
-    """Mark a function as a Streamtree component.
+    """Mark a function as a StreamTree component.
 
     The function body runs when the tree is rendered (each Streamlit rerun),
     not when building the virtual tree from call sites like ``Page(Counter())``.

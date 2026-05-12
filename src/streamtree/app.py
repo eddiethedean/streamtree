@@ -23,7 +23,7 @@ class App:
 
     body: Element
     sidebar: Element | None = None
-    page_title: str = "Streamtree"
+    page_title: str = "StreamTree"
     page_icon: str | None = None
     layout: Literal["centered", "wide"] = "centered"
 

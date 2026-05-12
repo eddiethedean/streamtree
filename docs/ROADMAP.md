@@ -1,7 +1,7 @@
 
-# Streamtree Roadmap
+# StreamTree Roadmap
 
-This roadmap is aligned with the dependency and packaging approach in [STREAMTREE_DEPENDENCY_STRATEGY.md](./STREAMTREE_DEPENDENCY_STRATEGY.md) (base vs optional extras, wrapper-first public API) and with the **async model** in [STREAMTREE_PLAN.md](./STREAMTREE_PLAN.md#async-model-first-class-data-plane).
+This roadmap is aligned with the dependency and packaging approach in [DEPENDENCY_STRATEGY.md](./DEPENDENCY_STRATEGY.md) (base vs optional extras, wrapper-first public API) and with the **async model** in [PLAN.md](./PLAN.md#async-model-first-class-data-plane).
 
 ## Progress and release alignment
 
@@ -36,14 +36,14 @@ _Last updated: 2026-05-12._
 - **Authentication** abstractions and **`[auth]`** wrappers
 - **Portals / layout targets**, **imperative handles**
 - **Route-level async prefetch** and optional **progress** surfaces on `streamtree.asyncio`
-- **`streamlit-extras`** curation behind Streamtree names
+- **`streamlit-extras`** curation behind StreamTree names
 - **Form builder** beyond string `TextInput` grids (numeric fields, layout presets, submit batching)
 
 ---
 
 # Patterns from React ergonomics (non-VDOM, rerun-native)
 
-Streamtree is **not** React and will **not** ship a browser virtual DOM. The items below borrow **product lessons** from common React-era patterns and adapt them to **Streamlit’s script rerun model**. They are spread across phases; each phase lists concrete work.
+StreamTree is **not** React and will **not** ship a browser virtual DOM. The items below borrow **product lessons** from common React-era patterns and adapt them to **Streamlit’s script rerun model**. They are spread across phases; each phase lists concrete work.
 
 1. **Error boundaries** — isolate a subtree’s failures; render fallback UI and capture errors without killing the whole app.
 2. **Context / dependency injection** — pass theme, tenant, feature flags, or route-level data deep in the tree without prop drilling (generalizing beyond key-only render context).
@@ -86,7 +86,7 @@ Streamtree is **not** React and will **not** ship a browser virtual DOM. The ite
 - Basic Streamlit renderer
 - Minimal documentation
 - **Pattern philosophy** — short doc tying Phase 0–1 behavior to [Patterns from React ergonomics](#patterns-from-react-ergonomics-non-vdom-rerun-native) (keys, reruns, no VDOM)
-- **Async + rerun** — document how async work is **polled across reruns** (never blocking the main Streamlit thread for I/O), stale-run rules, and pointers to the plan’s [async model](./STREAMTREE_PLAN.md#async-model-first-class-data-plane)
+- **Async + rerun** — document how async work is **polled across reruns** (never blocking the main Streamlit thread for I/O), stale-run rules, and pointers to the plan’s [async model](./PLAN.md#async-model-first-class-data-plane)
 - **`pyproject.toml` aligned with strategy:** documented install tiers (`streamtree`, `[tables]`, `[charts]`, `[ui]`, `[auth]`, `[async]`, `[cli]`, `[dev]`, `[all]`) and rationale (see plan + dependency strategy doc)
 
 ---
@@ -144,7 +144,7 @@ Streamtree is **not** React and will **not** ship a browser virtual DOM. The ite
 ## Dependency alignment (MVP)
 - Ship **core** with the **hard** dependency set from the strategy (`streamlit`, `pydantic`, `typing-extensions`, `streamlit-extras`) once wrappers are ready; until then document any gap vs the strategy doc
 - Introduce **Pydantic** for typed component props and early form models where MVP scope allows
-- Add **curated** `streamlit-extras`-backed helpers only behind stable Streamtree names (avoid exposing the full grab bag)
+- Add **curated** `streamlit-extras`-backed helpers only behind stable StreamTree names (avoid exposing the full grab bag)
 
 ## Deliverables
 - pip-installable package
@@ -177,13 +177,13 @@ What shipped in **0.2.0** and **0.3.0** versus what stays on the **Phase 2** bac
 - **Error boundaries** — `try`/`except`-style wrappers around subtrees with fallback UI and structured logging
 - **Context / DI** — scoped providers for theme, tenant, flags, and route-level data without threading through every component signature
 - **Portals / layout targets** — elements or APIs that render a declared subtree into sidebar, dialog, or other supported Streamlit regions while preserving a single composition model
-- **Imperative handles** — supported focus, scroll, and widget actions exposed through Streamtree where Streamlit’s API allows; clear docs where not possible
+- **Imperative handles** — supported focus, scroll, and widget actions exposed through StreamTree where Streamlit’s API allows; clear docs where not possible
 - **Session-scoped async tasks** — **`streamtree.asyncio`** MVP (`submit` / `TaskHandle`, stdlib threads); **progress**, richer cancellation, and **route-level async prefetch** remain on the backlog
 - **Route-level async prefetch (optional)** — parallel warm-up when entering a page, with stale-run discard when query params or auth context change
 
 ## Optional dependency alignment
 - **`[auth]` extra:** `streamlit-authenticator` (+ shared helpers such as `extra-streamlit-components` where needed), wrapped as `AuthProvider`, protected routes, or similar—document limitations and future pluggable providers
-- **`[ui]` extra:** use `streamlit-shadcn-ui` / `extra-streamlit-components` only behind Streamtree components (badges, alerts, modern cards, tab bars, cookie/router helpers) to avoid API leakage
+- **`[ui]` extra:** use `streamlit-shadcn-ui` / `extra-streamlit-components` only behind StreamTree components (badges, alerts, modern cards, tab bars, cookie/router helpers) to avoid API leakage
 - **`[async]` extra (when shipped):** optional backend for background event-loop + poll semantics (e.g. asynclit), exposed only through **`streamtree.asyncio`** — no primary-doc workflow that requires `import asynclit` in app code
 
 ## Deliverables
@@ -216,7 +216,7 @@ What shipped in **0.2.0** and **0.3.0** versus what stays on the **Phase 2** bac
 
 ## Optional dependency alignment
 - **`[tables]` extra:** `streamlit-aggrid` (or equivalent) behind elements such as `DataGrid` (selectable, editable, filterable rows)
-- **`[charts]` extra:** `plotly`, `streamlit-echarts`, `altair` behind elements such as `Chart`, `LineChart`, `EChart`—declarative specs where it matches Streamtree’s model
+- **`[charts]` extra:** `plotly`, `streamlit-echarts`, `altair` behind elements such as `Chart`, `LineChart`, `EChart`—declarative specs where it matches StreamTree’s model
 - **`[async]` extra (when shipped):** optional worker-loop integration (see Phase 2); default docs use **`streamtree.asyncio`** public API only
 
 ## Deliverables
@@ -237,7 +237,7 @@ What shipped in **0.2.0** and **0.3.0** versus what stays on the **Phase 2** bac
 - Snapshot testing
 - `render_to_tree()` for JSON-style tree snapshots (tests, logs, CI)
 - **Component tree visualization** — interactive inspector (expand/collapse, keys, component names) in devtools, a dev sidebar, or the preview server; optional export (e.g. Mermaid/graph) from the same tree walk
-- **Dev-only introspection** — props snapshots, component names, and bound `session_state` / Streamtree state keys surfaced in devtools or the preview server (React DevTools–style signal, rerun-native)
+- **Dev-only introspection** — props snapshots, component names, and bound `session_state` / StreamTree state keys surfaced in devtools or the preview server (React DevTools–style signal, rerun-native)
 - **In-flight async inspection** — surface pending **`streamtree.asyncio`** tasks (status, key, age) next to the component tree in dev mode
 - **Typer CLI (`streamtree`)** — optional **`[cli]`** extra: subcommands aligned with devtools (e.g. **`preview`** for the component preview server, **`doctor`** for versions/extras, **`tree`** to dump or export `render_to_tree` JSON/Mermaid, optional **`init`** scaffolding once templates stabilize); keeps the default library install free of CLI dependencies
 - Component assertions
@@ -268,7 +268,7 @@ What shipped in **0.2.0** and **0.3.0** versus what stays on the **Phase 2** bac
 - FastAPI renderer
 - Static HTML renderer
 - Alternate runtime support
-- Plugin architecture (optional backends and extras register through Streamtree, not ad-hoc direct imports)
+- Plugin architecture (optional backends and extras register through StreamTree, not ad-hoc direct imports)
 - **Cross-runtime patterns** — where feasible, carry forward error boundaries, context, and memo semantics behind the multi-renderer abstraction so plugins do not bypass safety rails
 - **Async-native renderer hooks** — backends (e.g. FastAPI) may supply **async** data providers; contract for how they feed the virtual tree or session state without assuming a Streamlit-only thread model
 - **FastAPI + asyncio** — document recommended patterns for sharing async clients and task lifetimes with Streamlit sessions when both appear in one product
@@ -283,7 +283,7 @@ What shipped in **0.2.0** and **0.3.0** versus what stays on the **Phase 2** bac
 
 # Long-Term Vision
 
-Streamtree becomes:
+StreamTree becomes:
 - the architecture layer for Streamlit
 - a Python-native UI framework ecosystem
 - a production-grade application platform
