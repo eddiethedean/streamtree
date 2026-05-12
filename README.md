@@ -38,10 +38,10 @@ Streamtree is **not** a React clone, a browser framework, or a JS build step. It
 
 ## Install
 
-**From PyPI** (when published):
+**From PyPI** (after you publish this version):
 
 ```bash
-pip install streamtree
+pip install streamtree==0.1.0
 ```
 
 **From a clone** (editable, with dev tools):
@@ -50,6 +50,8 @@ pip install streamtree
 git clone https://github.com/streamtree-dev/streamtree.git
 cd streamtree
 pip install -e ".[dev]"
+# or, with uv:
+uv sync --extra dev
 ```
 
 Optional install groups (`tables`, `charts`, `ui`, `auth`, `all`) are specified in the [dependency strategy](docs/STREAMTREE_DEPENDENCY_STRATEGY.md) and will appear in `pyproject.toml` as those integrations ship.
@@ -136,19 +138,38 @@ tests/              # pytest
 | [STREAMTREE_PLAN.md](docs/STREAMTREE_PLAN.md) | Vision, goals, architecture, risks |
 | [STREAMTREE_ROADMAP.md](docs/STREAMTREE_ROADMAP.md) | Phased delivery and dependency alignment |
 | [STREAMTREE_DEPENDENCY_STRATEGY.md](docs/STREAMTREE_DEPENDENCY_STRATEGY.md) | Base vs optional deps, extras, wrapper-first API |
+| [CHANGELOG.md](CHANGELOG.md) | Version history |
 
 ---
 
 ## Contributing
 
+With **[uv](https://docs.astral.sh/uv/)** (recommended):
+
+```bash
+uv sync --extra dev
+uv run ruff check src tests
+uv run ty check src
+uv run pytest
+```
+
+With **pip**:
+
 ```bash
 pip install -e ".[dev]"
 ruff check src tests
+ty check src
 pytest
 ```
+
+CI runs the same checks on Python 3.10–3.12 (see `.github/workflows/ci.yml`).
+
+### Publishing
+
+For **0.1.0**, build artifacts with `uv build` (or `python -m build`), then upload the contents of `dist/` to PyPI using **twine**, **uv publish**, or [Trusted Publishing](https://docs.pypi.org/trusted-publishers/). Tag the release commit `v0.1.0` on your default branch and record changes in [CHANGELOG.md](CHANGELOG.md). Keep `version` in `pyproject.toml`, `streamtree.__version__`, `tests/test_package_meta.py`, and the changelog entry aligned when you cut releases.
 
 ---
 
 ## License
 
-MIT — see `pyproject.toml`.
+MIT — see the [`LICENSE`](LICENSE) file.

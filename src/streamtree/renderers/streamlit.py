@@ -65,19 +65,21 @@ def _render_text_input(el: TextInput, slot: str) -> None:
         kwargs["type"] = "password"
 
     if isinstance(val, FormState):
-        kwargs["key"] = val.edit_key
-        kwargs["value"] = val.edit_value()
+        fs = cast(FormState[str], val)
+        kwargs["key"] = fs.edit_key
+        # Edit buffer is initialized in ``form_state()``; passing ``value=`` as well
+        # triggers Streamlit's session-state policy error and can hang AppTest.
         out = st.text_input(**kwargs)
-        if out != val.edit_value():
-            val.set_edit(cast(str, out))
+        if out != fs.edit_value():
+            fs.set_edit(out)
         return
 
     if isinstance(val, StateVar):
-        kwargs["key"] = val.key
-        kwargs["value"] = val()
+        sv = cast(StateVar[str], val)
+        kwargs["key"] = sv.key
         out = st.text_input(**kwargs)
-        if out != val():
-            val.set(cast(str, out))
+        if out != sv():
+            sv.set(out)
         return
 
     kwargs["key"] = _widget_key(el, "text_input", slot)
@@ -103,7 +105,6 @@ def _render_number_input(el: NumberInput, slot: str) -> None:
 
     if isinstance(val, StateVar):
         kwargs["key"] = val.key
-        kwargs["value"] = val()
         out = st.number_input(**kwargs)
         if out != val():
             val.set(cast(Any, out))
@@ -129,14 +130,15 @@ def _render_selectbox(el: Selectbox, slot: str) -> None:
 
     idx = el.index
     if isinstance(idx, StateVar):
+        idx_sv = cast(StateVar[int], idx)
         wk = _widget_key(el, "selectbox", slot)
-        i = int(idx())
+        i = int(idx_sv())
         kwargs["index"] = min(max(i, 0), max(len(opts) - 1, 0))
         kwargs["key"] = wk
         out = st.selectbox(**kwargs)
         new_i = opts.index(out) if out in opts else kwargs["index"]
         if new_i != i:
-            idx.set(new_i)
+            idx_sv.set(new_i)
         return
 
     kwargs["key"] = _widget_key(el, "selectbox", slot)
@@ -150,7 +152,6 @@ def _render_checkbox(el: Checkbox, slot: str) -> None:
     val = el.value
     if isinstance(val, (StateVar, ToggleState)):
         kwargs["key"] = val.key
-        kwargs["value"] = bool(val())
         out = st.checkbox(**kwargs)
         if out != bool(val()):
             val.set(out)
@@ -169,7 +170,7 @@ def render_element(el: Element, *, slot: str = "0") -> None:
         return
 
     if isinstance(el, ComponentCall):
-        seg = el.key or el.fn.__name__
+        seg = el.key or getattr(el.fn, "__name__", "component")
         with push_segment(seg):
             tree = el.fn(*el.args, **el.kwargs)
         render_element(tree, slot=slot)
@@ -285,9 +286,7 @@ def render_element(el: Element, *, slot: str = "0") -> None:
 
     if isinstance(el, Button):
         if el.submit:
-            clicked = st.form_submit_button(
-                el.label, disabled=el.disabled, help=el.help or ""
-            )
+            clicked = st.form_submit_button(el.label, disabled=el.disabled, help=el.help or "")
         else:
             clicked = st.button(
                 el.label, disabled=el.disabled, help=el.help or "", key=_widget_key(el, "btn", slot)

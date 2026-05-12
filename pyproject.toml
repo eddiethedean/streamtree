@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,14 +8,14 @@ version = "0.1.0"
 description = "Composable, typed Streamlit applications with a declarative component model."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{ name = "Streamtree contributors" }]
 keywords = ["streamlit", "ui", "components", "declarative"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Framework :: Streamlit",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -29,12 +29,19 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pytest>=7.4.0",
+  "pytest-cov>=4.1.0",
+  "pytest-xdist>=3.5.0",
   "mypy>=1.8.0",
   "ruff>=0.2.0",
+  "ty>=0.0.30",
 ]
 
 [project.urls]
 Homepage = "https://github.com/streamtree-dev/streamtree"
+Documentation = "https://github.com/streamtree-dev/streamtree#readme"
+Repository = "https://github.com/streamtree-dev/streamtree"
+Issues = "https://github.com/streamtree-dev/streamtree/issues"
+Changelog = "https://github.com/streamtree-dev/streamtree/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -53,6 +60,21 @@ packages = ["streamtree"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = [
+  "--import-mode=importlib",
+  "--cov=streamtree",
+  "--cov-report=term-missing:skip-covered",
+  "--cov-fail-under=100",
+]
 filterwarnings = [
   "ignore:.*async fixture 'ensure_greenlet_context'.*:pytest.PytestRemovedIn9Warning",
+]
+
+[tool.coverage.run]
+source = ["src"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
 ]

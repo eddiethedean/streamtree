@@ -4,9 +4,24 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, TypeAlias
 
-ElementChild = "Element | Sequence[Element | None] | None"
+
+@dataclass(frozen=True)
+class Element:
+    """Base class for virtual tree nodes."""
+
+    key: str | None = None
+
+
+ElementChild: TypeAlias = Element | Sequence[Element | None] | None
+
+
+@dataclass(frozen=True)
+class Fragment(Element):
+    """Group multiple children without a Streamlit container."""
+
+    children: tuple[Element, ...] = field(default_factory=tuple)
 
 
 def normalize_children(children: tuple[ElementChild, ...]) -> tuple[Element, ...]:
@@ -21,20 +36,6 @@ def normalize_children(children: tuple[ElementChild, ...]) -> tuple[Element, ...
         else:
             raise TypeError(f"Invalid child type: {type(ch)!r}")
     return tuple(out)
-
-
-@dataclass(frozen=True)
-class Element:
-    """Base class for virtual tree nodes."""
-
-    key: str | None = None
-
-
-@dataclass(frozen=True)
-class Fragment(Element):
-    """Group multiple children without a Streamlit container."""
-
-    children: tuple[Element, ...] = field(default_factory=tuple)
 
 
 def fragment(*children: ElementChild, key: str | None = None) -> Fragment:

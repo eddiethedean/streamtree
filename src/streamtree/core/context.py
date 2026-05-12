@@ -43,8 +43,10 @@ def current_context() -> RenderContext:
 @contextmanager
 def render_context(root_segment: str = "app") -> Iterator[RenderContext]:
     parent = _ctx.get()
-    ctx = RenderContext(parent=parent, segment=root_segment) if parent else RenderContext(
-        parent=None, segment=root_segment
+    ctx = (
+        RenderContext(parent=parent, segment=root_segment)
+        if parent
+        else RenderContext(parent=None, segment=root_segment)
     )
     token = _ctx.set(ctx)
     try:

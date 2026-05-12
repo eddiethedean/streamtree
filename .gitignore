@@ -33,6 +33,7 @@ coverage.xml
 # Type checkers / linters
 .mypy_cache/
 .ruff_cache/
+.ty_cache/
 .dmypy.json
 dmypy.json
 

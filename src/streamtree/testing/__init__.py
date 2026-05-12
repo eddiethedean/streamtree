@@ -67,7 +67,7 @@ def _node(el: Element, *, expand_components: bool) -> dict[str, Any]:
         if expand_components:
             from streamtree.core.context import push_segment
 
-            seg = el.key or el.fn.__name__
+            seg = el.key or getattr(el.fn, "__name__", "component")
             with push_segment(seg):
                 inner = el.fn(*el.args, **el.kwargs)
             return _node(inner, expand_components=expand_components)
