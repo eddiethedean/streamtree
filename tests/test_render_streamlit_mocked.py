@@ -352,6 +352,45 @@ def test_component_call_with_explicit_key() -> None:
             rs.render_element(K(key="mykey"), slot="0")
 
 
+def test_render_hstack_with_gap_inserts_gutter_columns() -> None:
+    st = _make_st()
+    recorded: list[list[float]] = []
+
+    def columns_capture(spec: object, **kwargs: object) -> list[object]:
+        if isinstance(spec, (list, tuple)):
+            recorded.append([float(x) for x in spec])
+            n = len(spec)
+        else:
+            n = int(spec)  # type: ignore[arg-type]
+        return [nullcontext() for _ in range(max(n, 1))]
+
+    st.columns = columns_capture
+    with _patched_st(st):
+        with render_context("r"):
+            rs.render_element(HStack(Text("a"), Text("b"), gap="8px"), slot="0")
+    assert recorded == [[1.0, 0.12, 1.0]]
+
+
+def test_render_component_returns_none_raises() -> None:
+    @component
+    def N() -> Element:
+        return None  # type: ignore[return-value]
+
+    st = _make_st()
+    with _patched_st(st), render_context("r"), pytest.raises(TypeError, match="returned None"):
+        rs.render_element(N(), slot="0")
+
+
+def test_render_component_returns_bad_type_raises() -> None:
+    @component
+    def W() -> Element:
+        return 99  # type: ignore[return-value]
+
+    st = _make_st()
+    with _patched_st(st), render_context("r"), pytest.raises(TypeError, match="int"):
+        rs.render_element(W(), slot="0")
+
+
 def test_render_component_with_lambda() -> None:
     st = _make_st()
     with _patched_st(st):
@@ -381,9 +420,9 @@ def test_render_error_boundary_on_error_callback() -> None:
     def boom() -> Element:
         raise ValueError("x")
 
-    seen: list[BaseException] = []
+    seen: list[Exception] = []
 
-    def on_error(exc: BaseException) -> None:
+    def on_error(exc: Exception) -> None:
         seen.append(exc)
 
     st = _make_st()

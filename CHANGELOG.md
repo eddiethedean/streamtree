@@ -9,11 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Packaging:** optional extra **`[async]`** as a TOML-quoted alias of the empty **`[asyncio]`** stub extra (matches install examples in the plan and dependency strategy).
 - **`streamtree.app.App`** shell with optional sidebar composition, **`apply_page_config`**, **`app_root_element`**, and **`render_app()`** (one-time `st.set_page_config` guard).
 - **`streamtree.theme`**: **`Theme`** (Pydantic), **`theme()`** / **`theme_css()`**, and **`ThemeRoot`** element for CSS injection via `app_context.provider(theme=...)`.
-- **`streamtree.asyncio`**: **`submit()`** / **`TaskHandle`** for daemon-thread background work with session-scoped poll keys (stdlib-only; optional `[asyncio]` extra unchanged as meta).
+- **`streamtree.asyncio`**: **`submit()`** / **`TaskHandle`** for daemon-thread background work with session-scoped poll keys (stdlib-only; optional `[asyncio]` / `[async]` stub extras unchanged as meta).
 - **`streamtree.forms`**: **`bind_str_fields`** and **`str_text_inputs`** for declarative `TextInput` grids from Pydantic string fields.
 - Examples **`examples/app_shell.py`**, **`examples/async_bg.py`**, **`examples/model_form.py`**.
+
+### Changed
+
+- **Routing:** `sync_route` / `set_route` now store the active route in `st.session_state` under `streamtree.routing.active.<param>` (one slot per query-param name) instead of a single global `streamtree.routing.active` key. Apps that read that private key must migrate.
+- **`ErrorBoundary.on_error`** is typed as ``Callable[[Exception], None]``, matching the renderer (only `Exception` subclasses are passed through).
+- **`Routes`:** duplicate route names are rejected at construction.
+- **`@component`:** returning ``None`` or a non-``Element`` value raises a clear ``TypeError`` (including in ``render_to_tree(..., expand_components=True)``).
+- **`streamtree.asyncio`:** task status dict updates are serialized with a lock; module and ``submit`` docstrings document rerun-polling semantics.
+- **`Theme`:** ``primary_color`` is restricted to ``#RGB`` / ``#RRGGBB`` hex; ``font_stack`` rejects ``<``, ``>``, and backticks; ``custom_css`` rejects ``<script`` and ``expression(`` substrings (full ``custom_css`` remains trusted CSS).
+- **`HStack`:** non-empty ``gap`` inserts gutter columns between children (CSS ``min-width`` on a spacer).
 
 ## [0.2.0] — 2026-05-12
 

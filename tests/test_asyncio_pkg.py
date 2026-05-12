@@ -71,6 +71,13 @@ def test_task_handle_missing_session() -> None:
         assert h.error() is None
 
 
+def test_cancel_handles_missing_session() -> None:
+    st = SimpleNamespace(session_state={})
+    h = TaskHandle(_session_key="streamtree.asyncio.task.none")
+    with patch("streamtree.asyncio.st", st):
+        h.cancel()
+
+
 def test_submit_idempotent_same_key() -> None:
     st = SimpleNamespace(session_state={})
     n = {"c": 0}
@@ -167,3 +174,30 @@ def test_task_handle_error_coerces_non_str() -> None:
     h = TaskHandle(_session_key=sk)
     with patch("streamtree.asyncio.st", st):
         assert h.error() == "404"
+
+
+def test_submit_run_aborts_when_cancelled_before_fn() -> None:
+    """Exercise ``mark_running_or_abort`` when status is already ``cancelled``."""
+    st = SimpleNamespace(session_state={})
+    ran: list[int] = []
+
+    def work() -> int:
+        ran.append(1)
+        return 42
+
+    captured: dict[str, object] = {}
+
+    def capture_start(self: threading.Thread) -> None:
+        captured["target"] = self._target
+        captured["args"] = self._args
+
+    with patch("streamtree.asyncio.st", st), patch.object(threading.Thread, "start", capture_start):
+        submit(work, key="pre_cancel")
+
+    sk = "streamtree.asyncio.task.pre_cancel"
+    st.session_state[sk]["status"] = "cancelled"
+    target = captured["target"]
+    assert callable(target)
+    target(*captured["args"])
+    assert ran == []
+    assert st.session_state[sk]["status"] == "cancelled"

@@ -27,3 +27,8 @@ def test_routes_normalizes_query_param_and_default() -> None:
     r = Routes(routes=(("home", Text("H")),), default="  home  ", query_param="  page  ")
     assert r.default == "home"
     assert r.query_param == "page"
+
+
+def test_routes_rejects_duplicate_route_names() -> None:
+    with pytest.raises(ValueError, match="unique"):
+        Routes(routes=(("home", Text("A")), ("home", Text("B"))), default="home")

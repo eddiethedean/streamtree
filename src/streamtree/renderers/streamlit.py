@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from typing import Any, cast
 
 import streamlit as st
@@ -43,6 +44,17 @@ from streamtree.state import FormState, StateVar, ToggleState
 from streamtree.theme import ThemeRoot, theme_css
 
 __all__ = ["render_element"]
+
+
+def _ensure_component_result(tree: object, fn: Callable[..., Any]) -> Element:
+    name = getattr(fn, "__name__", "component")
+    if tree is None:
+        raise TypeError(
+            f"component {name!r} returned None; expected an Element (e.g. Page, VStack, fragment())"
+        )
+    if not isinstance(tree, Element):
+        raise TypeError(f"component {name!r} returned {type(tree)!r}; expected an Element subclass")
+    return tree
 
 
 def _maybe_bordered_container() -> Any:
@@ -185,7 +197,7 @@ def render_element(el: Element, *, slot: str = "0") -> None:
         seg = el.key or getattr(el.fn, "__name__", "component")
         with push_segment(seg):
             tree = el.fn(*el.args, **el.kwargs)
-        render_element(tree, slot=slot)
+        render_element(_ensure_component_result(tree, el.fn), slot=slot)
         return
 
     if isinstance(el, VStack):
@@ -199,10 +211,33 @@ def render_element(el: Element, *, slot: str = "0") -> None:
         return
 
     if isinstance(el, HStack):
-        cols = st.columns([1] * max(len(el.children), 1))
-        for i, ch in enumerate(el.children):
-            with cols[i]:
+        children = list(el.children)
+        n = len(children)
+        gap = (el.gap or "").strip()
+        if not gap:
+            cols = st.columns([1] * max(n, 1))
+            for i, ch in enumerate(children):
+                with cols[i]:
+                    render_element(ch, slot=f"{slot}.h{i}")
+            return
+        weights: list[float] = []
+        for i in range(n):
+            weights.append(1.0)
+            if i < n - 1:
+                weights.append(0.12)
+        cols = st.columns(weights)
+        col_idx = 0
+        for i, ch in enumerate(children):
+            with cols[col_idx]:
                 render_element(ch, slot=f"{slot}.h{i}")
+            col_idx += 1
+            if i < n - 1:
+                with cols[col_idx]:
+                    st.markdown(
+                        f"<div aria-hidden='true' style='min-width:{gap};height:1px'></div>",
+                        unsafe_allow_html=True,
+                    )
+                col_idx += 1
         return
 
     if isinstance(el, Columns):

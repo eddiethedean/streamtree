@@ -72,10 +72,12 @@ def _node(el: Element, *, expand_components: bool) -> dict[str, Any]:
     if isinstance(el, ComponentCall):
         if expand_components:
             from streamtree.core.context import push_segment
+            from streamtree.renderers.streamlit import _ensure_component_result
 
             seg = el.key or getattr(el.fn, "__name__", "component")
             with push_segment(seg):
                 inner = el.fn(*el.args, **el.kwargs)
+            inner = _ensure_component_result(inner, el.fn)
             return _node(inner, expand_components=expand_components)
         return {
             "kind": "ComponentCall",
@@ -85,10 +87,18 @@ def _node(el: Element, *, expand_components: bool) -> dict[str, Any]:
             "kwargs": {k: _safe_repr(v) for k, v in el.kwargs.items()},
         }
 
-    if isinstance(el, (VStack, Page, HStack, Card)):
+    if isinstance(el, (VStack, Page, Card)):
         return {
             "kind": _kind(el),
             "key": el.key,
+            "children": [_node(c, expand_components=expand_components) for c in el.children],
+        }
+
+    if isinstance(el, HStack):
+        return {
+            "kind": "HStack",
+            "key": el.key,
+            "gap": el.gap,
             "children": [_node(c, expand_components=expand_components) for c in el.children],
         }
 

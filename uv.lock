@@ -1773,7 +1773,7 @@ requires-dist = [
     { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.30" },
     { name = "typing-extensions", specifier = ">=4.8.0" },
 ]
-provides-extras = ["tables", "charts", "ui", "auth", "asyncio", "cli", "all", "dev"]
+provides-extras = ["tables", "charts", "ui", "auth", "asyncio", "async", "cli", "all", "dev"]
 
 [[package]]
 name = "tenacity"

@@ -21,7 +21,11 @@ class VStack(Element):
 
 @dataclass(frozen=True)
 class HStack(Element):
-    """Render children in a horizontal row of equal columns."""
+    """Render children in a horizontal row of equal columns.
+
+    When ``gap`` is a non-empty string (e.g. ``\"12px\"`` or ``\"0.5rem\"``), narrow gutter columns
+    are inserted between children; each gutter uses the string as CSS ``min-width`` on a spacer.
+    """
 
     children: tuple[Element, ...] = field(default_factory=tuple)
     gap: str | None = None
@@ -171,7 +175,7 @@ class ErrorBoundary(Element):
 
     child: Element = field(kw_only=True)
     fallback: Element = field(kw_only=True)
-    on_error: Callable[[BaseException], None] | None = field(default=None, kw_only=True)
+    on_error: Callable[[Exception], None] | None = field(default=None, kw_only=True)
 
 
 @dataclass(frozen=True)
@@ -185,6 +189,9 @@ class Routes(Element):
     def __post_init__(self) -> None:
         if not self.routes:
             raise ValueError("Routes requires at least one (name, element) pair")
+        names = [n for n, _ in self.routes]
+        if len(set(names)) != len(names):
+            raise ValueError("Routes route names must be unique")
         qp = self.query_param.strip() if isinstance(self.query_param, str) else ""
         if not qp:
             raise ValueError("Routes.query_param must be a non-empty string")

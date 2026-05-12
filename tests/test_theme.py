@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import pytest
+from pydantic import ValidationError
+
 from streamtree.app_context import provider
 from streamtree.testing import render_to_tree
 from streamtree.theme import Theme, ThemeRoot, theme, theme_css
@@ -59,3 +62,33 @@ def test_render_to_tree_theme_root() -> None:
 def test_render_to_tree_theme_root_with_key() -> None:
     tree = render_to_tree(ThemeRoot(key="layout"))
     assert tree == {"kind": "ThemeRoot", "key": "layout"}
+
+
+def test_theme_rejects_non_hex_primary_color() -> None:
+    with pytest.raises(ValidationError):
+        Theme(primary_color="red")
+
+
+def test_theme_font_stack_strips_whitespace() -> None:
+    t = Theme(font_stack="  Verdana, sans-serif  ")
+    assert t.font_stack == "Verdana, sans-serif"
+
+
+def test_theme_rejects_font_stack_backtick() -> None:
+    with pytest.raises(ValidationError):
+        Theme(font_stack="`mono`")
+
+
+def test_theme_rejects_font_stack_angle_brackets() -> None:
+    with pytest.raises(ValidationError):
+        Theme(font_stack="Arial <script>")
+
+
+def test_theme_rejects_custom_css_expression_url() -> None:
+    with pytest.raises(ValidationError):
+        Theme(custom_css="div { x: expression(1); }")
+
+
+def test_theme_rejects_custom_css_script_tag() -> None:
+    with pytest.raises(ValidationError):
+        Theme(custom_css="body <script>alert(1)</script>")

@@ -34,8 +34,10 @@ charts = []
 ui = []
 auth = []
 asyncio = []
+# TOML-quoted key: matches documented ``pip install streamtree[async]`` (alias of the asyncio stub extra).
+"async" = []
 cli = []
-# Combined: pip install "streamtree[tables,charts,ui,auth,asyncio,cli]" (meta-extra omitted; names like "cli" are PyPI packages in lists).
+# Combined: pip install "streamtree[tables,charts,ui,auth,asyncio,async,cli]" (meta-extra omitted; names like "cli" are PyPI packages in lists).
 all = []
 dev = [
   "pytest>=7.4.0",

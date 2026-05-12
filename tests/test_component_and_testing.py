@@ -49,6 +49,24 @@ def test_render_to_tree_expand_component() -> None:
     assert tree["children"][0]["body"] == "expanded"
 
 
+def test_render_to_tree_expand_component_none_raises() -> None:
+    @component
+    def Bad() -> Element | None:
+        return None  # type: ignore[return-value]
+
+    with render_context("ctx"), pytest.raises(TypeError, match="returned None"):
+        render_to_tree(Page(Bad()), expand_components=True)
+
+
+def test_render_to_tree_expand_component_non_element_raises() -> None:
+    @component
+    def Bad2() -> Element:
+        return "nope"  # type: ignore[return-value]
+
+    with render_context("ctx"), pytest.raises(TypeError, match="returned"):
+        render_to_tree(Page(Bad2()), expand_components=True)
+
+
 def test_render_to_tree_unknown_element_raises() -> None:
     with pytest.raises(TypeError, match="Unsupported"):
         render_to_tree(Unknown())  # type: ignore[arg-type]

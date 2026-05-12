@@ -24,7 +24,7 @@ _Last updated: 2026-05-12._
 
 ### 0.2.0 (first Phase 2 tranche, shipped)
 
-- **Dependencies:** Pydantic v2 and typing-extensions in the default install; stub optional extras (`tables`, `charts`, `ui`, `auth`, `asyncio`, `cli`, `all`). The `asyncio` extra name matches the roadmap’s `[async]` slot (reserved keyword workaround in TOML).
+- **Dependencies:** Pydantic v2 and typing-extensions in the default install; stub optional extras (`tables`, `charts`, `ui`, `auth`, `asyncio`, `async`, `cli`, `all`). **`[async]`** and **`[asyncio]`** are the same empty stub in `pyproject.toml` (quoted TOML key for the former).
 - **Routing + query params:** `streamtree.routing.sync_route`, `set_route`, and the `Routes` layout element; see `examples/routed_app.py`.
 - **Error boundaries:** `ErrorBoundary` with fallback subtree, optional `on_error`, and `logging` on the default path.
 - **Context / DI (minimal):** `streamtree.app_context` with `provider`, `lookup`, and `current_bag`.

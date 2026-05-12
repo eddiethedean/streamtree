@@ -4,8 +4,12 @@ from __future__ import annotations
 
 import streamlit as st
 
-_SESSION_ACTIVE = "streamtree.routing.active"
 _DEFAULT_PARAM = "route"
+
+
+def _active_session_key(param: str) -> str:
+    """Session slot for the active route name, namespaced by query param."""
+    return f"streamtree.routing.active.{param}"
 
 
 def _validate_param(param: str) -> str:
@@ -30,6 +34,8 @@ def _first(v: object) -> str | None:
 def sync_route(default: str, *, param: str = _DEFAULT_PARAM) -> str:
     """Keep ``st.session_state`` and ``st.query_params[param]`` aligned.
 
+    Session uses one key per ``param``: ``streamtree.routing.active.<param>`` (validated name).
+
     If the query string sets ``param``, that wins and updates session. Otherwise
     the active route is read from session (initializing to ``default``), then
     written back to the query string when missing so URLs stay shareable.
@@ -42,21 +48,22 @@ def sync_route(default: str, *, param: str = _DEFAULT_PARAM) -> str:
         raise ValueError("default must be a non-empty string")
     default = default.strip()
 
+    sk = _active_session_key(param)
     raw = st.query_params.get(param)
     if raw is not None:
         name = _first(raw)
         if name:
-            st.session_state[_SESSION_ACTIVE] = name
+            st.session_state[sk] = name
             return name
-    if _SESSION_ACTIVE in st.session_state:
-        raw_sess = st.session_state[_SESSION_ACTIVE]
+    if sk in st.session_state:
+        raw_sess = st.session_state[sk]
         name = str(raw_sess).strip() if raw_sess is not None else ""
         if not name:
             name = default
-            st.session_state[_SESSION_ACTIVE] = name
+            st.session_state[sk] = name
     else:
         name = default
-        st.session_state[_SESSION_ACTIVE] = name
+        st.session_state[sk] = name
     if st.query_params.get(param) != name:
         st.query_params[param] = name
     return name
@@ -68,7 +75,7 @@ def set_route(name: str, *, param: str = _DEFAULT_PARAM) -> None:
     if not isinstance(name, str) or not name.strip():
         raise ValueError("route name must be a non-empty string")
     name = name.strip()
-    st.session_state[_SESSION_ACTIVE] = name
+    st.session_state[_active_session_key(param)] = name
     st.query_params[param] = name
 
 
