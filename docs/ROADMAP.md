@@ -5,7 +5,7 @@ This document tracks **product direction and phased delivery**. It aligns with [
 
 ## How to use this roadmap
 
-1. **Release index** (table below) — snapshot of phases and what is already on PyPI.
+1. **Release index** (table below) — snapshot of phases and what has **shipped in tagged releases** (PyPI publishes when the [release workflow](https://github.com/streamtree-dev/streamtree/blob/main/.github/workflows/release.yml) succeeds on **`v*.*.*`** tags).
 2. **Near-term themes** — backlog and cross-cutting work (docs, CLI, helpers) that span releases.
 3. **Pattern catalog** — design vocabulary mapped to phases (not a separate product spec).
 4. **Phase 0–5** — historical goals and long-range bets; detailed **shipped vs open** for Phase 2 lives in the table + backlog, not duplicated in the Phase 2 feature list.
@@ -20,9 +20,9 @@ _Last updated: 2026-05-12._
 
 | Track | Status | Notes |
 |-------|--------|--------|
-| Phase 0 — Foundation | Mostly complete | Package layout, Streamlit renderer, design docs in `docs/`. |
+| Phase 0 — Foundation | **Complete** | Package layout, Streamlit renderer, design docs in `docs/`. |
 | Phase 1 — MVP | In progress | **0.1.0** core tree + state; **0.2.0** Pydantic + stub extras; deeper memoization / `streamlit-extras` curation still open. |
-| Phase 2 — Application | In progress | **Shipped through 0.5.0:** routing, `Routes`, `ErrorBoundary`, `app_context`, forms (str + numeric), **`App` / `render_app`** (+ sidebar/menu/sidebar state passthrough), theme, **`streamtree.asyncio`** (incl. **progress** API), **`PageLink`**, **`streamtree.helpers.runner`**, **`streamtree.helpers.pages`**, optional **`[cli]`** (`streamtree run` / `doctor`). **Next:** auth, portals, `streamlit-extras` behind names, richer shell / **`streamtree init`**, multipage DX polish. |
+| Phase 2 — Application | In progress | **Shipped through 0.5.0:** routing, `Routes`, `ErrorBoundary`, `app_context`, forms (str + numeric), **`App` / `render_app`** (+ sidebar/menu/sidebar state passthrough), theme, **`streamtree.asyncio`** (submit / `TaskHandle` + **progress** API), **`PageLink`**, **`streamtree.helpers.runner`**, **`streamtree.helpers.pages`** (`pages/` discovery + `PageLink` paths), optional **`[cli]`** (`streamtree run` / `doctor`). **Next:** auth, portals, `streamlit-extras` behind stable names, richer shell / **`streamtree init`**, multipage polish beyond discovery helpers. |
 | Phase 3 — Data toolkit | Planned | Tables, charts, performance playbooks; follows Phase 2. |
 | Phase 4 — Tooling | Planned | Testing, dev introspection; **`streamtree` CLI** MVP shipped in **0.4.0**; overlaps RTD handoff. |
 | Docs — Read the Docs | Planned | [Manual, guides, API](#documentation-platform-read-the-docs); **stable** / **latest**; CI doc builds. |
@@ -32,6 +32,8 @@ _Last updated: 2026-05-12._
 - **`streamtree.helpers.pages`:** `PageEntry`, `pages_dir_next_to`, `list_page_entries`, `discover_pages` for Streamlit `pages/` scripts (labels + sort keys + `PageLink` paths); exported from **`streamtree.helpers`**.
 - **`streamtree.asyncio`:** `set_task_progress` and **`TaskHandle.progress()`**; task session dict stores **`progress`** (lock-serialized with status/result/error).
 - **Examples:** **`examples/pages_helpers_demo.py`**, stub **`examples/pages/1_About_demo.py`**.
+- **Docs:** README install pin + capabilities, [PLAN.md](./PLAN.md) packaging line, [DEPENDENCY_STRATEGY.md](./DEPENDENCY_STRATEGY.md) (`helpers.pages` + progress), this roadmap’s release index / Phase 2 “Next”.
+- **Tests:** expanded coverage for **`helpers.pages`** (paths, unicode, ordering, in-directory symlinks) and **`asyncio`** progress (poll while running, error path, main-thread updates).
 
 ### 0.4.1 (shipped)
 
@@ -176,6 +178,17 @@ StreamTree is **not** React and will **not** ship a browser VDOM. The list below
 
 - Production-grade apps on Streamlit: routing, resilience, theming, async slice, forms.
 
+### Completed (through 0.5.0)
+
+The following Phase 2 themes are **done** for the current minor line; details and version pins live in the [Release index](#release-index).
+
+- **Routing & resilience:** `sync_route` / `set_route`, `Routes`, `ErrorBoundary`, `app_context`.
+- **Forms:** Pydantic-first string + scalar numeric bindings and inputs.
+- **App shell:** `App`, `apply_page_config`, `render_app`, sidebar composition, `PageLink` + `st.page_link`, `initial_sidebar_state` / `menu_items` passthrough.
+- **Theming:** `Theme` / `theme()` / `ThemeRoot`.
+- **Async worker slice:** `streamtree.asyncio` `submit` / `TaskHandle`, session task dict, **progress** field + **`set_task_progress`** / **`TaskHandle.progress()`**.
+- **Run / multipage DX (stdlib):** `streamtree.helpers.runner`, optional **`[cli]`** `streamtree run` / `doctor`, **`streamtree.helpers.pages`** for `pages/` discovery.
+
 ### Release notes
 
 Shipped scope for **0.2.0** through **0.5.0** is in the [Release index](#release-index) and subsections above. **Open** work is in the [backlog](#phase-2-backlog--near-term-themes).
@@ -187,6 +200,8 @@ Shipped scope for **0.2.0** through **0.5.0** is in the [Release index](#release
 - **`[async]` (when shipped):** optional backend (e.g. asynclit) **only** via **`streamtree.asyncio`** public API.
 
 ### Deliverables (remaining / stretch)
+
+Everything listed under **Completed (through 0.5.0)** above is **closed** for the current release line; items below are still **open**.
 
 - Deeper navigation framework, auth, portals, richer theme/forms/async as backlog clears.
 - Example apps for error boundaries + context + parallel loads + async UI branches.
