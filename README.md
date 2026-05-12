@@ -1,5 +1,7 @@
 # Streamtree
 
+[![PyPI version](https://img.shields.io/pypi/v/streamtree)](https://pypi.org/project/streamtree/)
+
 **Composable, typed Streamlit applications** — a small Python layer that turns UIs into declarative trees instead of long imperative scripts.
 
 Streamtree keeps Streamlit’s execution model and widgets, but adds **components**, **virtual elements**, **scoped session state**, and a path toward **Pydantic-typed** forms and props. No JavaScript is required for the core experience.
