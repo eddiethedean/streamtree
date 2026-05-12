@@ -27,6 +27,7 @@ Streamtree is **not** a React clone, a browser framework, or a JS build step. It
 - **Declarative layouts** — `Page`, `Card`, `Grid`, `VStack`, `Form`, `Tabs`, `Sidebar`, `Routes`, `ErrorBoundary`, …
 - **Session-backed state** — `state`, `toggle_state`, `form_state`, `memo`, `cache`
 - **Streamlit renderer** — virtual tree → `st.*` on each rerun
+- **Raw `st` when you need it** — `@component` bodies run during render, so you can compose `st.columns`, `st.metric`, custom components, then `return` elements or `fragment()` (see **Custom Streamlit inside `@component`** below)
 - **Testing helpers** — serialize trees for snapshots (`render_to_tree`)
 - **Typed trajectory** — roadmap and dependency strategy center on **Pydantic** and curated optional extras
 
@@ -90,6 +91,59 @@ Run the bundled demo from the repo root:
 streamlit run examples/counter.py
 streamlit run examples/routed_app.py
 ```
+
+## Custom Streamlit inside `@component`
+
+The body of a `@component` runs **while the tree is being rendered** (each Streamlit rerun), in the same script context as `st.*`. Anything Streamlit exposes—`st.columns`, `st.metric`, `st.plotly_chart`, `st.download_button`, third-party `components.v1`, and so on—you can call **before** you `return` your `Element` tree. Use that when Streamtree does not yet ship a wrapper for a widget, or when the imperative API is clearer.
+
+Return `fragment()` when everything below was drawn with raw `st` calls and you do not need extra virtual nodes. Mix freely: draw with `st`, then return `VStack`, `Markdown`, `Button`, … for the rest of the subtree.
+
+```python
+import streamlit as st
+
+from streamtree import component, fragment, render
+from streamtree.elements import Button, Markdown, Page, TextInput, VStack
+from streamtree.state import state
+
+
+@component
+def DashboardHeader():
+    """Build part of the UI with Streamlit primitives, the rest as elements."""
+    band, meta = st.columns([3, 1])
+    with band:
+        st.title("Operations")
+    with meta:
+        st.metric("Queue depth", 12, delta=-2)
+
+    notes = state("", key="header_notes")
+
+    return VStack(
+        Markdown("**Notes** (Streamtree `TextInput` + `state`):"),
+        TextInput("Session notes", value=notes),
+        Button("Clear notes", on_click=lambda: notes.set("")),
+    )
+
+
+@component
+def SparklineStrip():
+    """All-imperative strip: no virtual children, so return an empty `fragment`."""
+    cols = st.columns(4)
+    for i, col in enumerate(cols):
+        with col:
+            st.metric(f"M{i + 1}", value=100 + i * 7, delta=i - 1)
+    return fragment()
+
+
+if __name__ == "__main__":
+    render(
+        Page(
+            DashboardHeader(),
+            SparklineStrip(),
+        )
+    )
+```
+
+Give every **manual** `st` widget a **stable `key=`** when Streamlit requires it (sliders, inputs, duplicated patterns, etc.) so reruns do not collide with other widgets.
 
 ---
 
