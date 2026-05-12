@@ -16,9 +16,7 @@ from streamtree.state import StateVar, state
 
 M = TypeVar("M", bound=BaseModel)
 
-NumericStateVar = (
-    StateVar[int] | StateVar[float] | StateVar[int | None] | StateVar[float | None]
-)
+NumericStateVar = StateVar[int] | StateVar[float] | StateVar[int | None] | StateVar[float | None]
 
 
 def _unwrap_annotation(ann: Any) -> Any:
