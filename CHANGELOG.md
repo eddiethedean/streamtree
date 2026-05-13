@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Docs:** **`docs/TESTING_AND_DEBUG.md`**; MkDocs **API reference** pages (**mkdocstrings**); **`.readthedocs.yml`** for Read the Docs builds.
 - **`examples`:** package **`__init__.py`** and **`examples.counter.streamtree_tree_root`** for **`streamtree tree`** demos.
 - **`tests/test_examples_run.py`:** **`AppTest.from_file`** smoke test for every **`examples/*.py`** and **`examples/pages/*.py`** script (asserts no **`at.exception`** entries); **`echarts_demo.py`** is skipped because **`streamlit-echarts`** custom-component registration fails in the AppTest harness.
+- **CI / Actions:** reusable workflows (**`reusable-lint-test.yml`**, **`reusable-cli-smoke.yml`**, **`reusable-docs-and-dist.yml`**), **`workflow_dispatch`** on **`ci.yml`**, release **concurrency** (**`cancel-in-progress: false`**), job **timeouts**, **Dependabot** for **GitHub Actions**; release **`docs-and-dist`** runs **MkDocs** + **`uv build`** on Python **3.12** and uploads **`dist/`** for publish jobs (replaces standalone **`build-dist`** on 3.11).
 
 ### Fixed
 

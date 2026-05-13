@@ -1,0 +1,38 @@
+# Called from CI and Release — verifies ``streamtree doctor`` with ``[cli]`` on each OS.
+name: Reusable CLI smoke
+
+on:
+  workflow_call:
+    inputs:
+      os:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  cli-smoke:
+    runs-on: ${{ inputs.os }}
+    timeout-minutes: 15
+    env:
+      UV_PYTHON: "3.12"
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            uv.lock
+            pyproject.toml
+
+      - name: Python 3.12 (${{ inputs.os }})
+        run: uv python install 3.12
+
+      - name: Sync dev + cli extras
+        run: uv sync --frozen --python 3.12 --extra dev --extra cli
+
+      - name: streamtree doctor
+        run: uv run streamtree doctor

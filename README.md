@@ -95,7 +95,7 @@ uv run python -m mkdocs build --strict
 uv build
 ```
 
-Same checks with **pip**: `pip install -e ".[dev]"`, then the same `ruff`, `ty`, `pytest`, `mkdocs build --strict`, and `uv build` (or `python -m build`). **Coverage** is enforced at 100% on `src/streamtree` (see `pyproject.toml`).
+Same checks with **pip**: `pip install -e ".[dev]"`, then the same `ruff`, `ty`, `pytest`, `mkdocs build --strict`, and `uv build` (or `python -m build`). **Coverage** is enforced at 100% on `src/streamtree` (see `pyproject.toml`). GitHub Actions live under [`.github/workflows/`](https://github.com/eddiethedean/streamtree/tree/main/.github/workflows) (**`ci.yml`**, **`release.yml`**, and **`reusable-*.yml`**); you can re-run **`CI`** manually via **Actions → CI → Run workflow**.
 
 ## Releases
 

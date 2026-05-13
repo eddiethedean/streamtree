@@ -8,110 +8,48 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   lint-test:
-    runs-on: ${{ matrix.os }}
+    name: lint-test (${{ matrix.os }}, ${{ matrix.python-version }})
     strategy:
       fail-fast: false
       matrix:
-        # Pin VS2026 image; windows-latest was emitting redirect notices from windows-2025.
         os: [ubuntu-latest, windows-2025-vs2026, macos-latest]
         python-version: ["3.10", "3.11", "3.12", "3.13"]
-    env:
-      # Otherwise `uv run` follows `.python-version` (3.11) and breaks non-3.11 matrix rows.
-      UV_PYTHON: ${{ matrix.python-version }}
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v8.1.0
-        with:
-          enable-cache: true
-
-      - name: Python ${{ matrix.python-version }} (${{ matrix.os }})
-        run: uv python install ${{ matrix.python-version }}
-
-      - name: Sync dev environment
-        run: uv sync --frozen --python ${{ matrix.python-version }} --extra dev
-
-      - name: Ruff format
-        run: uv run ruff format --check .
-
-      - name: Ruff
-        run: uv run ruff check src tests
-
-      - name: ty
-        run: uv run ty check src
-
-      - name: Pytest with coverage
-        run: uv run pytest tests/ -q
-
-      - name: MkDocs build (strict)
-        if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
-        run: uv run python -m mkdocs build --strict
+    uses: ./.github/workflows/reusable-lint-test.yml
+    secrets: inherit
+    with:
+      os: ${{ matrix.os }}
+      python-version: ${{ matrix.python-version }}
 
   cli-smoke:
-    runs-on: ${{ matrix.os }}
+    name: cli-smoke (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
-        # Pin VS2026 image; windows-latest was emitting redirect notices from windows-2025.
         os: [ubuntu-latest, windows-2025-vs2026, macos-latest]
-    env:
-      # Match ``uv sync`` interpreter; otherwise ``uv run`` follows ``.python-version`` and recreates a venv without ``--extra cli``.
-      UV_PYTHON: "3.12"
-    steps:
-      - uses: actions/checkout@v6
+    uses: ./.github/workflows/reusable-cli-smoke.yml
+    secrets: inherit
+    with:
+      os: ${{ matrix.os }}
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v8.1.0
-        with:
-          enable-cache: true
-
-      - name: Python 3.12 (${{ matrix.os }})
-        run: uv python install 3.12
-
-      - name: Sync dev + cli extras
-        run: uv sync --frozen --python 3.12 --extra dev --extra cli
-
-      - name: streamtree doctor
-        run: uv run streamtree doctor
-
-  # One build artifact shared by index-specific publish jobs (PyPA recommends one publish action per job).
-  build-dist:
-    runs-on: ubuntu-latest
+  docs-and-dist:
+    name: MkDocs and distributions
     needs: [lint-test, cli-smoke]
-    permissions:
-      contents: read
-    env:
-      UV_PYTHON: "3.11"
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v8.1.0
-        with:
-          enable-cache: true
-
-      - name: Python
-        run: uv python install 3.11
-
-      - name: Sync dev dependencies
-        run: uv sync --frozen --extra dev
-
-      - name: Build sdist and wheel
-        run: uv build
-
-      - name: Upload distributions
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-package-distributions
-          path: dist/
+    uses: ./.github/workflows/reusable-docs-and-dist.yml
+    secrets: inherit
+    with:
+      upload-artifact: true
 
   publish-pypi:
     name: Publish to PyPI
     runs-on: ubuntu-latest
-    needs: [build-dist]
+    needs: [docs-and-dist]
+    timeout-minutes: 20
     permissions:
       contents: read
     steps:
@@ -129,7 +67,8 @@ jobs:
   publish-github:
     name: Publish to GitHub Packages
     runs-on: ubuntu-latest
-    needs: [build-dist]
+    needs: [docs-and-dist]
+    timeout-minutes: 20
     permissions:
       contents: read
       packages: write
