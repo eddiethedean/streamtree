@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **CI:** **`ruff format --check`** — apply Ruff formatting to **`tests/test_tree_viz.py`** (was failing **`lint-test`** matrix on push).
 - **`examples/crud_pattern_demo.py`:** form actions use **`Button(..., submit=True)`** so Streamlit receives **`st.form_submit_button`** instead of **`st.button`** inside **`st.form`**.
 - **`examples/numeric_nav_demo.py`:** **`PageLink`** targets **`pages/1_About_demo.py`** (a valid multipage path relative to the entrypoint; sibling **`counter.py`** is not a discoverable page for **`st.page_link`**).
 

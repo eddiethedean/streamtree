@@ -21,7 +21,14 @@ def test_tree_dict_to_mermaid_non_dict_in_list() -> None:
 
 
 def test_format_tree_text_label_without_name() -> None:
-    tree = {"kind": "Button", "key": "b", "label": "Go", "disabled": False, "submit": False, "has_on_click": False}
+    tree = {
+        "kind": "Button",
+        "key": "b",
+        "label": "Go",
+        "disabled": False,
+        "submit": False,
+        "has_on_click": False,
+    }
     out = format_tree_text(tree)
     assert "label=" in out
 
