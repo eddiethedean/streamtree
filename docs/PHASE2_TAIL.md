@@ -1,6 +1,6 @@
 # Phase 2 backlog — follow-up work (post-0.6.0)
 
-This note captures **larger or cross-cutting** Phase 2 themes that are intentionally **not** part of the **0.6.0** slice. Use it to groom releases after [`streamtree init`](https://github.com/streamtree-dev/streamtree/blob/main/src/streamtree/cli.py), **[`auth`]**, **overlays** (`Dialog` / `Popover`), and the first **[`ui`]** wrappers ship.
+This note captures **larger or cross-cutting** Phase 2 themes that were intentionally **not** part of the **0.6.0** slice. Several items have since **shipped** in **0.7.0** / **0.8.0** (called out inline below); the remaining bullets are still **open**. For a consolidated shipped list, see [ROADMAP.md](./ROADMAP.md) and [CHANGELOG.md](../CHANGELOG.md).
 
 ## Richer navigation and app shell
 

@@ -62,6 +62,10 @@ Per the dependency strategy, the base package should standardize on:
 
 **0.5.0:** **`streamtree.helpers.pages`** (stdlib discovery for Streamlit’s `pages/` directory), plus **`set_task_progress`** / **`TaskHandle.progress()`** on **`streamtree.asyncio`** for rerun-polled worker progress—see [CHANGELOG.md](../CHANGELOG.md).
 
+**0.7.0:** **`streamtree.asyncio.submit_many`**, cooperative cancellation (**`TaskHandle.cancel()`**, **`is_task_cancel_requested`**, **`complete_cancelled`**), and stale-key documentation—see [CHANGELOG.md](../CHANGELOG.md).
+
+**0.7.1:** README CI / Actions badge targets aligned with the repository used for workflow status—see [CHANGELOG.md](../CHANGELOG.md).
+
 **0.8.0:** Optional **`[tables]`** (**`DataGrid`**, streamlit-aggrid) and **`[charts]`** (**`Chart`**, Plotly); **`routing.sync_query_value`** / **`set_query_value`**; **`streamtree.loading.match_task`**; **`helpers.page_links`**, **`asyncio.dismiss_task`**, **`[ui]`** additions (**`SocialBadge`**, **`StyleMetricCards`**), **`init --with-pages`** sidebar scaffold; see [CHANGELOG.md](../CHANGELOG.md).
 
 ## Optional extras (target)
@@ -200,9 +204,9 @@ Provides:
 - snapshot testing
 - component assertions
 
-## streamtree.asyncio (planned name)
+## streamtree.asyncio (shipped)
 
-Provides **first-class async orchestration** for Streamlit apps (exact module path may evolve):
+The **`streamtree.asyncio`** module path is **stable** in the default install. It provides **first-class async orchestration** for Streamlit apps:
 
 - Task submission and **polling** APIs aligned with rerun semantics (`done`, `result`, `error`, `cancel`)
 - Optional **progress** bridging for long async jobs

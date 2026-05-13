@@ -254,7 +254,7 @@ pip install "streamtree[cli]"
 
 ### Typer
 
-**Why:** A small **Typer**-based **`streamtree`** console entrypoint ships in **0.4.0** (`streamtree run`, `streamtree doctor`). Typer is **not** a core dependency so `pip install streamtree` stays lean.
+**Why:** A small **Typer**-based **`streamtree`** console entrypoint ships in **0.4.0** (`streamtree run`, `streamtree doctor`); **`streamtree init`** in **0.6.0**; **`init --with-pages`** in **0.8.0** scaffolds a multipage sidebar shell. Typer is **not** a core dependency so `pip install streamtree` stays lean.
 
 **Recommendation:** Optional extra **`[cli]`** plus **`[project.scripts]`** `streamtree = "streamtree.cli:main"`. The **`[runner]`** extra remains an **empty metadata stub** (stdlib `streamtree.helpers.runner` ships in the default wheel); **`[pages]`** remains reserved for future pinned multipage deps while **`streamtree.helpers.pages`** (stdlib) ships in the default install as of **0.5.0**—see [ROADMAP.md](./ROADMAP.md).
 
@@ -267,7 +267,7 @@ pages = []
 
 ### Multipage helpers (`streamtree.helpers.pages`)
 
-**As of 0.5.0:** **`streamtree.helpers.pages`** ships in the **default** wheel (stdlib + pathlib). It exposes **`discover_pages`**, **`list_page_entries`**, **`pages_dir_next_to`**, and **`PageEntry`** so apps can align StreamTree trees with Streamlit’s `pages/` layout (labels, sort keys, and paths for **`PageLink`**). The **`[pages]`** extra remains **empty** until optional third-party multipage dependencies are pinned—see [ROADMAP.md](./ROADMAP.md).
+**As of 0.5.0:** **`streamtree.helpers.pages`** ships in the **default** wheel (stdlib + pathlib). It exposes **`discover_pages`**, **`list_page_entries`**, **`pages_dir_next_to`**, and **`PageEntry`** so apps can align StreamTree trees with Streamlit’s `pages/` layout (labels, sort keys, and paths for **`PageLink`**). **As of 0.8.0:** **`page_links`** builds **`PageLink`** rows from discovery output, and **`streamtree init --with-pages`** wires **`SidebarNav`** + **`page_links`** in generated **`app.py`**. The **`[pages]`** extra remains **empty** until optional third-party multipage dependencies are pinned—see [ROADMAP.md](./ROADMAP.md).
 
 ---
 
@@ -296,9 +296,11 @@ Useful for:
 - CRUD admin interfaces
 - dashboard tables
 
-### StreamTree Integration Ideas
+### StreamTree integration (shipped)
 
-StreamTree could expose:
+**`DataGrid`** (optional **`[tables]`**) maps to **streamlit-aggrid** when the extra is installed; see **`streamtree.tables`** and **`examples/datagrid_demo.py`**.
+
+Earlier design sketch (still valid at a high level):
 
 ```python
 DataGrid(
@@ -309,7 +311,7 @@ DataGrid(
 )
 ```
 
-Under the hood, this could use streamlit-aggrid when installed.
+Under the hood, this uses streamlit-aggrid when installed.
 
 ### Strategic Value
 
@@ -352,7 +354,11 @@ Useful for:
 - business intelligence views
 - data exploration
 
-### StreamTree Integration Ideas
+### StreamTree integration (shipped)
+
+**`Chart`** (optional **`[charts]`**) accepts a Plotly figure and renders via **`st.plotly_chart`**; see **`streamtree.charts`** and **`examples/chart_demo.py`**.
+
+Design directions still on the roadmap (Altair / echarts, higher-level constructors):
 
 ```python
 Chart(fig)

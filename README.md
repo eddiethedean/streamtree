@@ -36,7 +36,7 @@ StreamTree is an **architecture layer** for Streamlit, not a React-style web fra
 - **Data toolkit (0.8+)** — **`pip install "streamtree[tables]"`**: **`DataGrid`** (streamlit-aggrid); **`pip install "streamtree[charts]"`**: **`Chart`** (Plotly via **`st.plotly_chart`**); **`streamtree.loading.match_task`** for declarative loading / ready / error subtrees from **`TaskHandle`**; **`routing.sync_query_value`** / **`set_query_value`** for URL-backed filter strings. See [docs/PERFORMANCE.md](docs/PERFORMANCE.md).
 - **Quality** — Pydantic v2 in the default install, typing-first APIs, and `render_to_tree` for structural tests.
 
-Optional extras: **`[tables]`** pins **`streamlit-aggrid`**; **`[charts]`** pins **`plotly`**. **`[ui]`** and **`[auth]`** pin **`streamlit-extras`** and **`streamlit-authenticator`** (0.6+). **`[cli]`** adds **Typer** and the **`streamtree`** console script (`run`, `doctor`, `init`). **`[asyncio]`** / **`[async]`**, **`[pages]`**, and **`[runner]`** remain metadata-oriented. See [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md). The `streamtree.asyncio` module, **`streamtree.helpers.runner`**, and **`streamtree.helpers.pages`** ship in the default package.
+Optional extras: **`[tables]`** pins **`streamlit-aggrid`**; **`[charts]`** pins **`plotly`**. **`[ui]`** and **`[auth]`** pin **`streamlit-extras`** and **`streamlit-authenticator`** (0.6+). **`[cli]`** adds **Typer** and the **`streamtree`** console script (`run`, `doctor`, `init`). **`[asyncio]`** / **`[async]`**, **`[pages]`**, and **`[runner]`** remain metadata-oriented. See [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md). The `streamtree.asyncio` module and **`streamtree.helpers`** ( **`pages`**, **`runner`**, **`scaffold`** ) ship in the default install; **`import streamtree`** exposes **`streamtree.helpers`** on the root package.
 
 ## Requirements
 
@@ -190,15 +190,15 @@ search = state("")
 TextInput(label="Search", value=search)
 ```
 
-**Multipage discovery (0.5+)**
+**Multipage discovery (0.5+; `page_links` in 0.8.0)**
 
-Use **`streamtree.helpers.pages.discover_pages(__file__)`** to list scripts under Streamlit’s **`pages/`** folder next to your entry script. Each **`PageEntry`** has **`label`** and **`page`** for **`PageLink`**. See **`examples/pages_helpers_demo.py`**.
+Use **`streamtree.helpers.pages.discover_pages(__file__)`** to list scripts under Streamlit’s **`pages/`** folder next to your entry script. Each **`PageEntry`** has **`label`** and **`page`** for **`PageLink`**. Use **`streamtree.helpers.page_links(...)`** to turn discovery rows into **`PageLink`** tuples for **`SidebarNav`** or custom shells. See **`examples/pages_helpers_demo.py`**.
 
 ## Documentation
 
 | Resource | Description |
 |----------|-------------|
-| [Plan](https://github.com/streamtree-dev/streamtree/blob/main/docs/PLAN.md) | Vision, architecture, dependency timeline (incl. **0.6.0**) |
+| [Plan](https://github.com/streamtree-dev/streamtree/blob/main/docs/PLAN.md) | Vision, architecture, optional extras, release notes through **0.8.0** |
 | [Roadmap](https://github.com/streamtree-dev/streamtree/blob/main/docs/ROADMAP.md) | Phased delivery and release index |
 | [Phase 2 tail](https://github.com/streamtree-dev/streamtree/blob/main/docs/PHASE2_TAIL.md) | Grooming after **0.6.0** (navigation, asyncio, forms) |
 | [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md) | Optional extras, **default-install** helpers (`runner`, `pages`), and CI typing notes |
@@ -211,13 +211,14 @@ Install dev tools, then run lint, type check, and tests (mirrors CI on Python 3.
 
 ```bash
 uv sync --extra dev
-uv run ruff format .
+uv run ruff format .           # apply formatting locally
+uv run ruff format --check .   # same check CI runs (no file writes)
 uv run ruff check src tests
 uv run ty check src
 uv run pytest
 ```
 
-Equivalent with **pip**: `pip install -e ".[dev]"`, then `ruff`, `ty check src`, and `pytest` as above.
+Equivalent with **pip**: `pip install -e ".[dev]"`, then `ruff`, `ruff format` / `ruff format --check`, `ty check src`, and `pytest` as above.
 
 ## Releases
 
