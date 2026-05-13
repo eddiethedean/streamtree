@@ -24,6 +24,7 @@ from streamtree.elements import (
     Chart,
     DataFrame,
     DataGrid,
+    DeferredFragment,
     Dialog,
     Divider,
     EChartsChart,
@@ -1079,3 +1080,27 @@ def test_render_mention_chip_import_error_message() -> None:
     with _patched_st(st), patch.object(builtins, "__import__", side_effect=_fake):
         with render_context("menie"), pytest.raises(ImportError, match="streamtree\\[ui\\]"):
             rs.render_element(MentionChip("L", "https://x.invalid"), slot="0")
+
+
+def test_render_deferred_fragment_without_st_fragment() -> None:
+    st = _make_st()
+    with _patched_st(st), render_context("dfrag"):
+        rs.render_element(DeferredFragment(Text("a"), Text("b")), slot="0")
+
+
+def test_render_deferred_fragment_with_st_fragment() -> None:
+    st = _make_st()
+    calls: list[str] = []
+
+    def fragment_factory() -> object:
+        def deco(fn: object) -> object:
+            calls.append("entered")
+            fn()  # type: ignore[operator]
+            return fn
+
+        return deco
+
+    st.fragment = fragment_factory
+    with _patched_st(st), render_context("dfrag2"):
+        rs.render_element(DeferredFragment(Text("z")), slot="0")
+    assert calls == ["entered"]

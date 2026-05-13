@@ -68,6 +68,21 @@ def test_main_invokes_built_app(monkeypatch: pytest.MonkeyPatch) -> None:
     fake.assert_called_once()
 
 
+def test_cli_init_template_crud(tmp_path: Path) -> None:
+    runner = CliRunner()
+    result = runner.invoke(
+        cli._cli_app(), ["init", str(tmp_path), "--template", "crud", "--name", "T"]
+    )
+    assert result.exit_code == 0
+    assert "save_intent_counter" in (tmp_path / "app.py").read_text(encoding="utf-8")
+
+
+def test_cli_init_bad_template_exits(tmp_path: Path) -> None:
+    runner = CliRunner()
+    result = runner.invoke(cli._cli_app(), ["init", str(tmp_path), "--template", "nope"])
+    assert result.exit_code == 1
+
+
 def test_cli_init_writes_app(tmp_path: Path) -> None:
     runner = CliRunner()
     result = runner.invoke(cli._cli_app(), ["init", str(tmp_path), "--name", "Demo"])

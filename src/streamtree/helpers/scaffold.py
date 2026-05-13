@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Literal
+
+InitTemplate = Literal["default", "crud", "explore", "enterprise"]
 
 
 def app_py_source(*, page_title: str, with_pages: bool = False) -> str:
@@ -72,6 +75,115 @@ if __name__ == "__main__":
 '''
 
 
+def crud_app_py_source(*, page_title: str, with_pages: bool) -> str:
+    """CRUD-oriented shell using :mod:`streamtree.crud` save-intent + :class:`Routes`."""
+    _ = with_pages
+    tl = repr(page_title)
+    return (
+        '"""StreamTree CRUD shell (``streamtree init --template crud``)."""\n\n'
+        "from __future__ import annotations\n\n"
+        "from streamtree import component, render_app\n"
+        "from streamtree.app import App\n"
+        "from streamtree.core.element import Element\n"
+        "from streamtree.crud import save_intent_counter\n"
+        "from streamtree.elements import Button, Page, Text, VStack\n"
+        "from streamtree.elements.layout import Routes\n\n\n"
+        "@component\n"
+        "def Main() -> Element:\n"
+        '    count, bump_save = save_intent_counter(key="demo_save")\n'
+        "    return Routes(\n"
+        "        routes=(\n"
+        "            (\n"
+        '                "list",\n'
+        "                Page(\n"
+        "                    VStack(\n"
+        '                        Text("List view (add DataGrid with [tables] extra)"),\n'
+        '                        Button("Simulate save intent", on_click=bump_save),\n'
+        '                        Text(f"save_intent={count()}"),\n'
+        "                    )\n"
+        "                ),\n"
+        "            ),\n"
+        '            ("detail", Page(VStack(Text("Detail / edit route placeholder")))),\n'
+        "        ),\n"
+        '        default="list",\n'
+        "    )\n\n\n"
+        f'if __name__ == "__main__":\n'
+        f"    render_app(App(page_title={tl}, body=Main()))\n"
+    )
+
+
+def explore_app_py_source(*, page_title: str, with_pages: bool) -> str:
+    """Exploration shell using :mod:`streamtree.helpers.explore`."""
+    _ = with_pages
+    tl = repr(page_title)
+    return (
+        '"""StreamTree exploration shell (``streamtree init --template explore``)."""\n\n'
+        "from __future__ import annotations\n\n"
+        "import json\n\n"
+        "from streamtree import component, render_app\n"
+        "from streamtree.app import App\n"
+        "from streamtree.core.element import Element\n"
+        "from streamtree.elements import Markdown, Page, VStack\n"
+        "from streamtree.helpers.explore import column_summary\n\n\n"
+        "@component\n"
+        "def Main() -> Element:\n"
+        '    rows = [{"a": 1, "b": "x"}, {"a": 2, "b": "y"}]\n'
+        "    summary = column_summary(rows)\n"
+        '    return Page(VStack(Markdown("## Explore"), Markdown(f"```json\\n{json.dumps(summary)}\\n```")))\n\n\n'
+        f'if __name__ == "__main__":\n'
+        f"    render_app(App(page_title={tl}, body=Main()))\n"
+    )
+
+
+def enterprise_app_py_source(*, page_title: str, with_pages: bool) -> str:
+    """Enterprise shell with optional :mod:`streamtree.enterprise` event sink."""
+    _ = with_pages
+    tl = repr(page_title)
+    return (
+        '"""StreamTree enterprise shell (``streamtree init --template enterprise``)."""\n\n'
+        "from __future__ import annotations\n\n"
+        "from streamtree import component, render_app\n"
+        "from streamtree.app import App\n"
+        "from streamtree.app_context import provider\n"
+        "from streamtree.core.element import Element\n"
+        "from streamtree.enterprise import EVENT_SINK_KEY, EventSink, emit_event\n"
+        "from streamtree.elements import Button, Page, Text, VStack\n\n\n"
+        "class PrintSink:\n"
+        "    def emit(self, name: str, payload: dict) -> None:\n"
+        "        pass  # Replace with logging / audit export\n\n\n"
+        "@component\n"
+        "def Main() -> Element:\n"
+        "    return Page(\n"
+        "        VStack(\n"
+        '            Text("Tenant / audit hooks via app_context"),\n'
+        "            Button(\n"
+        '                "Emit demo event",\n'
+        '                on_click=lambda: emit_event("demo", {"ok": True}),\n'
+        "            ),\n"
+        "        )\n"
+        "    )\n\n\n"
+        f'if __name__ == "__main__":\n'
+        f"    sink: EventSink = PrintSink()\n"
+        f'    with provider(**{{EVENT_SINK_KEY: sink, "tenant_id": "demo"}}):\n'
+        f"        render_app(App(page_title={tl}, body=Main()))\n"
+    )
+
+
+def app_py_source_for_template(template: str, *, page_title: str, with_pages: bool) -> str:
+    t = template.strip().lower()
+    if t == "default":
+        return app_py_source(page_title=page_title, with_pages=with_pages)
+    if t == "crud":
+        return crud_app_py_source(page_title=page_title, with_pages=with_pages)
+    if t == "explore":
+        return explore_app_py_source(page_title=page_title, with_pages=with_pages)
+    if t == "enterprise":
+        return enterprise_app_py_source(page_title=page_title, with_pages=with_pages)
+    raise ValueError(
+        f"unknown init template {template!r}; expected default|crud|explore|enterprise"
+    )
+
+
 PAGE_ABOUT = '''"""Example multipage script (Streamlit ``pages/`` convention)."""
 
 from __future__ import annotations
@@ -97,8 +209,12 @@ def write_init_project(
     page_title: str,
     with_pages: bool,
     force: bool,
+    template: str = "default",
 ) -> list[Path]:
     """Write ``app.py`` and optionally ``pages/`` under ``root``.
+
+    ``template`` selects the generated ``app.py`` body: ``default`` (current shell),
+    ``crud``, ``explore``, or ``enterprise`` (see :func:`app_py_source_for_template`).
 
     Returns paths of files written. Raises ``FileExistsError`` if a file would
     be overwritten and ``force`` is false.
@@ -111,7 +227,8 @@ def write_init_project(
     if app_path.exists() and not force:
         raise FileExistsError(str(app_path))
     app_path.write_text(
-        app_py_source(page_title=page_title, with_pages=with_pages), encoding="utf-8"
+        app_py_source_for_template(template, page_title=page_title, with_pages=with_pages),
+        encoding="utf-8",
     )
     written.append(app_path)
 
@@ -127,4 +244,9 @@ def write_init_project(
     return written
 
 
-__all__ = ["app_py_source", "write_init_project"]
+__all__ = [
+    "InitTemplate",
+    "app_py_source",
+    "app_py_source_for_template",
+    "write_init_project",
+]

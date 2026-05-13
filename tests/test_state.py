@@ -6,12 +6,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from streamtree.core.context import render_context
+from streamtree.core.context import push_segment, render_context
 from streamtree.state import (
     StateVar,
     cache,
     form_state,
     memo,
+    memo_subtree,
     session_state,
     state,
     toggle_state,
@@ -156,3 +157,51 @@ def test_memo_and_cache(mock_st: MagicMock) -> None:
 
         assert cache("c1", 99) == 99
         assert cache("c1", 100) == 99
+
+
+def test_memo_subtree_respects_deps(mock_st: MagicMock) -> None:
+    with patch("streamtree.state.st", mock_st):
+        with render_context("app"):
+            calls = {"n": 0}
+
+            def factory() -> int:
+                calls["n"] += 1
+                return 42
+
+            assert memo_subtree("k", (1,), factory) == 42
+            assert memo_subtree("k", (1,), factory) == 42
+            assert calls["n"] == 1
+            assert memo_subtree("k", (2,), factory) == 42
+            assert calls["n"] == 2
+
+
+def test_memo_subtree_scoped_by_render_path(mock_st: MagicMock) -> None:
+    with patch("streamtree.state.st", mock_st):
+        with render_context("app"):
+            with push_segment("a"):
+                o1 = memo_subtree("slot", (0,), object)
+            with push_segment("b"):
+                o2 = memo_subtree("slot", (0,), object)
+            assert o1 is not o2
+
+
+def test_memo_subtree_deps_fingerprint_typeerror_branch(mock_st: MagicMock) -> None:
+    with patch("streamtree.state.json.dumps", side_effect=TypeError("forced")):
+        with patch("streamtree.state.st", mock_st):
+            with render_context("app"):
+                calls = {"n": 0}
+
+                def factory() -> int:
+                    calls["n"] += 1
+                    return 5
+
+                assert memo_subtree("tdep", (1,), factory) == 5
+                assert memo_subtree("tdep", (1,), factory) == 5
+                assert calls["n"] == 1
+
+
+def test_memo_subtree_empty_key_raises(mock_st: MagicMock) -> None:
+    with patch("streamtree.state.st", mock_st):
+        with render_context("app"):
+            with pytest.raises(ValueError, match="logical_key"):
+                memo_subtree("  ", (1,), lambda: 1)

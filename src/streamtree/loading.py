@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from typing import Any, Protocol, TypeVar, runtime_checkable
 
 from streamtree.core.element import Element
@@ -87,4 +87,15 @@ def match_task_many(
     return ready(tuple(h.result() for h in handles))
 
 
-__all__ = ["match_task", "match_task_many"]
+def submit_many_ordered(jobs: Mapping[str, Callable[[], Any]]) -> tuple[Any, ...]:
+    """Start tasks via :func:`streamtree.asyncio.submit_many` in **sorted key order**.
+
+    Use with :func:`match_task_many`: the ``ready`` tuple matches this same order.
+    """
+    from streamtree.asyncio import submit_many
+
+    ordered = sorted(jobs.items(), key=lambda kv: kv[0])
+    return submit_many([(k, fn) for k, fn in ordered])
+
+
+__all__ = ["match_task", "match_task_many", "submit_many_ordered"]

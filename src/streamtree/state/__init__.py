@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Generic, TypeVar, cast
@@ -181,6 +182,32 @@ def cache(key: str, value: T) -> T:
     return cast(T, st.session_state[sk])
 
 
+def _deps_fingerprint(deps: tuple[Any, ...]) -> str:
+    try:
+        return json.dumps(deps, default=str, separators=(",", ":"), sort_keys=False)
+    except TypeError:
+        return repr(deps)
+
+
+def memo_subtree(logical_key: str, deps: tuple[Any, ...], factory: Callable[[], T]) -> T:
+    """Memoize once per session keyed by **render path**, ``logical_key``, and ``deps``.
+
+    Unlike :func:`memo`, the slot includes :func:`streamtree.core.context.current_context`
+    ``path()`` so unrelated subtrees do not share storage. Change ``deps`` when inputs
+    change to invalidate the cached value.
+
+    Session key: ``streamtree.memo_subtree.<path>.<logical_key>.<fingerprint>``.
+    """
+    if not isinstance(logical_key, str) or not logical_key.strip():
+        raise ValueError("memo_subtree logical_key must be a non-empty string")
+    ctx = current_context()
+    fp = _deps_fingerprint(deps)
+    sk = f"streamtree.memo_subtree.{ctx.path()}.{logical_key.strip()}.{fp}"
+    if sk not in st.session_state:
+        st.session_state[sk] = factory()
+    return cast(T, st.session_state[sk])
+
+
 __all__ = [
     "FormState",
     "StateVar",
@@ -188,6 +215,7 @@ __all__ = [
     "cache",
     "form_state",
     "memo",
+    "memo_subtree",
     "session_state",
     "state",
     "toggle_state",

@@ -6,6 +6,7 @@ from streamtree.elements.auth_gate import AuthGate
 from streamtree.elements.layout import (
     Card,
     Columns,
+    DeferredFragment,
     Dialog,
     ErrorBoundary,
     Expander,
@@ -66,6 +67,7 @@ __all__ = [
     "EChartsChart",
     "DataFrame",
     "DataGrid",
+    "DeferredFragment",
     "Dialog",
     "Divider",
     "Element",

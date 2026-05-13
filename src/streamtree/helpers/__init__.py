@@ -1,5 +1,6 @@
 """Optional integration helpers (stdlib-first where possible)."""
 
+from streamtree.helpers.explore import column_summary, dataframe_profile
 from streamtree.helpers.pages import (
     PageEntry,
     discover_pages,
@@ -15,6 +16,8 @@ from streamtree.helpers.pages import (
 from streamtree.helpers.runner import build_streamlit_run_argv, run_streamlit_sync
 
 __all__ = [
+    "column_summary",
+    "dataframe_profile",
     "PageEntry",
     "build_streamlit_run_argv",
     "discover_pages",

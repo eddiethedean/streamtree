@@ -16,6 +16,7 @@ from streamtree.elements import (
     EChartsChart,
     DataFrame,
     DataGrid,
+    DeferredFragment,
     Dialog,
     Divider,
     ErrorBoundary,
@@ -63,6 +64,7 @@ def test_render_to_tree_exercises_all_node_types() -> None:
             VStack(
                 ThemeRoot(),
                 fragment(Text("f")),
+                DeferredFragment(Text("d1"), Text("d2")),
                 HStack(Text("h")),
                 Columns(Text("c1"), weights=(1.0,)),
                 Grid(Text("g"), columns=1),
@@ -114,4 +116,4 @@ def test_render_to_tree_exercises_all_node_types() -> None:
         )
     )
     assert tree["kind"] == "Page"
-    assert len(tree["children"][0]["children"]) >= 29
+    assert len(tree["children"][0]["children"]) >= 30

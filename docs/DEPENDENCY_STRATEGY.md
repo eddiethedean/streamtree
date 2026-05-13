@@ -268,6 +268,14 @@ pages = []
 
 **As of 0.5.0:** **`streamtree.helpers.pages`** ships in the **default** wheel (stdlib + pathlib). It exposes **`discover_pages`**, **`list_page_entries`**, **`pages_dir_next_to`**, and **`PageEntry`** so apps can align StreamTree trees with Streamlit’s `pages/` layout (labels, sort keys, and paths for **`PageLink`**). **As of 0.8.0:** **`page_links`** builds **`PageLink`** rows from discovery output, and **`streamtree init --with-pages`** wires **`SidebarNav`** + **`page_links`** in generated **`app.py`**. **As of 0.9.0:** **`iter_page_entries`**, **`prefetch_page_sources`**, **`group_page_entries_by_order_prefix`**, **`page_links_sidebar_sections`**, and **`multipage_sidebar_nav`** support sectioned sidebars and optional source **`compile()`** checks without importing page modules—see **`docs/PERFORMANCE.md`** and **`docs/PHASE2_PORTALS_AND_PREFETCH.md`**. The **`[pages]`** extra remains **empty** until optional third-party multipage dependencies are pinned—see [ROADMAP.md](./ROADMAP.md).
 
+### Exploration helpers (`streamtree.helpers.explore`)
+
+**As of 0.10.0:** **`column_summary`** runs on lists of row dicts without pandas. **`dataframe_profile`** targets pandas **`DataFrame`** objects and is documented for environments that already install pandas (**`[tables]`** / **`[dev]`**), matching the optional data stack described under [Tables Extra](#tables-extra-shipped-in-080).
+
+### Enterprise hooks (`streamtree.enterprise`)
+
+**As of 0.10.0:** **`streamtree.enterprise`** ships in the default wheel (stdlib only): **`EventSink`** / **`emit_event`** via **`app_context`**, **`tenant_id`**, and **`redact_secrets`**. No logging or observability vendor is pinned; applications provide concrete sink types.
+
 ---
 
 # Tables Extra (shipped in 0.8.0)

@@ -41,6 +41,21 @@ def test_loading_submodule_exposed() -> None:
     assert hasattr(streamtree, "loading")
     assert hasattr(streamtree.loading, "match_task")
     assert hasattr(streamtree.loading, "match_task_many")
+    assert hasattr(streamtree.loading, "submit_many_ordered")
+
+
+def test_phase3_submodules_exposed() -> None:
+    assert hasattr(streamtree, "crud")
+    assert hasattr(streamtree.crud, "save_intent_counter")
+    assert hasattr(streamtree, "enterprise")
+    assert hasattr(streamtree.enterprise, "emit_event")
+    assert hasattr(streamtree, "perf")
+    assert hasattr(streamtree.perf, "perf_bump")
+
+
+def test_helpers_explore_exports() -> None:
+    assert hasattr(streamtree.helpers, "column_summary")
+    assert hasattr(streamtree.helpers, "dataframe_profile")
 
 
 def test_helpers_exports_page_links() -> None:

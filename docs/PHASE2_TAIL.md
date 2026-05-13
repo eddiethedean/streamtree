@@ -19,7 +19,7 @@ Phase 2 is considered **feature-complete for the application track** when all of
 - **Shipped in 0.8.0:** **`page_links`**, **`init --with-pages`**, **`App(sidebar=..., body=...)`**.
 - **Shipped in 0.9.0:** **`iter_page_entries`**, **`prefetch_page_sources`**, **`SplitView`** (pseudo-sidebar), **portals**.
 - **Shipped in 0.9.0:** **`group_page_entries_by_order_prefix`**, **`page_links_sidebar_sections`**, **`multipage_sidebar_nav`**; README / docs on **`Routes` + query params** vs **`pages/`** multipage.
-- **Still stretch:** opinionated **templates** that tightly couple **`Routes`** + **`App`** (beyond helpers and docs).
+- **Still stretch:** opinionated **product templates** that tightly couple **`Routes`** + **`App`** as a single shipped layout (distinct from **0.10.0+** **`streamtree init --template`** shells under **`helpers.scaffold`**).
 
 ## `streamtree.asyncio` orchestration
 

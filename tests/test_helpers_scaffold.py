@@ -6,7 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from streamtree.helpers.scaffold import app_py_source, write_init_project
+from streamtree.helpers.scaffold import (
+    app_py_source,
+    app_py_source_for_template,
+    write_init_project,
+)
 
 
 def test_app_py_source_embeds_title() -> None:
@@ -32,6 +36,32 @@ def test_app_py_source_with_pages_compiles() -> None:
     assert "discover_pages" in src
     assert "page_links" in src
     assert "SidebarNav" in src
+
+
+def test_app_py_source_for_template_explore_and_enterprise_compile() -> None:
+    for tpl in ("explore", "enterprise"):
+        src = app_py_source_for_template(tpl, page_title="Zed", with_pages=False)
+        compile(src, "<app.py>", "exec")
+
+
+def test_app_py_source_for_template_default_matches_app_py_source() -> None:
+    assert app_py_source_for_template("default", page_title="X", with_pages=False) == app_py_source(
+        page_title="X", with_pages=False
+    )
+
+
+def test_write_init_project_template_crud(tmp_path: Path) -> None:
+    write_init_project(tmp_path, page_title="C", with_pages=False, force=False, template="crud")
+    txt = (tmp_path / "app.py").read_text(encoding="utf-8")
+    assert "save_intent_counter" in txt
+    compile(txt, "<app.py>", "exec")
+
+
+def test_write_init_project_unknown_template_raises(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="unknown init template"):
+        write_init_project(
+            tmp_path, page_title="X", with_pages=False, force=False, template="bogus"
+        )
 
 
 def test_write_init_project_creates_app(tmp_path: Path) -> None:

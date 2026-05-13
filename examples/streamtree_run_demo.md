@@ -42,6 +42,23 @@ streamtree init myapp
 
 Use **`--force`** to overwrite existing generated files. **`--name`** sets the **`App.page_title`** string in the template.
 
+**Templates (0.10.0+):** **`--template`** (short **`-t`**) selects the generated **`app.py`** body:
+
+| Value | Purpose |
+|-------|---------|
+| **`default`** | Current multipage-aware shell (same as omitting **`--template`**) |
+| **`crud`** | **`Routes`** + **`streamtree.crud.save_intent_counter`** starter |
+| **`explore`** | **`column_summary`** on in-memory rows + Markdown preview |
+| **`enterprise`** | **`app_context.provider`** + **`streamtree.enterprise`** event sink stub |
+
+Examples:
+
+```bash
+streamtree init myapp --template crud --name "My CRUD"
+streamtree init myapp -t explore
+streamtree init myapp --template enterprise --force
+```
+
 The always-supported path remains:
 
 ```bash

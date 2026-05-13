@@ -14,6 +14,7 @@ from streamtree.elements.auth_gate import AuthGate
 from streamtree.elements.layout import (
     Card,
     Columns,
+    DeferredFragment,
     Dialog,
     ErrorBoundary,
     Expander,
@@ -278,6 +279,22 @@ def _render_checkbox(el: Checkbox, slot: str) -> None:
 
 def render_element(el: Element, *, slot: str = "0") -> None:
     """Render a single element and its descendants."""
+    if isinstance(el, DeferredFragment):
+        children = el.children
+        frag = getattr(st, "fragment", None)
+        if callable(frag):
+
+            @frag()
+            def _deferred_body() -> None:
+                for i, ch in enumerate(children):
+                    render_element(ch, slot=f"{slot}.dfr{i}")
+
+            _deferred_body()
+        else:
+            for i, ch in enumerate(children):
+                render_element(ch, slot=f"{slot}.dfr{i}")
+        return
+
     if isinstance(el, Fragment):
         for i, ch in enumerate(el.children):
             render_element(ch, slot=f"{slot}.f{i}")

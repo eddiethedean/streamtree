@@ -10,7 +10,7 @@ import pytest
 
 from streamtree.core.element import Element
 from streamtree.elements import Text, VStack
-from streamtree.loading import match_task, match_task_many
+from streamtree.loading import match_task, match_task_many, submit_many_ordered
 
 
 @dataclass
@@ -178,3 +178,17 @@ def test_match_task_many_unknown_status(caplog: pytest.LogCaptureFixture) -> Non
         )
     assert out.children[0].body == "L"
     assert "match_task_many" in caplog.text and "weird" in caplog.text
+
+
+def test_submit_many_ordered_sorts_keys(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: list[list[str]] = []
+
+    def fake_submit_many(jobs: Any) -> tuple[Any, ...]:
+        captured.append([k for k, _ in jobs])
+        return ()
+
+    monkeypatch.setattr("streamtree.asyncio.submit_many", fake_submit_many)
+    submit_many_ordered({"b": lambda: 1, "a": lambda: 2})
+    assert captured == [["a", "b"]]

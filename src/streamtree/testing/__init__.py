@@ -10,6 +10,7 @@ from streamtree.elements.auth_gate import AuthGate
 from streamtree.elements.layout import (
     Card,
     Columns,
+    DeferredFragment,
     Dialog,
     ErrorBoundary,
     Expander,
@@ -56,7 +57,7 @@ from streamtree.elements.widgets import (
 from streamtree.tables import DataGrid
 from streamtree.theme import ThemeRoot
 
-__all__ = ["render_to_tree"]
+__all__ = ["render_to_tree", "summarize_tree_kinds"]
 
 
 def _kind(el: Element) -> str:
@@ -83,10 +84,39 @@ def render_to_tree(
     return _node(root, expand_components=expand_components)
 
 
+def summarize_tree_kinds(tree: Any) -> dict[str, int]:
+    """Count ``kind`` values in nested dict/list structures from :func:`render_to_tree`.
+
+    Useful for lightweight assertions in tests and optional perf/debug summaries.
+    """
+    counts: dict[str, int] = {}
+
+    def walk(node: Any) -> None:
+        if isinstance(node, dict):
+            kind = node.get("kind")
+            if isinstance(kind, str):
+                counts[kind] = counts.get(kind, 0) + 1
+            for v in node.values():
+                walk(v)
+        elif isinstance(node, (list, tuple)):
+            for item in node:
+                walk(item)
+
+    walk(tree)
+    return counts
+
+
 def _node(el: Element, *, expand_components: bool) -> dict[str, Any]:
     if isinstance(el, Fragment):
         return {
             "kind": "Fragment",
+            "key": el.key,
+            "children": [_node(c, expand_components=expand_components) for c in el.children],
+        }
+
+    if isinstance(el, DeferredFragment):
+        return {
+            "kind": "DeferredFragment",
             "key": el.key,
             "children": [_node(c, expand_components=expand_components) for c in el.children],
         }

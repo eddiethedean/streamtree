@@ -307,6 +307,21 @@ class SplitView(Element):
 
 
 @dataclass(frozen=True)
+class DeferredFragment(Element):
+    """Render children inside ``st.fragment`` when Streamlit provides it.
+
+    When ``st.fragment`` is missing, children render sequentially like a plain
+    :class:`streamtree.core.element.Fragment` (no isolated rerun scope).
+    """
+
+    children: tuple[Element, ...] = field(default_factory=tuple)
+
+    def __init__(self, *children: ElementChild, key: str | None = None) -> None:
+        object.__setattr__(self, "key", key)
+        object.__setattr__(self, "children", normalize_children(children))
+
+
+@dataclass(frozen=True)
 class Routes(Element):
     """Render exactly one child tree based on :func:`streamtree.routing.sync_route`."""
 

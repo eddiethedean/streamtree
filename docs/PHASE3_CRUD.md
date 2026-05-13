@@ -11,6 +11,9 @@ This note complements [`PERFORMANCE.md`](./PERFORMANCE.md) with **repeatable sha
 | Forms | **`Form`**, **`TextInput`**, **`streamtree.forms`**, **`streamtree.forms_layout`** |
 | Async save/load | **`streamtree.asyncio.submit`** / **`submit_many`** + **`TaskHandle`** |
 | Declarative branches | **`streamtree.loading.match_task`**; parallel waits → **`match_task_many`** |
+| CRUD URL + save intent | **`streamtree.crud.selected_id_from_query`**, **`save_intent_counter`** (see examples) |
+| Heavy subtree reuse | **`streamtree.state.memo_subtree`** (render-path scoped; see PERFORMANCE) |
+| Lower-priority UI block | **`DeferredFragment`** (uses **`st.fragment`** when present; see PERFORMANCE) |
 | Failure isolation | **`ErrorBoundary`** around risky subtrees |
 
 ## Recommended flow
@@ -24,6 +27,12 @@ This note complements [`PERFORMANCE.md`](./PERFORMANCE.md) with **repeatable sha
 ## Example
 
 [`examples/crud_pattern_demo.py`](https://github.com/streamtree-dev/streamtree/blob/main/examples/crud_pattern_demo.py) shows in-memory list/edit/add plus **`match_task_many`** over two parallel **`submit`** handles (stand-ins for reference data). Swap the bodies for real I/O as needed.
+
+[`examples/crud_automation_demo.py`](https://github.com/streamtree-dev/streamtree/blob/main/examples/crud_automation_demo.py) wires **`streamtree.crud`** helpers (URL **`id`** + save-intent counter) next to normal **`state`**.
+
+## CLI scaffolding (**0.10.0+**)
+
+With **`pip install "streamtree[cli]"`**, **`streamtree init --template crud`** (or **`explore`**, **`enterprise`**, **`default`**) writes a matching **`app.py`** under the target directory; combine with **`--with-pages`** and **`--name`** as needed. See [`examples/streamtree_run_demo.md`](https://github.com/streamtree-dev/streamtree/blob/main/examples/streamtree_run_demo.md) and **`streamtree.helpers.scaffold`**.
 
 ## Charts and reporting
 

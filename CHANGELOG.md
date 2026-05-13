@@ -13,8 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`EChartsChart`** (`[charts]` extra): ECharts option dicts via **`streamlit_echarts.st_echarts`**; **`streamlit-echarts`** pinned with **`plotly`** and **`altair`** in **`[charts]`** / **`[all]`** / **`[dev]`**.
 - **`DataGrid.on_result`**: optional callback invoked once after a successful **`AgGrid`** call with the grid return value (selection / updates); not called if **`AgGrid`** raises.
 - **`streamtree.loading.match_task_many`**: declarative subtree when **all** pollable handles are **`done`**, with **any-error** and **any-cancelled** semantics (see docstring and **`docs/PERFORMANCE.md`**).
-- **Docs:** **`docs/PHASE3_CRUD.md`** — Phase 3 list/detail/save patterns with **`DataGrid`**, routing, async, **`match_task`** / **`match_task_many`**.
-- **Example:** **`examples/altair_chart_demo.py`**, **`examples/crud_pattern_demo.py`**, **`examples/echarts_demo.py`**, **`examples/datagrid_selection_demo.py`**.
+- **`streamtree.loading.submit_many_ordered`**: start **`submit_many`** jobs in **sorted key order** so **`match_task_many`** result tuples are stable.
+- **`streamtree.state.memo_subtree`**: memoize values keyed by render path + logical key + **`deps`** fingerprint (see **`docs/PERFORMANCE.md`**).
+- **`streamtree.elements.DeferredFragment`**: defer child rendering with **`st.fragment`** when the Streamlit version exposes it.
+- **`streamtree.crud`**: **`selected_id_from_query`**, **`save_intent_counter`** for list/detail/save flows (not a full admin framework).
+- **`streamtree.enterprise`**: optional **`EventSink`** via **`app_context`**, **`emit_event`**, **`tenant_id`**, **`redact_secrets`** (no extra pinned vendors).
+- **`streamtree.perf`**: **`perf_bump`** / **`perf_snapshot`** with **`PERF_COUNTERS_KEY`** in **`app_context`** for lightweight counters.
+- **`streamtree.helpers.explore`**: **`column_summary`** (stdlib); **`dataframe_profile`** when pandas is present (**`[tables]`**).
+- **`streamtree.testing.summarize_tree_kinds`**: count element **`kind`** values in **`render_to_tree`** output.
+- **CLI:** **`streamtree init --template`** / **`-t`** for **`default`**, **`crud`**, **`explore`**, **`enterprise`** scaffolds.
+- **Docs:** **`docs/PHASE3_CRUD.md`** — Phase 3 list/detail/save patterns with **`DataGrid`**, routing, async, **`match_task`** / **`match_task_many`**; **`docs/PERFORMANCE.md`** updates for large trees and hooks.
+- **Example:** **`examples/altair_chart_demo.py`**, **`examples/crud_pattern_demo.py`**, **`examples/crud_automation_demo.py`**, **`examples/echarts_demo.py`**, **`examples/datagrid_selection_demo.py`**, **`examples/deferred_region_demo.py`**, **`examples/async_ordered_loader_demo.py`**.
 
 ## [0.9.0] — 2026-05-13
 

@@ -63,11 +63,23 @@ def _cli_app():
             help="Also create ``pages/`` with a sample page script",
         ),
         force: bool = typer.Option(False, help="Overwrite existing generated files"),
+        template: str = typer.Option(
+            "default",
+            "--template",
+            "-t",
+            help="app.py template: default | crud | explore | enterprise",
+        ),
     ) -> None:
         """Scaffold ``app.py`` (and optional ``pages/``) for ``streamtree run``."""
         root = Path.cwd() if path is None else path
         try:
-            written = write_init_project(root, page_title=name, with_pages=with_pages, force=force)
+            written = write_init_project(
+                root,
+                page_title=name,
+                with_pages=with_pages,
+                force=force,
+                template=template,
+            )
         except FileExistsError as exc:
             typer.echo(f"Refusing to overwrite (use --force): {exc}", err=True)
             raise typer.Exit(1) from exc
