@@ -10,7 +10,7 @@ This document tracks **product direction and phased delivery**. It aligns with [
 3. **Pattern catalog** — design vocabulary mapped to phases (not a separate product spec).
 4. **Phase 0–5** — historical goals and long-range bets; detailed **shipped vs open** for Phase 2 lives in the table + backlog, not duplicated in the Phase 2 feature list.
 
-**Contents:** [Release index](#release-index) · [Phase 2 backlog & themes](#phase-2-backlog--near-term-themes) · [Patterns](#patterns-from-react-ergonomics-non-vdom-rerun-native) · [Phase 0](#phase-0--foundation) · [Phase 1](#phase-1--mvp) · [Phase 2](#phase-2--application-features) · [Phase 3](#phase-3--data-application-toolkit) · [Phase 4](#phase-4--testing-and-tooling) · [Documentation (RTD)](#documentation-platform-read-the-docs) · [Phase 5](#phase-5--ecosystem-expansion) · [Vision](#long-term-vision)
+**Contents:** [Release index](#release-index) · [Phase 2 backlog & themes](#phase-2-backlog-near-term-themes) · [Patterns](#patterns-from-react-ergonomics-non-vdom-rerun-native) · [Phase 0](#phase-0-foundation) · [Phase 1](#phase-1-mvp) · [Phase 2](#phase-2-application-features) · [Phase 3](#phase-3-data-application-toolkit) · [Phase 4](#phase-4-testing-and-tooling) · [Documentation (RTD)](#documentation-platform-read-the-docs) · [Phase 5](#phase-5-ecosystem-expansion) · [Vision](#long-term-vision)
 
 ---
 
@@ -24,7 +24,7 @@ _Last updated: 2026-05-13 (0.11.0 Phase 4 tooling slice)._
 | Phase 1 — MVP | In progress | **0.1.0** core tree + state; **0.2.0** Pydantic + stub extras; deeper memoization / `streamlit-extras` curation still open. |
 | Phase 2 — Application | **Complete** (0.9.0) | **Shipped through 0.9.0:** navigation sections (**`page_links_sidebar_sections`**, **`multipage_sidebar_nav`**), routing clears/batch (**`clear_route`**, **`update_query_params`**, …), **bool** + layout forms (**`docs/PHASE2_FORMS.md`**), **`[ui]`** (**Stoggle**, **TaggerRow**, **MentionChip**), **`dismiss_tasks`**, composite **example** **`phase2_composite_demo.py`**, Phase 2 doc reconciliation. **0.10.0+** adds **`streamtree init --template`** scaffolds (Phase 3). Stretch: heavier opinionated **`App`** + **`Routes`** product templates; alternate auth protocols → backlog. |
 | Phase 3 — Data toolkit | **Complete** (0.10.0) | **Shipped through 0.10.0:** CRUD helpers, subtree memo, deferred fragments, perf/debug counters, ordered **`submit_many`** helper, exploration + enterprise protocol modules, **`streamtree init --template`**, docs and demos. Stretch (deeper admin frameworks, heavier analytics) → Phase **4** / app-specific layers. |
-| Phase 4 — Tooling | **Complete** (0.11.0) | **`streamtree tree`** / **`preview`** / **`serve`**, **`doctor --verbose`**, **`testing.viz`**, **`testing.introspection`**, **`testing.apptest`**, **`asyncio.summarize_async_tasks`**, **`debug_render_path`**; **MkDocs** + **mkdocstrings** API pages; **`.readthedocs.yml`**. **Docs — RTD:** site config in-repo; **PyPI `Documentation`** URL points at **RTD `stable`**. Stretch (Storybook-style visual regression) remains backlog. **Backlog:** imperative **Streamlit codegen** (virtual **`Element`** tree → readable **`st.*`** / context-manager Python) for docs, migration, and debugging — see [Phase 4](#phase-4--testing-and-tooling). |
+| Phase 4 — Tooling | **Complete** (0.11.0) | **`streamtree tree`** / **`preview`** / **`serve`**, **`doctor --verbose`**, **`testing.viz`**, **`testing.introspection`**, **`testing.apptest`**, **`asyncio.summarize_async_tasks`**, **`debug_render_path`**; **MkDocs** + **mkdocstrings** API pages; **`.readthedocs.yml`**. **Docs — RTD:** site config in-repo; **PyPI `Documentation`** URL points at **RTD `stable`**. Stretch (Storybook-style visual regression) remains backlog. **Backlog:** imperative **Streamlit codegen** (virtual **`Element`** tree → readable **`st.*`** / context-manager Python) for docs, migration, and debugging — see [Phase 4](#phase-4-testing-and-tooling). |
 | Docs — Read the Docs | In progress | **`.readthedocs.yml`** + **PyPI `Documentation`** URL (**`stable`**); manual, guides, and API reference expand over releases ([Documentation platform](#documentation-platform-read-the-docs)). |
 
 ### 0.11.0 (shipped)
@@ -252,7 +252,7 @@ The bullets below are **delivered** today; per-version pins and changelog prose 
 
 ### Release notes
 
-Shipped scope for **0.2.0** through **0.9.0** is in the [Release index](#release-index) and subsections above. **Stretch** work is in the [backlog](#phase-2-backlog--near-term-themes) and [PHASE2_TAIL.md](./PHASE2_TAIL.md).
+Shipped scope for **0.2.0** through **0.9.0** is in the [Release index](#release-index) and subsections above. **Stretch** work is in the [backlog](#phase-2-backlog-near-term-themes) and [PHASE2_TAIL.md](./PHASE2_TAIL.md).
 
 ### Optional dependency alignment
 
@@ -335,7 +335,7 @@ Phase 2 **application** deliverables from the original charter are **closed** as
 
 **API reference:** autodoc (Sphinx or MkDocs/mkdocstrings—decision in-repo); intersphinx to Streamlit / Pydantic / stdlib; stable per-symbol URLs.
 
-**Streamlit equivalent (future):** optional generated **`st.*`** blocks next to StreamTree snippets once **imperative Streamlit codegen** lands (Phase 4 backlog — [Testing and tooling](#phase-4--testing-and-tooling)).
+**Streamlit equivalent (future):** optional generated **`st.*`** blocks next to StreamTree snippets once **imperative Streamlit codegen** lands (Phase 4 backlog — [Testing and tooling](#phase-4-testing-and-tooling)).
 
 **Operations:** stable vs **latest** policy tied to tags/PyPI; **PR doc builds** with fail-on-broken-links where feasible; contributor preview + prose styleguide.
 

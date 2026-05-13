@@ -1,0 +1,21 @@
+/* StreamTree docs — light touch on Material defaults */
+:root {
+  --streamtree-accent: #4db6ac;
+}
+
+[data-md-color-scheme="default"] {
+  --md-accent-fg-color: var(--streamtree-accent);
+}
+
+[data-md-color-scheme="slate"] {
+  --md-accent-fg-color: #80cbc4;
+}
+
+/* Slightly roomier line length for long-form guides */
+.md-typeset {
+  font-size: 0.95rem;
+}
+
+.md-typeset h1 {
+  font-weight: 600;
+}

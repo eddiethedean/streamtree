@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`docs/EXAMPLES.md`:** MkDocs / Read the Docs page with **embedded full source** for every **`examples/*.py`** and **`examples/streamtree_run_demo.md`** (via **`pymdownx.snippets`**).
 - **`docs/recipes/`:** Cookbook pages (first app, state, forms, routing, async, multipage, shell/theme, layouts, data extras, CRUD, auth, CLI, portals, organization, observability, Streamlit interop).
+- **MkDocs Material:** **`mkdocs-material`** theme, tabbed nav (**Home**, **Examples**, **Recipes**, **Guides**, **API reference**), extended Markdown (**admonitions**, **details**, **tabbed**, **highlight**, **emoji**, **tables**), **`docs/getting-started.md`**, redesigned **`docs/index.md`**, **`docs/stylesheets/extra.css`**, **`site_url`** / **`edit_uri`**; **Guides** split into **Design & roadmap** vs **Operations**; nested **API reference**; **ROADMAP** internal anchors updated for Material heading slugs.
 
 ## [0.10.0] — 2026-05-13
 

@@ -2,9 +2,9 @@
 
 Cookbook-style patterns you can copy, adapt, and ship. These pages focus on **how** to
 assemble StreamTree for common product shapes. For architecture and dependency rules,
-see the **Guides** section (Plan, Roadmap, Dependency strategy, Performance, Phase 2/3
+see **Guides → Design & roadmap** (Plan, Roadmap, Dependency strategy, Performance, Phase 2/3
 docs). For **every line** of each runnable script under `examples/`, see
-**[Examples (full source)](../EXAMPLES.md)**.
+**[Examples (full source)](../EXAMPLES.md)**. New to the project? Start at **[Welcome](../index.md)** and **[Getting started](../getting-started.md)**.
 
 ## Quick map
 

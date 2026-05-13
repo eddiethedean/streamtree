@@ -1,21 +1,50 @@
 # Static doc site (MkDocs). Run: uv run python -m mkdocs build --strict
 site_name: StreamTree
 site_description: Declarative, typed composition for Streamlit.
+site_url: https://streamtree.readthedocs.io/en/stable/
 repo_url: https://github.com/streamtree-dev/streamtree
+repo_name: streamtree-dev/streamtree
+edit_uri: edit/main/docs/
 
 docs_dir: docs
 site_dir: site
 
 strict: true
 
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/streamtree-dev/streamtree
+      name: StreamTree on GitHub
+
+extra_css:
+  - stylesheets/extra.css
+
 markdown_extensions:
+  - tables
+  - attr_list
+  - md_in_html
+  - admonition
+  - pymdownx.details
   - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span__
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.snippets:
       base_path: ["."]
       check_paths: true
 
 plugins:
-  - search
+  - search:
+      separator: '[\s\-_]+'
   - mkdocstrings:
       handlers:
         python:
@@ -25,11 +54,39 @@ plugins:
             show_source: false
 
 theme:
-  name: readthedocs
+  name: material
+  language: en
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - toc.follow
+    - content.code.copy
+    - search.suggest
+    - search.highlight
 
 nav:
-  - Home: index.md
-  - Examples (full source): EXAMPLES.md
+  - Home:
+      - Welcome: index.md
+      - Getting started: getting-started.md
+      - Changelog: CHANGELOG.md
+  - Examples: EXAMPLES.md
   - Recipes:
       - Overview: recipes/README.md
       - First app & components: recipes/first-app-and-components.md
@@ -48,21 +105,24 @@ nav:
       - Portals & deferred UI: recipes/portals-and-deferred.md
       - Organizing large apps: recipes/organizing-large-apps.md
       - Observability & ops: recipes/observability-and-ops.md
-  - Changelog: CHANGELOG.md
-  - Testing & debugging: TESTING_AND_DEBUG.md
   - Guides:
-      - Plan: PLAN.md
-      - Roadmap: ROADMAP.md
-      - Dependency strategy: DEPENDENCY_STRATEGY.md
-      - Performance: PERFORMANCE.md
-      - Phase 3 CRUD patterns: PHASE3_CRUD.md
-      - Phase 2 tail: PHASE2_TAIL.md
-      - Phase 2 portals & prefetch: PHASE2_PORTALS_AND_PREFETCH.md
-      - Phase 2 form layout: PHASE2_FORMS.md
+      - Design & roadmap:
+          - Plan: PLAN.md
+          - Roadmap: ROADMAP.md
+          - Dependency strategy: DEPENDENCY_STRATEGY.md
+          - Performance: PERFORMANCE.md
+          - Phase 2 tail: PHASE2_TAIL.md
+          - Phase 2 portals & prefetch: PHASE2_PORTALS_AND_PREFETCH.md
+          - Phase 2 form layout: PHASE2_FORMS.md
+          - Phase 3 CRUD patterns: PHASE3_CRUD.md
+      - Operations:
+          - Testing & debugging: TESTING_AND_DEBUG.md
   - API reference:
-      - Testing: reference/testing_api.md
-      - Introspection: reference/introspection_api.md
-      - Async tasks: reference/asyncio_api.md
-      - Core context: reference/core_api.md
-      - AppTest: reference/apptest_api.md
-      - CLI helpers: reference/cli_helpers.md
+      - Testing & trees:
+          - Testing: reference/testing_api.md
+          - Introspection: reference/introspection_api.md
+          - AppTest: reference/apptest_api.md
+      - Runtime & CLI:
+          - Async tasks: reference/asyncio_api.md
+          - Core context: reference/core_api.md
+          - CLI helpers: reference/cli_helpers.md
