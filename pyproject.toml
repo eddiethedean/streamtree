@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "streamtree"
-version = "0.7.1"
+version = "0.8.0"
 description = "StreamTree: declarative, typed composition for Streamlit."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -32,9 +32,9 @@ dependencies = [
 streamtree = "streamtree.cli:main"
 
 [project.optional-dependencies]
-# Stub extras (see docs/DEPENDENCY_STRATEGY.md); wrappers ship in later releases.
-tables = []
-charts = []
+# Optional extras (see docs/DEPENDENCY_STRATEGY.md).
+tables = ["streamlit-aggrid>=0.3.0"]
+charts = ["plotly>=5.18.0"]
 ui = ["streamlit-extras>=0.4.3"]
 auth = ["streamlit-authenticator>=0.3.3"]
 asyncio = []
@@ -47,7 +47,13 @@ pages = []
 # Stdlib ``streamtree.helpers.runner`` ships in the default install; this extra is metadata-only for now.
 runner = []
 # Combined: pip install "streamtree[tables,charts,ui,auth,asyncio,async,cli]" (meta-extra omitted; names like "cli" are PyPI packages in lists).
-all = []
+all = [
+  "streamlit-aggrid>=0.3.0",
+  "plotly>=5.18.0",
+  "streamlit-extras>=0.4.3",
+  "streamlit-authenticator>=0.3.3",
+  "typer>=0.12.3",
+]
 dev = [
   "pytest>=7.4.0",
   "pytest-cov>=4.1.0",
@@ -58,6 +64,8 @@ dev = [
   "typer>=0.12.3",
   "streamlit-authenticator>=0.3.3",
   "streamlit-extras>=0.4.3",
+  "streamlit-aggrid>=0.3.0",
+  "plotly>=5.18.0",
 ]
 
 [project.urls]

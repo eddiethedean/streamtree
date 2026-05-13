@@ -1,5 +1,6 @@
 """Declarative layout and widget primitives."""
 
+from streamtree.charts import Chart
 from streamtree.core.element import Element, Fragment, fragment
 from streamtree.elements.auth_gate import AuthGate
 from streamtree.elements.layout import (
@@ -35,6 +36,7 @@ from streamtree.elements.widgets import (
     TextInput,
     Title,
 )
+from streamtree.tables import DataGrid
 from streamtree.theme import Theme, ThemeRoot
 
 __all__ = [
@@ -44,7 +46,9 @@ __all__ = [
     "Checkbox",
     "ColoredHeader",
     "Columns",
+    "Chart",
     "DataFrame",
+    "DataGrid",
     "Dialog",
     "Divider",
     "Element",

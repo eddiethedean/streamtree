@@ -33,9 +33,10 @@ StreamTree is an **architecture layer** for Streamlit, not a React-style web fra
 - **Optional UI extras (0.6+)** — **`pip install "streamtree[ui]"`**: **`ColoredHeader`**, **`VerticalSpaceLines`** (curated **`streamlit-extras`** wrappers).
 - **Overlays (0.6+)** — **`Dialog`** / **`Popover`** elements mapped to **`st.dialog`** / **`st.popover`**. On older Streamlit builds without **`st.dialog`**, **`Dialog`** shows a warning and renders its children **inline** on the page (not a modal); **`Popover`** falls back to **`st.expander`**.
 - **Interop** — Inside `@component`, your function body runs during render; you may call `st.*` (columns, metrics, charts, third-party components) and still return an element tree, or `fragment()` when the subtree is fully imperative.
+- **Data toolkit (0.8+)** — **`pip install "streamtree[tables]"`**: **`DataGrid`** (streamlit-aggrid); **`pip install "streamtree[charts]"`**: **`Chart`** (Plotly via **`st.plotly_chart`**); **`streamtree.loading.match_task`** for declarative loading / ready / error subtrees from **`TaskHandle`**; **`routing.sync_query_value`** / **`set_query_value`** for URL-backed filter strings. See [docs/PERFORMANCE.md](docs/PERFORMANCE.md).
 - **Quality** — Pydantic v2 in the default install, typing-first APIs, and `render_to_tree` for structural tests.
 
-Optional extras: **`[tables]`**, **`[charts]`** remain stubs; **`[ui]`** and **`[auth]`** pin **`streamlit-extras`** and **`streamlit-authenticator`** (0.6+). **`[cli]`** adds **Typer** and the **`streamtree`** console script (`run`, `doctor`, `init`). **`[asyncio]`** / **`[async]`**, **`[pages]`**, and **`[runner]`** remain metadata-oriented. See [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md). The `streamtree.asyncio` module, **`streamtree.helpers.runner`**, and **`streamtree.helpers.pages`** ship in the default package.
+Optional extras: **`[tables]`** pins **`streamlit-aggrid`**; **`[charts]`** pins **`plotly`**. **`[ui]`** and **`[auth]`** pin **`streamlit-extras`** and **`streamlit-authenticator`** (0.6+). **`[cli]`** adds **Typer** and the **`streamtree`** console script (`run`, `doctor`, `init`). **`[asyncio]`** / **`[async]`**, **`[pages]`**, and **`[runner]`** remain metadata-oriented. See [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md). The `streamtree.asyncio` module, **`streamtree.helpers.runner`**, and **`streamtree.helpers.pages`** ship in the default package.
 
 ## Requirements
 
@@ -44,10 +45,12 @@ Python **3.10+**, with **Streamlit ≥ 1.33** (for **`st.dialog`** / **`st.popov
 ## Installation
 
 ```bash
-pip install streamtree==0.7.1
+pip install streamtree==0.8.0
 pip install "streamtree[cli]"   # Typer + ``streamtree run`` / ``doctor`` / ``init``
 pip install "streamtree[auth]"  # streamlit-authenticator
 pip install "streamtree[ui]"    # streamlit-extras wrappers
+pip install "streamtree[tables]"  # streamlit-aggrid + ``DataGrid``
+pip install "streamtree[charts]"  # plotly + ``Chart``
 ```
 
 From a clone, with dev dependencies:
@@ -93,6 +96,9 @@ streamlit run examples/numeric_nav_demo.py
 streamlit run examples/pages_helpers_demo.py
 streamlit run examples/overlay_demo.py
 streamlit run examples/auth_demo.py
+streamlit run examples/datagrid_demo.py
+streamlit run examples/chart_demo.py
+streamlit run examples/async_loader_demo.py
 # With Typer installed (``pip install "streamtree[cli]"``):
 streamtree run examples/counter.py
 ```
@@ -196,7 +202,8 @@ Use **`streamtree.helpers.pages.discover_pages(__file__)`** to list scripts unde
 | [Roadmap](https://github.com/streamtree-dev/streamtree/blob/main/docs/ROADMAP.md) | Phased delivery and release index |
 | [Phase 2 tail](https://github.com/streamtree-dev/streamtree/blob/main/docs/PHASE2_TAIL.md) | Grooming after **0.6.0** (navigation, asyncio, forms) |
 | [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md) | Optional extras, **default-install** helpers (`runner`, `pages`), and CI typing notes |
-| [CHANGELOG](https://github.com/streamtree-dev/streamtree/blob/main/CHANGELOG.md) | Release history (e.g. **0.7.1** patch; **0.7.0** asyncio orchestration; **0.6.0** `init`, overlays) |
+| [Performance](https://github.com/streamtree-dev/streamtree/blob/main/docs/PERFORMANCE.md) | Memoization, background work, URL filter params, optional data extras |
+| [CHANGELOG](https://github.com/streamtree-dev/streamtree/blob/main/CHANGELOG.md) | Release history (e.g. **0.8.0** data toolkit; **0.7.1** patch; **0.7.0** asyncio orchestration; **0.6.0** `init`, overlays) |
 
 ## Contributing
 
@@ -214,9 +221,9 @@ Equivalent with **pip**: `pip install -e ".[dev]"`, then `ruff`, `ty check src`,
 
 ## Releases
 
-Before tagging **`v0.7.1`** (or any **`v*.*.*`** release), confirm **`uv build`** succeeds, **`uv run pytest`** passes with coverage, and **`pyproject.toml`**, **`streamtree.__version__`**, **`tests/test_package_meta.py`**, and **`CHANGELOG.md`** all agree on the version.
+Before tagging **`v0.8.0`** (or any **`v*.*.*`** release), confirm **`uv build`** succeeds, **`uv run pytest`** passes with coverage, and **`pyproject.toml`**, **`streamtree.__version__`**, **`tests/test_package_meta.py`**, and **`CHANGELOG.md`** all agree on the version.
 
-**Automated:** Add a **`PYPI_API_TOKEN`** secret to the repository. When `main` is green, push a tag of the form **`v0.7.1`**. The [release workflow](https://github.com/streamtree-dev/streamtree/blob/main/.github/workflows/release.yml) runs lint, type check, pytest (including coverage), builds with `uv build`, and publishes to PyPI.
+**Automated:** Add a **`PYPI_API_TOKEN`** secret to the repository. When `main` is green, push a tag of the form **`v0.8.0`**. The [release workflow](https://github.com/streamtree-dev/streamtree/blob/main/.github/workflows/release.yml) runs lint, type check, pytest (including coverage), builds with `uv build`, and publishes to PyPI.
 
 **Manual:** `uv build` (or `python -m build`), then upload `dist/` with **twine** or **`uv publish`**. Keep `pyproject.toml`, `streamtree.__version__`, `tests/test_package_meta.py`, and `CHANGELOG.md` in sync when cutting a release.
 

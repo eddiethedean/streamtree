@@ -8,7 +8,7 @@ from unittest.mock import patch
 import pytest
 
 from streamtree import routing as routing_mod
-from streamtree.routing import set_route, sync_route
+from streamtree.routing import set_query_value, set_route, sync_query_value, sync_route
 
 _SK_ROUTE = "streamtree.routing.active.route"
 
@@ -149,6 +149,71 @@ def test_first_returns_none_for_none() -> None:
     assert routing_mod._first(None) is None
 
 
+_SK_Q = "streamtree.query.value.q"
+
+
+def test_sync_query_value_reads_url() -> None:
+    st = SimpleNamespace(session_state={}, query_params={"q": "hello"})
+    with patch("streamtree.routing.st", st):
+        assert sync_query_value("", param="q") == "hello"
+    assert st.session_state[_SK_Q] == "hello"
+
+
+def test_sync_query_value_default_writes_url() -> None:
+    qp: dict[str, str] = {}
+    st = SimpleNamespace(session_state={}, query_params=qp)
+    with patch("streamtree.routing.st", st):
+        assert sync_query_value("all", param="q") == "all"
+    assert st.session_state[_SK_Q] == "all"
+    assert qp["q"] == "all"
+
+
+def test_sync_query_value_empty_string_from_url() -> None:
+    st = SimpleNamespace(session_state={}, query_params={"q": ""})
+    with patch("streamtree.routing.st", st):
+        assert sync_query_value("fallback", param="q") == ""
+    assert st.session_state[_SK_Q] == ""
+
+
+def test_sync_query_value_uses_session_when_url_missing() -> None:
+    qp: dict[str, str] = {}
+    st = SimpleNamespace(session_state={_SK_Q: "saved"}, query_params=qp)
+    with patch("streamtree.routing.st", st):
+        assert sync_query_value("def", param="q") == "saved"
+    assert qp["q"] == "saved"
+
+
+def test_set_query_value_coerces_and_sets_both() -> None:
+    qp: dict[str, str] = {}
+    st = SimpleNamespace(session_state={}, query_params=qp)
+    with patch("streamtree.routing.st", st):
+        set_query_value(42, param="n")
+    assert qp["n"] == "42"
+    assert st.session_state["streamtree.query.value.n"] == "42"
+
+
+def test_sync_query_value_empty_query_list() -> None:
+    st = SimpleNamespace(session_state={}, query_params={"q": []})
+    with patch("streamtree.routing.st", st):
+        assert sync_query_value("d", param="q") == ""
+    assert st.session_state["streamtree.query.value.q"] == ""
+
+
+def test_sync_query_value_query_as_list_strips() -> None:
+    st = SimpleNamespace(session_state={}, query_params={"q": ["  hi  "]})
+    with patch("streamtree.routing.st", st):
+        assert sync_query_value("", param="q") == "hi"
+    assert st.session_state["streamtree.query.value.q"] == "hi"
+
+
+def test_two_query_params_independent() -> None:
+    qp = {"a": "1", "b": "2"}
+    st = SimpleNamespace(session_state={}, query_params=qp)
+    with patch("streamtree.routing.st", st):
+        assert sync_query_value("", param="a") == "1"
+        assert sync_query_value("", param="b") == "2"
+
+
 @pytest.mark.parametrize(
     ("fn", "kwargs"),
     [
@@ -160,6 +225,10 @@ def test_first_returns_none_for_none() -> None:
         (set_route, {"name": "  ", "param": "route"}),
         (set_route, {"name": "home", "param": ""}),
         (set_route, {"name": "home", "param": "  "}),
+        (sync_query_value, {"default": "x", "param": ""}),
+        (sync_query_value, {"default": "x", "param": "  "}),
+        (set_query_value, {"value": "x", "param": ""}),
+        (set_query_value, {"value": "x", "param": "  "}),
     ],
 )
 def test_routing_rejects_blank_strings(

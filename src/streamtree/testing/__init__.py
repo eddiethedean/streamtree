@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from streamtree.elements.auth_gate import AuthGate
+from streamtree.charts import Chart
 from streamtree.core.element import ComponentCall, Element, Fragment
+from streamtree.elements.auth_gate import AuthGate
 from streamtree.elements.layout import (
     Card,
     Columns,
@@ -39,6 +40,7 @@ from streamtree.elements.widgets import (
     TextInput,
     Title,
 )
+from streamtree.tables import DataGrid
 from streamtree.theme import ThemeRoot
 
 __all__ = ["render_to_tree"]
@@ -256,6 +258,10 @@ def _node(el: Element, *, expand_components: bool) -> dict[str, Any]:
         return {"kind": "Checkbox", "key": el.key, "label": el.label}
     if isinstance(el, DataFrame):
         return {"kind": "DataFrame", "key": el.key}
+    if isinstance(el, DataGrid):
+        return {"kind": "DataGrid", "key": el.key}
+    if isinstance(el, Chart):
+        return {"kind": "Chart", "key": el.key}
     if isinstance(el, Image):
         return {"kind": "Image", "key": el.key}
 

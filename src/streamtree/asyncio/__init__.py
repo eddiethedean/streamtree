@@ -32,6 +32,13 @@ task it sets ``cancel_requested``; the worker should poll :func:`is_task_cancel_
 and then call :func:`complete_cancelled` when exiting early. If the worker finishes
 normally instead, **done** / **error** wins over a late cancel request (the normal
 completion path clears the cancel flag).
+
+Composition with trees
+------------------------
+
+Use :func:`submit_many` for parallel independent tasks. For declarative loading branches,
+:func:`streamtree.loading.match_task` maps a :class:`TaskHandle` ``status`` to
+``loading`` / ``ready`` / ``error`` element subtrees (see ``examples/async_loader_demo.py``).
 """
 
 from __future__ import annotations

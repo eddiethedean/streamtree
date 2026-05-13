@@ -6,7 +6,7 @@ import streamtree
 
 
 def test_version_matches_release_series() -> None:
-    assert streamtree.__version__ == "0.7.1"
+    assert streamtree.__version__ == "0.8.0"
 
 
 def test_public_exports_are_importable() -> None:
@@ -31,3 +31,20 @@ def test_asyncio_and_forms_submodules_exposed() -> None:
     assert hasattr(streamtree.forms, "bind_numeric_fields")
     assert hasattr(streamtree.forms, "number_inputs")
     assert hasattr(streamtree.forms, "NumericStateVar")
+
+
+def test_loading_submodule_exposed() -> None:
+    assert hasattr(streamtree, "loading")
+    assert hasattr(streamtree.loading, "match_task")
+
+
+def test_tables_and_charts_submodules_exposed() -> None:
+    assert hasattr(streamtree, "tables")
+    assert hasattr(streamtree.tables, "DataGrid")
+    assert hasattr(streamtree, "charts")
+    assert hasattr(streamtree.charts, "Chart")
+
+
+def test_routing_query_helpers() -> None:
+    assert hasattr(streamtree.routing, "sync_query_value")
+    assert hasattr(streamtree.routing, "set_query_value")

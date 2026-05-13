@@ -1780,6 +1780,15 @@ wheels = [
 ]
 
 [[package]]
+name = "python-decouple"
+version = "3.8"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e1/97/373dcd5844ec0ea5893e13c39a2c67e7537987ad8de3842fe078db4582fa/python-decouple-3.8.tar.gz", hash = "sha256:ba6e2657d4f376ecc46f77a3a615e058d93ba5e465c01bbe57289bfb7cce680f", size = 9612, upload-time = "2023-03-01T19:38:38.143Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a2/d4/9193206c4563ec771faf2ccf54815ca7918529fe81f6adb22ee6d0e06622/python_decouple-3.8-py3-none-any.whl", hash = "sha256:d0d45340815b25f4de59c974b855bb38d03151d81b037d9e3f463b0c9f8cbd66", size = 9947, upload-time = "2023-03-01T19:38:36.015Z" },
+]
+
+[[package]]
 name = "python-multipart"
 version = "0.0.28"
 source = { registry = "https://pypi.org/simple" }
@@ -2128,6 +2137,21 @@ wheels = [
 ]
 
 [[package]]
+name = "streamlit-aggrid"
+version = "1.2.1.post2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "pandas", version = "3.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "python-decouple" },
+    { name = "streamlit" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/47/18/2b1e99ca2c803d920bbc1beb6a7c60a954f587e23a861dd44b57d00744d7/streamlit_aggrid-1.2.1.post2.tar.gz", hash = "sha256:ad186998894af9356d7fa1d6de9f324a376714583cccc31d87c8c003334089fc", size = 5669190, upload-time = "2025-12-29T14:00:34.187Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1a/dc/baec10d371834ca2fbf26a71289d73be79e031c734a9830d7cc2879aeb83/streamlit_aggrid-1.2.1.post2-py3-none-any.whl", hash = "sha256:a812274e69bc6dcdebdd390c2eca7d0502e90420b869d4abf9d74ca3af47bc51", size = 5732799, upload-time = "2025-12-29T14:00:30.524Z" },
+]
+
+[[package]]
 name = "streamlit-authenticator"
 version = "0.4.2"
 source = { registry = "https://pypi.org/simple" }
@@ -2159,7 +2183,7 @@ wheels = [
 
 [[package]]
 name = "streamtree"
-version = "0.7.1"
+version = "0.8.0"
 source = { editable = "." }
 dependencies = [
     { name = "pydantic" },
@@ -2168,22 +2192,37 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+all = [
+    { name = "plotly" },
+    { name = "streamlit-aggrid" },
+    { name = "streamlit-authenticator" },
+    { name = "streamlit-extras" },
+    { name = "typer" },
+]
 auth = [
     { name = "streamlit-authenticator" },
+]
+charts = [
+    { name = "plotly" },
 ]
 cli = [
     { name = "typer" },
 ]
 dev = [
     { name = "mypy" },
+    { name = "plotly" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-xdist" },
     { name = "ruff" },
+    { name = "streamlit-aggrid" },
     { name = "streamlit-authenticator" },
     { name = "streamlit-extras" },
     { name = "ty" },
     { name = "typer" },
+]
+tables = [
+    { name = "streamlit-aggrid" },
 ]
 ui = [
     { name = "streamlit-extras" },
@@ -2192,17 +2231,26 @@ ui = [
 [package.metadata]
 requires-dist = [
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.8.0" },
+    { name = "plotly", marker = "extra == 'all'", specifier = ">=5.18.0" },
+    { name = "plotly", marker = "extra == 'charts'", specifier = ">=5.18.0" },
+    { name = "plotly", marker = "extra == 'dev'", specifier = ">=5.18.0" },
     { name = "pydantic", specifier = ">=2.4.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.4.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
     { name = "pytest-xdist", marker = "extra == 'dev'", specifier = ">=3.5.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.2.0" },
     { name = "streamlit", specifier = ">=1.33.0" },
+    { name = "streamlit-aggrid", marker = "extra == 'all'", specifier = ">=0.3.0" },
+    { name = "streamlit-aggrid", marker = "extra == 'dev'", specifier = ">=0.3.0" },
+    { name = "streamlit-aggrid", marker = "extra == 'tables'", specifier = ">=0.3.0" },
+    { name = "streamlit-authenticator", marker = "extra == 'all'", specifier = ">=0.3.3" },
     { name = "streamlit-authenticator", marker = "extra == 'auth'", specifier = ">=0.3.3" },
     { name = "streamlit-authenticator", marker = "extra == 'dev'", specifier = ">=0.3.3" },
+    { name = "streamlit-extras", marker = "extra == 'all'", specifier = ">=0.4.3" },
     { name = "streamlit-extras", marker = "extra == 'dev'", specifier = ">=0.4.3" },
     { name = "streamlit-extras", marker = "extra == 'ui'", specifier = ">=0.4.3" },
     { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.30" },
+    { name = "typer", marker = "extra == 'all'", specifier = ">=0.12.3" },
     { name = "typer", marker = "extra == 'cli'", specifier = ">=0.12.3" },
     { name = "typer", marker = "extra == 'dev'", specifier = ">=0.12.3" },
     { name = "typing-extensions", specifier = ">=4.8.0" },

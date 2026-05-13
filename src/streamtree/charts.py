@@ -1,0 +1,48 @@
+"""Plotly charts behind ``pip install \"streamtree[charts]\"``."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any
+
+import streamlit as st
+
+from streamtree.core.element import Element
+
+
+@dataclass(frozen=True)
+class Chart(Element):
+    """Render a Plotly figure via ``st.plotly_chart`` (install the ``[charts]`` extra)."""
+
+    figure: Any = None
+    use_container_width: bool | None = True
+
+    def __init__(
+        self,
+        figure: Any,
+        *,
+        use_container_width: bool | None = True,
+        key: str | None = None,
+    ) -> None:
+        object.__setattr__(self, "key", key)
+        object.__setattr__(self, "figure", figure)
+        object.__setattr__(self, "use_container_width", use_container_width)
+
+
+def render_chart(el: Chart, *, widget_key: str) -> None:
+    try:
+        import plotly
+    except ImportError as exc:
+        raise ImportError(
+            'Chart requires plotly. Install with: pip install "streamtree[charts]"'
+        ) from exc
+
+    _ = plotly.__version__
+    st.plotly_chart(
+        el.figure,
+        use_container_width=el.use_container_width,
+        key=widget_key,
+    )
+
+
+__all__ = ["Chart", "render_chart"]

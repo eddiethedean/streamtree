@@ -18,7 +18,9 @@ from streamtree.elements import (
     Checkbox,
     ColoredHeader,
     Columns,
+    Chart,
     DataFrame,
+    DataGrid,
     Dialog,
     Divider,
     ErrorBoundary,
@@ -87,6 +89,7 @@ def _make_st(
     st.markdown = MagicMock()
     st.dataframe = MagicMock()
     st.image = MagicMock()
+    st.plotly_chart = MagicMock()
 
     if with_divider_attr:
         st.divider = MagicMock()
@@ -775,3 +778,19 @@ def test_render_vertical_space_import_error() -> None:
     ):
         with render_context("vs2"), pytest.raises(ImportError, match="streamtree\\[ui\\]"):
             rs.render_element(VerticalSpaceLines(), slot="0")
+
+
+def test_render_datagrid_and_chart_delegate_to_helpers() -> None:
+    st = _make_st()
+    fig = MagicMock()
+    with _patched_st(st):
+        with (
+            patch("streamtree.tables.render_datagrid") as rd,
+            patch("streamtree.charts.render_chart") as rc,
+        ):
+            with render_context("p3"):
+                rs.render_element(
+                    Page(VStack(DataGrid([{"a": 1}], key="g1"), Chart(fig, key="c1"))),
+                )
+        rd.assert_called_once()
+        rc.assert_called_once()

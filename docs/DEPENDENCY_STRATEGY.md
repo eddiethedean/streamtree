@@ -271,7 +271,7 @@ pages = []
 
 ---
 
-# Tables Extra
+# Tables Extra (shipped in 0.8.0)
 
 ```bash
 pip install streamtree[tables]
@@ -330,7 +330,7 @@ tables = [
 
 ---
 
-# Charts Extra
+# Charts Extra (Plotly MVP shipped in 0.8.0; Altair / echarts remain roadmap)
 
 ```bash
 pip install streamtree[charts]

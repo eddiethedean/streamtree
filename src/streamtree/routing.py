@@ -1,4 +1,4 @@
-"""URL query param ↔ session helpers for simple multi-page Streamlit apps."""
+"""URL query param ↔ session helpers (routes, filters, and arbitrary string params)."""
 
 from __future__ import annotations
 
@@ -29,6 +29,56 @@ def _first(v: object) -> str | None:
         return s or None
     s = str(v).strip()
     return s or None
+
+
+def _query_value_session_key(param: str) -> str:
+    """Session slot for a generic query param value (filters, sort keys, etc.)."""
+    return f"streamtree.query.value.{param}"
+
+
+def _coerce_query_string(raw: object) -> str:
+    """First query segment as a stripped string (may be empty)."""
+    if isinstance(raw, (list, tuple)):
+        if not raw:
+            return ""
+        return str(raw[0]).strip()
+    return str(raw).strip()
+
+
+def sync_query_value(default: str, *, param: str) -> str:
+    """Keep ``st.session_state`` and ``st.query_params[param]`` aligned for an arbitrary string.
+
+    Unlike :func:`sync_route`, ``default`` may be empty, and a present (possibly empty)
+    query value always wins: if ``param`` appears in the query string, its first segment
+    (after strip) is stored in session and returned.
+
+    Session key: ``streamtree.query.value.<param>``.
+    """
+    param = _validate_param(param)
+    sk = _query_value_session_key(param)
+
+    if param in st.query_params:
+        raw = st.query_params[param]
+        val = _coerce_query_string(raw)
+        st.session_state[sk] = val
+        return val
+
+    if sk in st.session_state:
+        val = str(st.session_state[sk])
+    else:
+        val = default
+        st.session_state[sk] = val
+
+    st.query_params[param] = val
+    return val
+
+
+def set_query_value(value: str, *, param: str) -> None:
+    """Set a query param and mirrored session value (coerced to ``str``)."""
+    param = _validate_param(param)
+    text = str(value)
+    st.session_state[_query_value_session_key(param)] = text
+    st.query_params[param] = text
 
 
 def sync_route(default: str, *, param: str = _DEFAULT_PARAM) -> str:
@@ -80,4 +130,4 @@ def set_route(name: str, *, param: str = _DEFAULT_PARAM) -> None:
     st.query_params[param] = name
 
 
-__all__ = ["set_route", "sync_route"]
+__all__ = ["set_query_value", "set_route", "sync_query_value", "sync_route"]

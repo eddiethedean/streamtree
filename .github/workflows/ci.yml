@@ -34,6 +34,7 @@ jobs:
         run: uv python install ${{ matrix.python-version }}
 
       - name: Sync dev environment
+        # ``[dev]`` includes optional UI/auth plus tables/charts deps for CI coverage.
         run: uv sync --frozen --python ${{ matrix.python-version }} --extra dev
 
       - name: Ruff format

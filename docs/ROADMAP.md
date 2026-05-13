@@ -23,9 +23,14 @@ _Last updated: 2026-05-13._
 | Phase 0 — Foundation | **Complete** | Package layout, Streamlit renderer, design docs in `docs/`. |
 | Phase 1 — MVP | In progress | **0.1.0** core tree + state; **0.2.0** Pydantic + stub extras; deeper memoization / `streamlit-extras` curation still open. |
 | Phase 2 — Application | In progress | **Shipped through 0.7.1:** same as **0.7.0** (asyncio orchestration in **0.7.0**); **0.7.1** README CI badge fix for fork. **Next:** navigation polish, portals, more **`streamlit-extras`** names, further async orchestration, **`streamtree init`** templates — see [PHASE2_TAIL.md](./PHASE2_TAIL.md). |
-| Phase 3 — Data toolkit | Planned | Tables, charts, performance playbooks; follows Phase 2. |
+| Phase 3 — Data toolkit | In progress | **0.8.0:** **`[tables]`** / **`DataGrid`**, **`[charts]`** / **`Chart`**, **`sync_query_value`**, **`match_task`**, **`docs/PERFORMANCE.md`**. **Next:** richer CRUD patterns, chart breadth (Altair / echarts), deferred regions, performance hardening. |
 | Phase 4 — Tooling | Planned | Testing, dev introspection; **`streamtree` CLI** MVP shipped in **0.4.0**; overlaps RTD handoff. |
 | Docs — Read the Docs | Planned | [Manual, guides, API](#documentation-platform-read-the-docs); **stable** / **latest**; CI doc builds. |
+
+### 0.8.0 (shipped)
+
+- **`[tables]` / `[charts]`:** **`DataGrid`** (streamlit-aggrid) and **`Chart`** (Plotly); **`streamtree.loading.match_task`**; **`routing.sync_query_value`** / **`set_query_value`**; **`docs/PERFORMANCE.md`**; examples **`datagrid_demo`**, **`chart_demo`**, **`async_loader_demo`**.
+- **`[all]`** and **`[dev]`:** include aggrid + plotly pins for combined installs and CI coverage.
 
 ### 0.7.1 (shipped)
 

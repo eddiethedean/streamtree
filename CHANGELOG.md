@@ -5,6 +5,22 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] — 2026-05-13
+
+### Added
+
+- **`[tables]`** optional extra: **`streamlit-aggrid`** + **`DataGrid`** element and **`streamtree.tables.render_datagrid`** (lazy import with install hint).
+- **`[charts]`** optional extra: **`plotly`** + **`Chart`** element and **`streamtree.charts.render_chart`** (Plotly via **`st.plotly_chart`**).
+- **`streamtree.routing.sync_query_value`** / **`set_query_value`**: URL ↔ session helpers for arbitrary string query params (including empty defaults), complementing **`sync_route`** / **`set_route`**.
+- **`streamtree.loading.match_task`**: map **`TaskHandle.status`** to **`loading` / `ready` / `error` (and optional `cancelled`)** element subtrees.
+- **Examples:** **`examples/datagrid_demo.py`**, **`examples/chart_demo.py`**, **`examples/async_loader_demo.py`**.
+- **Docs:** [`docs/PERFORMANCE.md`](docs/PERFORMANCE.md) playbook for memoization, async work, URL filters, and optional data extras.
+
+### Changed
+
+- **`[all]`** meta-extra now lists **`streamlit-aggrid`**, **`plotly`**, and the existing optional CLI/auth/UI pins for convenience.
+- **`[dev]`** includes **`streamlit-aggrid`** and **`plotly`** so contributor / CI installs exercise optional render paths.
+
 ## [0.7.1] — 2026-05-13
 
 ### Changed

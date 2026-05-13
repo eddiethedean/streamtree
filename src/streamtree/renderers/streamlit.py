@@ -8,9 +8,9 @@ from typing import Any, cast
 
 import streamlit as st
 
-from streamtree.elements.auth_gate import AuthGate
 from streamtree.core.context import current_context, push_segment
 from streamtree.core.element import ComponentCall, Element, Fragment
+from streamtree.elements.auth_gate import AuthGate
 from streamtree.elements.layout import (
     Card,
     Columns,
@@ -49,6 +49,27 @@ from streamtree.state import FormState, StateVar, ToggleState
 from streamtree.theme import ThemeRoot, theme_css
 
 __all__ = ["render_element"]
+
+_DG_TYPE: type | None = None
+_CHART_TYPE: type | None = None
+
+
+def _datagrid_type() -> type:
+    global _DG_TYPE
+    if _DG_TYPE is None:
+        from streamtree.tables import DataGrid
+
+        _DG_TYPE = DataGrid
+    return _DG_TYPE
+
+
+def _chart_type() -> type:
+    global _CHART_TYPE
+    if _CHART_TYPE is None:
+        from streamtree.charts import Chart
+
+        _CHART_TYPE = Chart
+    return _CHART_TYPE
 
 
 def _coerce_open_flag(open_v: object) -> bool:
@@ -450,6 +471,18 @@ def render_element(el: Element, *, slot: str = "0") -> None:
         if el.height is not None:
             kw["height"] = el.height
         st.dataframe(el.data, **kw)
+        return
+
+    if isinstance(el, _datagrid_type()):
+        from streamtree.tables import DataGrid, render_datagrid
+
+        render_datagrid(cast(DataGrid, el), widget_key=_widget_key(el, "datagrid", slot))
+        return
+
+    if isinstance(el, _chart_type()):
+        from streamtree.charts import Chart, render_chart
+
+        render_chart(cast(Chart, el), widget_key=_widget_key(el, "chart", slot))
         return
 
     if isinstance(el, Image):
