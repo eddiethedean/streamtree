@@ -14,9 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Pin windows-2022: avoids GitHub NOTICE when windows-latest resolves to windows-2025
-        # (redirect to windows-2025-vs2026). See GitHub Actions runner-images changelog.
-        os: [ubuntu-latest, windows-2022, macos-latest]
+        # Pin VS2026 image; windows-latest was emitting redirect notices from windows-2025.
+        os: [ubuntu-latest, windows-2025-vs2026, macos-latest]
         python-version: ["3.10", "3.11", "3.12", "3.13"]
     env:
       # Otherwise `uv run` follows `.python-version` (3.11) and breaks non-3.11 matrix rows.
@@ -56,9 +55,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Pin windows-2022: avoids GitHub NOTICE when windows-latest resolves to windows-2025
-        # (redirect to windows-2025-vs2026). See GitHub Actions runner-images changelog.
-        os: [ubuntu-latest, windows-2022, macos-latest]
+        # Pin VS2026 image; windows-latest was emitting redirect notices from windows-2025.
+        os: [ubuntu-latest, windows-2025-vs2026, macos-latest]
     env:
       # Match ``uv sync`` interpreter; otherwise ``uv run`` follows ``.python-version`` and recreates a venv without ``--extra cli``.
       UV_PYTHON: "3.12"
