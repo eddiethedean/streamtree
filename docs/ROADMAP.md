@@ -16,16 +16,20 @@ This document tracks **product direction and phased delivery**. It aligns with [
 
 ## Release index
 
-_Last updated: 2026-05-12._
+_Last updated: 2026-05-13._
 
 | Track | Status | Notes |
 |-------|--------|--------|
 | Phase 0 — Foundation | **Complete** | Package layout, Streamlit renderer, design docs in `docs/`. |
 | Phase 1 — MVP | In progress | **0.1.0** core tree + state; **0.2.0** Pydantic + stub extras; deeper memoization / `streamlit-extras` curation still open. |
-| Phase 2 — Application | In progress | **Shipped through 0.7.0:** same as **0.6.0** plus **`streamtree.asyncio`** **`submit_many`**, cooperative cancel helpers, and stale-key docs (**0.7.0**). **Next:** navigation polish, portals, more **`streamlit-extras`** names, further async orchestration, **`streamtree init`** templates — see [PHASE2_TAIL.md](./PHASE2_TAIL.md). |
+| Phase 2 — Application | In progress | **Shipped through 0.7.1:** same as **0.7.0** (asyncio orchestration in **0.7.0**); **0.7.1** README CI badge fix for fork. **Next:** navigation polish, portals, more **`streamlit-extras`** names, further async orchestration, **`streamtree init`** templates — see [PHASE2_TAIL.md](./PHASE2_TAIL.md). |
 | Phase 3 — Data toolkit | Planned | Tables, charts, performance playbooks; follows Phase 2. |
 | Phase 4 — Tooling | Planned | Testing, dev introspection; **`streamtree` CLI** MVP shipped in **0.4.0**; overlaps RTD handoff. |
 | Docs — Read the Docs | Planned | [Manual, guides, API](#documentation-platform-read-the-docs); **stable** / **latest**; CI doc builds. |
+
+### 0.7.1 (shipped)
+
+- **README:** CI badge / Actions link target **`eddiethedean/streamtree`** (patch **0.7.1**).
 
 ### 0.7.0 (shipped)
 

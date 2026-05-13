@@ -6,7 +6,7 @@ import streamtree
 
 
 def test_version_matches_release_series() -> None:
-    assert streamtree.__version__ == "0.7.0"
+    assert streamtree.__version__ == "0.7.1"
 
 
 def test_public_exports_are_importable() -> None:

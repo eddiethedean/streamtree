@@ -44,7 +44,7 @@ Python **3.10+**, with **Streamlit ≥ 1.33** (for **`st.dialog`** / **`st.popov
 ## Installation
 
 ```bash
-pip install streamtree==0.7.0
+pip install streamtree==0.7.1
 pip install "streamtree[cli]"   # Typer + ``streamtree run`` / ``doctor`` / ``init``
 pip install "streamtree[auth]"  # streamlit-authenticator
 pip install "streamtree[ui]"    # streamlit-extras wrappers
@@ -196,7 +196,7 @@ Use **`streamtree.helpers.pages.discover_pages(__file__)`** to list scripts unde
 | [Roadmap](https://github.com/streamtree-dev/streamtree/blob/main/docs/ROADMAP.md) | Phased delivery and release index |
 | [Phase 2 tail](https://github.com/streamtree-dev/streamtree/blob/main/docs/PHASE2_TAIL.md) | Grooming after **0.6.0** (navigation, asyncio, forms) |
 | [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md) | Optional extras, **default-install** helpers (`runner`, `pages`), and CI typing notes |
-| [CHANGELOG](https://github.com/streamtree-dev/streamtree/blob/main/CHANGELOG.md) | Release history (e.g. **0.7.0** asyncio orchestration; **0.6.0** `init`, `AuthGate`, overlays) |
+| [CHANGELOG](https://github.com/streamtree-dev/streamtree/blob/main/CHANGELOG.md) | Release history (e.g. **0.7.1** patch; **0.7.0** asyncio orchestration; **0.6.0** `init`, overlays) |
 
 ## Contributing
 
@@ -214,9 +214,9 @@ Equivalent with **pip**: `pip install -e ".[dev]"`, then `ruff`, `ty check src`,
 
 ## Releases
 
-Before tagging **`v0.7.0`** (or any **`v*.*.*`** release), confirm **`uv build`** succeeds, **`uv run pytest`** passes with coverage, and **`pyproject.toml`**, **`streamtree.__version__`**, **`tests/test_package_meta.py`**, and **`CHANGELOG.md`** all agree on the version.
+Before tagging **`v0.7.1`** (or any **`v*.*.*`** release), confirm **`uv build`** succeeds, **`uv run pytest`** passes with coverage, and **`pyproject.toml`**, **`streamtree.__version__`**, **`tests/test_package_meta.py`**, and **`CHANGELOG.md`** all agree on the version.
 
-**Automated:** Add a **`PYPI_API_TOKEN`** secret to the repository. When `main` is green, push a tag of the form **`v0.7.0`**. The [release workflow](https://github.com/streamtree-dev/streamtree/blob/main/.github/workflows/release.yml) runs lint, type check, pytest (including coverage), builds with `uv build`, and publishes to PyPI.
+**Automated:** Add a **`PYPI_API_TOKEN`** secret to the repository. When `main` is green, push a tag of the form **`v0.7.1`**. The [release workflow](https://github.com/streamtree-dev/streamtree/blob/main/.github/workflows/release.yml) runs lint, type check, pytest (including coverage), builds with `uv build`, and publishes to PyPI.
 
 **Manual:** `uv build` (or `python -m build`), then upload `dist/` with **twine** or **`uv publish`**. Keep `pyproject.toml`, `streamtree.__version__`, `tests/test_package_meta.py`, and `CHANGELOG.md` in sync when cutting a release.
 
