@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from typing import Any
 
@@ -89,15 +90,17 @@ def test_match_task_cancelled_falls_back_to_error() -> None:
     assert out.children[0].body == "E"
 
 
-def test_match_task_unknown_status_uses_loading() -> None:
-    out = match_task(
-        _FakeHandle("weird"),
-        loading=VStack(_t("L")),
-        ready=lambda x: VStack(_t("R")),
-        error=VStack(_t("E")),
-    )
+def test_match_task_unknown_status_uses_loading(caplog: pytest.LogCaptureFixture) -> None:
+    with caplog.at_level(logging.DEBUG, logger="streamtree.loading"):
+        out = match_task(
+            _FakeHandle("weird"),
+            loading=VStack(_t("L")),
+            ready=lambda x: VStack(_t("R")),
+            error=VStack(_t("E")),
+        )
     assert isinstance(out.children[0], Text)
     assert out.children[0].body == "L"
+    assert "unknown task status" in caplog.text and "weird" in caplog.text
 
 
 def test_match_task_done_ready_raises_propagates() -> None:

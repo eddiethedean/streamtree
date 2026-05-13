@@ -536,11 +536,11 @@ def render_element(el: Element, *, slot: str = "0") -> None:
             from streamtree.auth import build_authenticator
 
             auth = build_authenticator(el.config)
-        except ImportError:
+        except ImportError as exc:
             raise ImportError(
                 "AuthGate requires streamlit-authenticator. "
                 'Install with: pip install "streamtree[auth]"'
-            ) from None
+            ) from exc
         auth.login(location=el.login_location, key=el.login_key)
         if st.session_state.get("authentication_status"):
             render_element(el.child, slot=f"{slot}.auth_ok")
@@ -579,11 +579,11 @@ def render_element(el: Element, *, slot: str = "0") -> None:
             from streamlit_extras.colored_header import colored_header
 
             colored_header(el.label, description=el.description, color_name=el.color_name)
-        except ImportError:
+        except ImportError as exc:
             raise ImportError(
                 "ColoredHeader requires streamlit-extras. "
                 'Install with: pip install "streamtree[ui]"'
-            ) from None
+            ) from exc
         return
 
     if isinstance(el, VerticalSpaceLines):
@@ -591,11 +591,11 @@ def render_element(el: Element, *, slot: str = "0") -> None:
             from streamlit_extras.add_vertical_space import add_vertical_space
 
             add_vertical_space(el.num_lines)
-        except ImportError:
+        except ImportError as exc:
             raise ImportError(
                 "VerticalSpaceLines requires streamlit-extras. "
                 'Install with: pip install "streamtree[ui]"'
-            ) from None
+            ) from exc
         return
 
     raise TypeError(f"Unsupported element type: {type(el)!r}")

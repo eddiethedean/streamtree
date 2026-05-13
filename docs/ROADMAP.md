@@ -37,7 +37,7 @@ _Last updated: 2026-05-13._
 
 ### 0.7.1 (shipped)
 
-- **README:** CI badge / Actions link target **`eddiethedean/streamtree`** (patch **0.7.1**).
+- **README (0.7.1):** CI badge / Actions link target **`eddiethedean/streamtree`** (fork workflow visibility). **Current `main`:** badge targets **`streamtree-dev/streamtree`** to match canonical ``pyproject.toml`` URLs.
 
 ### 0.7.0 (shipped)
 

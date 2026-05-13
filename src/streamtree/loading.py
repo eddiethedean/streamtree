@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable
 from typing import Any, Protocol, TypeVar, runtime_checkable
 
 from streamtree.core.element import Element
+
+_LOGGER = logging.getLogger(__name__)
 
 T_co = TypeVar("T_co", covariant=True)
 
@@ -29,6 +32,8 @@ def match_task(
 
     Maps ``pending``, ``running``, and ``missing`` to ``loading``; ``done`` to ``ready(result())``;
     ``error`` to ``error``; ``cancelled`` to ``cancelled`` when provided, otherwise ``error``.
+    Any other ``status`` value is treated as ``loading`` and a debug log is emitted (unexpected
+    values may indicate a non-StreamTree handle or corrupted task state).
     """
     status = handle.status()
     if status in ("pending", "running", "missing"):
@@ -39,6 +44,7 @@ def match_task(
         return error
     if status == "cancelled":
         return error if cancelled is None else cancelled
+    _LOGGER.debug("match_task: unknown task status %r; using loading branch", status)
     return loading
 
 
