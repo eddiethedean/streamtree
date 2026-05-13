@@ -119,6 +119,16 @@ def test_increment_float_delta(mock_st: MagicMock) -> None:
             assert sv() == 2.0
 
 
+def test_increment_reseeds_when_session_key_missing(mock_st: MagicMock) -> None:
+    with patch("streamtree.state.st", mock_st):
+        with render_context("app"):
+            sv = state(5, key="reseed_inc")
+            assert sv() == 5
+            del mock_st.session_state[sv.key]
+            sv.increment(3)
+            assert sv() == 8
+
+
 def test_form_state_commit(mock_st: MagicMock) -> None:
     with patch("streamtree.state.st", mock_st):
         with render_context("app"):

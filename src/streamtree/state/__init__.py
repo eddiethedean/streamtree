@@ -40,6 +40,9 @@ class StateVar(Generic[T]):
         st.session_state[self._key] = fn(cast(T, st.session_state[self._key]))
 
     def increment(self, delta: int = 1) -> None:
+        """Add ``delta`` to numeric state; re-seeds from the initial default if the key was removed."""
+        if self._key not in st.session_state:
+            st.session_state[self._key] = self._default
         cur = cast(T, st.session_state[self._key])
         if not isinstance(cur, (int, float)):
             raise TypeError("increment() requires numeric state")

@@ -263,6 +263,10 @@ def render_element(el: Element, *, slot: str = "0") -> None:
                 with cols[i]:
                     render_element(ch, slot=f"{slot}.h{i}")
             return
+        if n == 0:
+            # Match no-gap empty HStack: never call ``st.columns`` with an empty weight list.
+            st.columns([1.0])
+            return
         weights: list[float] = []
         for i in range(n):
             weights.append(1.0)

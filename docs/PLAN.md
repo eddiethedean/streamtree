@@ -53,9 +53,8 @@ Per the dependency strategy, the base package should standardize on:
 | **streamlit** | Primary runtime and render target |
 | **pydantic** | Typed props, forms, validation, config models |
 | **typing-extensions** | Portable modern typing (when Python version warrants it) |
-| **streamlit-extras** | Curated building blocks (badges, metric cards, helpers); **expose only through StreamTree**, not as a re-export surface |
 
-**0.3.0:** `streamtree.asyncio` (stdlib thread MVP), `streamtree.app` / `render_app`, `streamtree.theme`, and expanded `streamtree.forms` string bindings—see [CHANGELOG.md](../CHANGELOG.md). **`streamlit-extras`** remains a documented hard-dependency target, not yet pinned in the default install.
+**0.3.0:** `streamtree.asyncio` (stdlib thread MVP), `streamtree.app` / `render_app`, `streamtree.theme`, and expanded `streamtree.forms` string bindings—see [CHANGELOG.md](../CHANGELOG.md). Curated third-party UI helpers (including **streamlit-extras** wrappers added in **0.6+**) stay behind optional extras per [DEPENDENCY_STRATEGY.md](./DEPENDENCY_STRATEGY.md), not in the default install.
 
 **0.4.0:** Optional **`[cli]`** (`streamtree run`, `streamtree doctor`), **`streamtree.helpers.runner`**, **`PageLink`** (Streamlit **≥ 1.30**), **`App`** `initial_sidebar_state` / `menu_items`, and numeric form helpers (`bind_numeric_fields`, `number_inputs`)—see [CHANGELOG.md](../CHANGELOG.md).
 

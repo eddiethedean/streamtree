@@ -181,7 +181,7 @@ def test_submit_passes_args_and_kwargs_to_fn() -> None:
         assert h.result() == 7
 
 
-def test_cancel_is_noop_when_not_pending() -> None:
+def test_cancel_running_requests_cooperative_cancel() -> None:
     st = SimpleNamespace(session_state={})
     sk = "streamtree.asyncio.task.job_running"
     st.session_state[sk] = {
@@ -189,13 +189,16 @@ def test_cancel_is_noop_when_not_pending() -> None:
         "result": None,
         "error": None,
         "progress": None,
+        "cancel_requested": False,
         "_submitted": True,
         "_lock": threading.Lock(),
     }
     h = TaskHandle(_session_key=sk)
     with patch("streamtree.asyncio.st", st):
         h.cancel()
-    assert st.session_state[sk]["status"] == "running"
+    box = st.session_state[sk]
+    assert box["status"] == "running"
+    assert box["cancel_requested"] is True
 
 
 def test_task_handle_status_coerces_non_str() -> None:

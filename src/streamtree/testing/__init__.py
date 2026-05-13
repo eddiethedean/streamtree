@@ -59,6 +59,11 @@ def render_to_tree(
     executed (no Streamlit context required). Set ``expand_components=True`` to
     expand them; callers must wrap execution in :func:`streamtree.core.context.render_context`
     and have an active Streamlit session (``st.session_state``) when components use ``state()``.
+
+    :class:`streamtree.elements.layout.Routes` nodes appear as metadata (``default``,
+    ``query_param``, ``route_names``) only; this helper does not call
+    :func:`streamtree.routing.sync_route` or embed the active child subtree—use
+    integration tests against Streamlit for routing behavior.
     """
     return _node(root, expand_components=expand_components)
 

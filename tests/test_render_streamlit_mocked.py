@@ -437,6 +437,25 @@ def test_render_hstack_empty() -> None:
             rs.render_element(HStack(), slot="0")
 
 
+def test_render_hstack_empty_with_gap_uses_non_empty_column_spec() -> None:
+    st = _make_st()
+    recorded: list[list[float]] = []
+
+    def columns_capture(spec: object, **kwargs: object) -> list[object]:
+        if isinstance(spec, (list, tuple)):
+            recorded.append([float(x) for x in spec])
+            n = len(spec)
+        else:
+            n = int(spec)  # type: ignore[arg-type]
+        return [nullcontext() for _ in range(max(n, 1))]
+
+    st.columns = columns_capture
+    with _patched_st(st):
+        with render_context("r"):
+            rs.render_element(HStack(gap="8px"), slot="0")
+    assert recorded == [[1.0]]
+
+
 def test_component_call_with_explicit_key() -> None:
     @component
     def K() -> Element:
