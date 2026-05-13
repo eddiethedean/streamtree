@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, ParamSpec, TypeVar
 
 from streamtree.core.context import render_context
 from streamtree.core.element import ComponentCall, Element
-from streamtree.renderers.streamlit import render_element as _render_streamlit
+from streamtree.renderers.streamlit import render as _render_streamlit_tree
 
 if TYPE_CHECKING:
     from streamtree.app import App
@@ -36,7 +36,7 @@ def component(fn: Callable[P, R]) -> Callable[P, ComponentCall]:
 def render(root: Element, *, context_root: str = "app") -> None:
     """Render a virtual element tree using the Streamlit backend."""
     with render_context(context_root):
-        _render_streamlit(root)
+        _render_streamlit_tree(root)
 
 
 def render_app(app: App, *, context_root: str = "app") -> None:
@@ -48,4 +48,4 @@ def render_app(app: App, *, context_root: str = "app") -> None:
         raise TypeError(f"render_app expects App, got {type(app)!r}")
     apply_page_config(app)
     with render_context(context_root):
-        _render_streamlit(app_root_element(app))
+        _render_streamlit_tree(app_root_element(app))

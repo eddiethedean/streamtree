@@ -22,10 +22,18 @@ _Last updated: 2026-05-13._
 |-------|--------|--------|
 | Phase 0 — Foundation | **Complete** | Package layout, Streamlit renderer, design docs in `docs/`. |
 | Phase 1 — MVP | In progress | **0.1.0** core tree + state; **0.2.0** Pydantic + stub extras; deeper memoization / `streamlit-extras` curation still open. |
-| Phase 2 — Application | In progress | **Shipped through 0.8.0:** **`helpers.page_links`**, **`asyncio.dismiss_task`**, **`SocialBadge`** / **`StyleMetricCards`** (`[ui]`), **`init --with-pages`** sidebar wiring. **Still open:** portals, imperative handles, route prefetch, broader **`streamlit-extras`** curation, layout form builder — see [PHASE2_TAIL.md](./PHASE2_TAIL.md). |
+| Phase 2 — Application | In progress | **Shipped through 0.9.0:** same as **0.8.0** plus **portals** / **`PortalMount`**, **`SplitView`**, **`helpers.prefetch_page_sources`**, **`forms_layout`**, **`BottomDock`** / **`FloatingActionButton`** (`[ui]`). **Docs:** [PHASE2_PORTALS_AND_PREFETCH.md](./PHASE2_PORTALS_AND_PREFETCH.md). **Still open:** deeper navigation, richer imperative handles where Streamlit allows — see [PHASE2_TAIL.md](./PHASE2_TAIL.md). |
 | Phase 3 — Data toolkit | In progress | **0.8.0:** **`[tables]`** / **`DataGrid`**, **`[charts]`** / **`Chart`**, **`sync_query_value`**, **`match_task`**, **`docs/PERFORMANCE.md`**. **Next:** richer CRUD patterns, chart breadth (Altair / echarts), deferred regions, performance hardening. |
 | Phase 4 — Tooling | In progress | **`streamtree.testing.render_to_tree`** (JSON tree snapshots) shipped; CI runs **pytest** (100% coverage), **ruff**, **ty** on **`src`**. **`[cli]`** ships **`run`** / **`doctor`** / **`init`** (incl. **`--with-pages`**, **0.8.0**). **Still open:** richer dev introspection, **`tree` / `preview`**-style CLI, RTD — see [Phase 4](#phase-4--testing-and-tooling). |
 | Docs — Read the Docs | Planned | [Manual, guides, API](#documentation-platform-read-the-docs); **stable** / **latest**; CI doc builds. |
+
+### 0.9.0 (shipped)
+
+- **Portals:** **`Portal`** / **`PortalMount`**, **`gather_portals`**, **`portal_render_context`** (renderer integration); design in [PHASE2_PORTALS_AND_PREFETCH.md](./PHASE2_PORTALS_AND_PREFETCH.md).
+- **Layout:** **`SplitView`** (pseudo-sidebar via columns).
+- **Multipage:** **`iter_page_entries`**, **`prefetch_page_sources`** (stdlib file read + optional **`compile`** check); documented in [PERFORMANCE.md](./PERFORMANCE.md).
+- **Forms:** **`streamtree.forms_layout`** — **`build_model_from_bindings`**, **`model_field_grid`** (row/column widget layout).
+- **`[ui]`:** **`BottomDock`**, **`FloatingActionButton`** (`streamlit-extras`).
 
 ### 0.8.0 (shipped)
 
@@ -202,7 +210,7 @@ StreamTree is **not** React and will **not** ship a browser VDOM. The list below
 
 - Production-grade apps on Streamlit: routing, resilience, theming, async slice, forms.
 
-### Shipped on the Phase 2 track (0.2.0–0.8.0)
+### Shipped on the Phase 2 track (0.2.0–0.9.0)
 
 The bullets below are **delivered** today; per-version pins and changelog prose live in the [Release index](#release-index) and [CHANGELOG.md](../CHANGELOG.md).
 
@@ -215,11 +223,13 @@ The bullets below are **delivered** today; per-version pins and changelog prose 
 - **Package surface:** **`helpers`** is exposed on the **`streamtree`** root package (**`streamtree.helpers`**).
 - **Optional auth:** **`AuthGate`** + **`[auth]`** (`streamlit-authenticator`).
 - **Overlays:** **`Dialog`**, **`Popover`** (Streamlit-native; version floor **1.33**).
-- **Optional UI extras:** **`[ui]`** — **`ColoredHeader`**, **`VerticalSpaceLines`** (**0.6.0**); **`SocialBadge`**, **`StyleMetricCards`** (**0.8.0**).
+- **Optional UI extras:** **`[ui]`** — **`ColoredHeader`**, **`VerticalSpaceLines`** (**0.6.0**); **`SocialBadge`**, **`StyleMetricCards`** (**0.8.0**); **`BottomDock`**, **`FloatingActionButton`** (**0.9.0**).
+- **Portals & layout targets (0.9.0):** **`Portal`** / **`PortalMount`**, **`SplitView`**, prefetch helpers — see [PHASE2_PORTALS_AND_PREFETCH.md](./PHASE2_PORTALS_AND_PREFETCH.md).
+- **Layout-aware forms (0.9.0):** **`streamtree.forms_layout`** — **`build_model_from_bindings`**, **`model_field_grid`**.
 
 ### Release notes
 
-Shipped scope for **0.2.0** through **0.8.0** is in the [Release index](#release-index) and subsections above. **Open** work is in the [backlog](#phase-2-backlog--near-term-themes) and [PHASE2_TAIL.md](./PHASE2_TAIL.md).
+Shipped scope for **0.2.0** through **0.9.0** is in the [Release index](#release-index) and subsections above. **Open** work is in the [backlog](#phase-2-backlog--near-term-themes) and [PHASE2_TAIL.md](./PHASE2_TAIL.md).
 
 ### Optional dependency alignment
 
@@ -231,7 +241,7 @@ Shipped scope for **0.2.0** through **0.8.0** is in the [Release index](#release
 
 Everything listed under **Shipped on the Phase 2 track** above is **closed** for those themes; items below are still **open**.
 
-- Deeper navigation framework, auth, portals, richer theme/forms/async as backlog clears.
+- Deeper navigation framework, auth, richer theme/forms/async as backlog clears.
 - Example apps for error boundaries + context + parallel loads + async UI branches.
 
 ---

@@ -5,6 +5,21 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] — 2026-05-13
+
+### Added
+
+- **`streamtree.portals`:** **`gather_portals`**, **`portal_render_context`**, **`take_portal_children`**; layout elements **`Portal`**, **`PortalMount`** (named-slot deferred rendering; see **`docs/PHASE2_PORTALS_AND_PREFETCH.md`**).
+- **`SplitView`** layout (narrow + main column strip, pseudo-sidebar without a second **`st.sidebar`**).
+- **`streamtree.helpers.pages`:** **`iter_page_entries`**, **`prefetch_page_sources`** (optional **`compile()`** syntax warm-up for page scripts without importing modules).
+- **`streamtree.forms_layout`:** **`model_field_grid`**, **`build_model_from_bindings`** for row/column Pydantic forms.
+- **`[ui]`** elements **`BottomDock`** (bottom container) and **`FloatingActionButton`** (floating action button) via **streamlit-extras**.
+- **Docs:** **`docs/PHASE2_PORTALS_AND_PREFETCH.md`** (Phase 2 portals / prefetch / form-layout contract).
+
+### Changed
+
+- **`streamtree.core.component.render` / `render_app`** now run the Streamlit backend’s **`render()`** wrapper so portal gather runs once per tree.
+
 ## [0.8.0] — 2026-05-13
 
 ### Added
@@ -175,6 +190,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Runnable example: `examples/counter.py`.
 - Design docs under `docs/` (plan, roadmap, dependency strategy).
 
+[0.9.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.9.0
 [0.8.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.8.0
 [0.7.1]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.7.1
 [0.7.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.7.0

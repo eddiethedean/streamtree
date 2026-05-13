@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import logging
 import re
-from collections.abc import Sequence
+from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -136,4 +136,52 @@ def page_links(
     )
 
 
-__all__ = ["PageEntry", "discover_pages", "list_page_entries", "page_links", "pages_dir_next_to"]
+def iter_page_entries(pages_dir: str | Path) -> Iterator[PageEntry]:
+    """Yield discoverable page scripts under ``pages_dir`` in sidebar order (lazy).
+
+    Skips non-``.py`` files, ``__init__.py``, and names starting with ``_``. If
+    ``pages_dir`` is missing or not a directory, yields nothing.
+    """
+    yield from list_page_entries(pages_dir)
+
+
+def prefetch_page_sources(
+    entries: Sequence[PageEntry],
+    *,
+    compile_check: bool = True,
+) -> tuple[tuple[Path, str | None], ...]:
+    """Best-effort warm-up for page scripts (no Streamlit import, no module execution).
+
+    When ``compile_check`` is True, each file is read and passed through
+    :func:`compile` to catch **syntax errors** early. On failure, the second tuple
+    element holds a short error message; on success it is ``None``.
+
+    This does **not** import page modules (so ``if __name__ == '__main__'`` blocks
+    never run). See ``docs/PHASE2_PORTALS_AND_PREFETCH.md``.
+    """
+    out: list[tuple[Path, str | None]] = []
+    for e in entries:
+        if not compile_check:
+            out.append((e.path, None))
+            continue
+        try:
+            src = e.path.read_text(encoding="utf-8")
+            compile(src, str(e.path), "exec")
+        except OSError as exc:
+            out.append((e.path, str(exc)))
+        except SyntaxError as exc:
+            out.append((e.path, f"{exc.msg} (line {exc.lineno})"))
+        else:
+            out.append((e.path, None))
+    return tuple(out)
+
+
+__all__ = [
+    "PageEntry",
+    "discover_pages",
+    "iter_page_entries",
+    "list_page_entries",
+    "page_links",
+    "pages_dir_next_to",
+    "prefetch_page_sources",
+]

@@ -3,15 +3,18 @@
 from __future__ import annotations
 
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
 from streamtree.helpers.pages import (
     PageEntry,
     discover_pages,
+    iter_page_entries,
     list_page_entries,
     page_links,
     pages_dir_next_to,
+    prefetch_page_sources,
 )
 
 
@@ -219,3 +222,57 @@ def test_page_links_builds_page_link_widgets(tmp_path: Path) -> None:
     assert links[0].label == "Hello"
     assert links[0].page == "pages/1_Hello.py"
     assert links[0].icon == "🌐"
+
+
+def test_iter_page_entries_matches_list_page_entries(tmp_path: Path) -> None:
+    pages = tmp_path / "pages"
+    pages.mkdir()
+    (pages / "2_B.py").write_text("#", encoding="utf-8")
+    (pages / "1_A.py").write_text("#", encoding="utf-8")
+    assert list(iter_page_entries(pages)) == list_page_entries(pages)
+
+
+def test_prefetch_page_sources_compile_ok(tmp_path: Path) -> None:
+    pages = tmp_path / "pages"
+    pages.mkdir()
+    (pages / "1_Ok.py").write_text("x = 1\n", encoding="utf-8")
+    entries = list_page_entries(pages)
+    out = prefetch_page_sources(entries)
+    assert len(out) == 1
+    assert out[0][1] is None
+
+
+def test_prefetch_page_sources_syntax_error(tmp_path: Path) -> None:
+    pages = tmp_path / "pages"
+    pages.mkdir()
+    (pages / "1_Bad.py").write_text("def broken(\n", encoding="utf-8")
+    entries = list_page_entries(pages)
+    out = prefetch_page_sources(entries)
+    assert out[0][1] is not None
+
+
+def test_prefetch_page_sources_no_compile(tmp_path: Path) -> None:
+    pages = tmp_path / "pages"
+    pages.mkdir()
+    (pages / "1_Bad.py").write_text("(((", encoding="utf-8")
+    entries = list_page_entries(pages)
+    out = prefetch_page_sources(entries, compile_check=False)
+    assert out[0][1] is None
+
+
+def test_prefetch_page_sources_oserror(tmp_path: Path) -> None:
+    pages = tmp_path / "pages"
+    pages.mkdir()
+    (pages / "1_X.py").write_text("x = 1\n", encoding="utf-8")
+    entries = list_page_entries(pages)
+    orig = Path.read_text
+
+    def boom(self: Path, *a: object, **kw: object) -> str:
+        if self.name == "1_X.py":
+            raise OSError("simulated read failure")
+        return orig(self, *a, **kw)
+
+    with patch.object(Path, "read_text", boom):
+        out = prefetch_page_sources(entries)
+    assert len(out) == 1
+    assert "simulated read failure" in (out[0][1] or "")

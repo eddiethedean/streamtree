@@ -6,7 +6,7 @@ import streamtree
 
 
 def test_version_matches_release_series() -> None:
-    assert streamtree.__version__ == "0.8.0"
+    assert streamtree.__version__ == "0.9.0"
 
 
 def test_public_exports_are_importable() -> None:
@@ -41,6 +41,13 @@ def test_loading_submodule_exposed() -> None:
 
 def test_helpers_exports_page_links() -> None:
     assert hasattr(streamtree.helpers, "page_links")
+    assert hasattr(streamtree.helpers, "prefetch_page_sources")
+
+
+def test_portals_submodule_exposed() -> None:
+    assert hasattr(streamtree, "portals")
+    assert hasattr(streamtree.portals, "gather_portals")
+    assert hasattr(streamtree.portals, "portal_render_context")
 
 
 def test_tables_and_charts_submodules_exposed() -> None:

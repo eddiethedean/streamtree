@@ -14,6 +14,7 @@ from streamtree.core.component import component
 from streamtree.core.context import render_context
 from streamtree.core.element import ComponentCall, Element
 from streamtree.elements import (
+    BottomDock,
     Button,
     Card,
     Checkbox,
@@ -26,6 +27,7 @@ from streamtree.elements import (
     Divider,
     ErrorBoundary,
     Expander,
+    FloatingActionButton,
     Form,
     Grid,
     HStack,
@@ -35,11 +37,14 @@ from streamtree.elements import (
     Page,
     PageLink,
     Popover,
+    Portal,
+    PortalMount,
     Routes,
     Selectbox,
     Sidebar,
     SocialBadge,
     Spacer,
+    SplitView,
     StyleMetricCards,
     Subheader,
     Tabs,
@@ -243,7 +248,10 @@ def test_render_element_full_tree_mocked() -> None:
                     Image(png, caption="c", width=5, use_column_width=False),
                 ),
             )
-            rs.render_element(tree)
+            from streamtree.portals import portal_render_context
+
+            with portal_render_context(tree):
+                rs.render_element(tree)
             assert st.page_link.called
 
 
@@ -837,8 +845,95 @@ def test_render_datagrid_and_chart_delegate_to_helpers() -> None:
             patch("streamtree.charts.render_chart") as rc,
         ):
             with render_context("p3"):
-                rs.render_element(
-                    Page(VStack(DataGrid([{"a": 1}], key="g1"), Chart(fig, key="c1"))),
-                )
+                tree = Page(VStack(DataGrid([{"a": 1}], key="g1"), Chart(fig, key="c1")))
+                from streamtree.portals import portal_render_context
+
+                with portal_render_context(tree):
+                    rs.render_element(tree)
         rd.assert_called_once()
         rc.assert_called_once()
+
+
+def test_render_splitview_mocked() -> None:
+    st = _make_st()
+    with _patched_st(st):
+        with render_context("split"):
+            tree = Page(SplitView(narrow=Text("nav"), main=Text("body")))
+            from streamtree.portals import portal_render_context
+
+            with portal_render_context(tree):
+                rs.render_element(tree)
+        assert st.write.call_count >= 2
+
+
+def test_render_portal_and_mount_mocked() -> None:
+    st = _make_st()
+    with _patched_st(st):
+        with render_context("portal"):
+            tree = Page(
+                VStack(
+                    PortalMount(slot="foot"),
+                    Portal(slot="foot", child=Text("footer text")),
+                )
+            )
+            from streamtree.portals import portal_render_context
+
+            with portal_render_context(tree):
+                rs.render_element(tree)
+    assert st.write.called
+
+
+def test_render_bottom_dock_mocked() -> None:
+    st = _make_st()
+    bottom_cm = MagicMock()
+    bottom_cm.__enter__ = MagicMock(return_value=MagicMock())
+    bottom_cm.__exit__ = MagicMock(return_value=False)
+    with _patched_st(st), patch("streamlit_extras.bottom_container.bottom", return_value=bottom_cm):
+        with render_context("bd"):
+            tree = Page(BottomDock(Text("pinned")))
+            from streamtree.portals import portal_render_context
+
+            with portal_render_context(tree):
+                rs.render_element(tree)
+    bottom_cm.__enter__.assert_called_once()
+
+
+def test_render_floating_action_button_mocked() -> None:
+    st = _make_st()
+    fab = MagicMock(return_value=False)
+    with _patched_st(st), patch("streamlit_extras.floating_button.floating_button", fab):
+        with render_context("fab"):
+            tree = Page(FloatingActionButton("Go", key="fab1"))
+            from streamtree.portals import portal_render_context
+
+            with portal_render_context(tree):
+                rs.render_element(tree)
+    fab.assert_called_once()
+
+
+def test_render_bottom_dock_import_error_message() -> None:
+    st = _make_st()
+    real_import = builtins.__import__
+
+    def _fake(name: str, *a: object, **kw: object):
+        if name == "streamlit_extras.bottom_container":
+            raise ImportError("blocked")
+        return real_import(name, *a, **kw)
+
+    with _patched_st(st), patch.object(builtins, "__import__", side_effect=_fake):
+        with render_context("bdie"), pytest.raises(ImportError, match="streamtree\\[ui\\]"):
+            rs.render_element(BottomDock(Text("x")), slot="0")
+
+
+def test_render_floating_action_button_import_error_message() -> None:
+    st = _make_st()
+    real_import = builtins.__import__
+
+    def _fake(name: str, *a: object, **kw: object):
+        if name == "streamlit_extras.floating_button":
+            raise ImportError("blocked")
+        return real_import(name, *a, **kw)
+
+    with _patched_st(st), patch.object(builtins, "__import__", side_effect=_fake):
+        with render_context("fabie"), pytest.raises(ImportError, match="streamtree\\[ui\\]"):
+            rs.render_element(FloatingActionButton("Go", key="fab2"), slot="0")

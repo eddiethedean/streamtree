@@ -18,14 +18,19 @@ from streamtree.elements.layout import (
     HStack,
     Page,
     Popover,
+    Portal,
+    PortalMount,
     Routes,
     Sidebar,
     Spacer,
+    SplitView,
     Tabs,
     VStack,
 )
 from streamtree.elements.ui_extra import (
+    BottomDock,
     ColoredHeader,
+    FloatingActionButton,
     SocialBadge,
     StyleMetricCards,
     VerticalSpaceLines,
@@ -144,6 +149,26 @@ def _node(el: Element, *, expand_components: bool) -> dict[str, Any]:
             "child": _node(el.child, expand_components=expand_components),
             "fallback": _node(el.fallback, expand_components=expand_components),
             "has_on_error": el.on_error is not None,
+        }
+
+    if isinstance(el, Portal):
+        return {
+            "kind": "Portal",
+            "key": el.key,
+            "slot": el.slot,
+            "child": _node(el.child, expand_components=expand_components),
+        }
+
+    if isinstance(el, PortalMount):
+        return {"kind": "PortalMount", "key": el.key, "slot": el.slot}
+
+    if isinstance(el, SplitView):
+        return {
+            "kind": "SplitView",
+            "key": el.key,
+            "narrow_ratio": el.narrow_ratio,
+            "narrow": _node(el.narrow, expand_components=expand_components),
+            "main": _node(el.main, expand_components=expand_components),
         }
 
     if isinstance(el, Routes):
@@ -286,6 +311,22 @@ def _node(el: Element, *, expand_components: bool) -> dict[str, Any]:
             "label": el.label,
             "description": el.description,
             "color_name": el.color_name,
+        }
+
+    if isinstance(el, BottomDock):
+        return {
+            "kind": "BottomDock",
+            "key": el.key,
+            "children": [_node(c, expand_components=expand_components) for c in el.children],
+        }
+
+    if isinstance(el, FloatingActionButton):
+        return {
+            "kind": "FloatingActionButton",
+            "key": el.key,
+            "label": el.label,
+            "button_type": el.button_type,
+            "has_on_click": el.on_click is not None,
         }
 
     if isinstance(el, SocialBadge):

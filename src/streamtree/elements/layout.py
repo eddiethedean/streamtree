@@ -241,6 +241,48 @@ class ErrorBoundary(Element):
 
 
 @dataclass(frozen=True)
+class Portal(Element):
+    """Declare ``child`` content for a named slot; it renders at :class:`PortalMount` instead of here."""
+
+    slot: str = field(kw_only=True)
+    child: Element = field(kw_only=True)
+
+    def __post_init__(self) -> None:
+        sk = self.slot.strip() if isinstance(self.slot, str) else ""
+        if not sk:
+            raise ValueError("Portal.slot must be a non-empty string")
+        object.__setattr__(self, "slot", sk)
+
+
+@dataclass(frozen=True)
+class PortalMount(Element):
+    """Render all :class:`Portal` children registered for ``slot`` (first mount per rerun wins)."""
+
+    slot: str = field(kw_only=True)
+
+    def __post_init__(self) -> None:
+        sk = self.slot.strip() if isinstance(self.slot, str) else ""
+        if not sk:
+            raise ValueError("PortalMount.slot must be a non-empty string")
+        object.__setattr__(self, "slot", sk)
+
+
+@dataclass(frozen=True)
+class SplitView(Element):
+    """Two-column shell: narrow strip + main (pseudo-sidebar without ``st.sidebar``)."""
+
+    narrow: Element = field(kw_only=True)
+    main: Element = field(kw_only=True)
+    narrow_ratio: float = field(default=0.28, kw_only=True)
+
+    def __post_init__(self) -> None:
+        r = float(self.narrow_ratio)
+        if not (0.0 < r < 1.0):
+            raise ValueError("SplitView.narrow_ratio must be strictly between 0 and 1")
+        object.__setattr__(self, "narrow_ratio", r)
+
+
+@dataclass(frozen=True)
 class Routes(Element):
     """Render exactly one child tree based on :func:`streamtree.routing.sync_route`."""
 

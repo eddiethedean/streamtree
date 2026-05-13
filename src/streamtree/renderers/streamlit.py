@@ -22,14 +22,19 @@ from streamtree.elements.layout import (
     HStack,
     Page,
     Popover,
+    Portal,
+    PortalMount,
     Routes,
     Sidebar,
     Spacer,
+    SplitView,
     Tabs,
     VStack,
 )
 from streamtree.elements.ui_extra import (
+    BottomDock,
     ColoredHeader,
+    FloatingActionButton,
     SocialBadge,
     StyleMetricCards,
     VerticalSpaceLines,
@@ -53,7 +58,7 @@ from streamtree.routing import sync_route
 from streamtree.state import FormState, StateVar, ToggleState
 from streamtree.theme import ThemeRoot, theme_css
 
-__all__ = ["render_element"]
+__all__ = ["render", "render_element"]
 
 _DG_TYPE: type | None = None
 _CHART_TYPE: type | None = None
@@ -395,6 +400,24 @@ def render_element(el: Element, *, slot: str = "0") -> None:
             render_element(el.fallback, slot=f"{slot}.eb_f")
         return
 
+    if isinstance(el, Portal):
+        return
+
+    if isinstance(el, PortalMount):
+        from streamtree.portals import take_portal_children
+
+        for i, ch in enumerate(take_portal_children(el.slot)):
+            render_element(ch, slot=f"{slot}.pm{i}")
+        return
+
+    if isinstance(el, SplitView):
+        cols = st.columns([el.narrow_ratio, 1.0 - el.narrow_ratio])
+        with cols[0]:
+            render_element(el.narrow, slot=f"{slot}.sv0")
+        with cols[1]:
+            render_element(el.main, slot=f"{slot}.sv1")
+        return
+
     if isinstance(el, Routes):
         # sync_route picks the active route name; resolve child by name, then default subtree.
         active = sync_route(el.default, param=el.query_param)
@@ -598,4 +621,45 @@ def render_element(el: Element, *, slot: str = "0") -> None:
             ) from exc
         return
 
+    if isinstance(el, BottomDock):
+        try:
+            from streamlit_extras.bottom_container import bottom
+        except ImportError as exc:
+            raise ImportError(
+                'BottomDock requires streamlit-extras. Install with: pip install "streamtree[ui]"'
+            ) from exc
+        with bottom():
+            for i, ch in enumerate(el.children):
+                render_element(ch, slot=f"{slot}.bd{i}")
+        return
+
+    if isinstance(el, FloatingActionButton):
+        try:
+            from streamlit_extras.floating_button import floating_button
+        except ImportError as exc:
+            raise ImportError(
+                "FloatingActionButton requires streamlit-extras. "
+                'Install with: pip install "streamtree[ui]"'
+            ) from exc
+        floating_button(
+            el.label,
+            key=_widget_key(el, "fab", slot),
+            help=el.help,
+            on_click=el.on_click,
+            args=el.on_click_args,
+            kwargs=el.on_click_kwargs,
+            type=el.button_type,
+            icon=el.icon,
+            disabled=el.disabled,
+        )
+        return
+
     raise TypeError(f"Unsupported element type: {type(el)!r}")
+
+
+def render(root: Element) -> None:
+    """Render a tree with portal gather pre-pass (see ``streamtree.portals``)."""
+    from streamtree.portals import portal_render_context
+
+    with portal_render_context(root):
+        render_element(root, slot="0")

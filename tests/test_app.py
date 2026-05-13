@@ -20,7 +20,7 @@ def test_render_app_applies_config_and_renders_root() -> None:
     with (
         patch("streamtree.app.apply_page_config") as ap,
         patch("streamtree.app.app_root_element", return_value=Text("root")) as ar,
-        patch.object(_core_component, "_render_streamlit") as rr,
+        patch.object(_core_component, "_render_streamlit_tree") as rr,
     ):
         render_app(App(body=Text("ignored"), page_title="T"))
     ap.assert_called_once()

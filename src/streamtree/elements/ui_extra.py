@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Literal
+from typing import Any, Literal
 
-from streamtree.core.element import Element
+from streamtree.core.element import Element, ElementChild, normalize_children
 
 ColoredHeaderColor = Literal[
     "light-blue-70",
@@ -19,6 +20,54 @@ ColoredHeaderColor = Literal[
 ]
 
 SocialBadgeKind = Literal["pypi", "github", "streamlit", "twitter", "buymeacoffee"]
+
+
+@dataclass(frozen=True)
+class BottomDock(Element):
+    """Pin children to the bottom main area via ``streamlit_extras.bottom_container.bottom``."""
+
+    children: tuple[Element, ...] = field(default_factory=tuple)
+
+    def __init__(self, *children: ElementChild, key: str | None = None) -> None:
+        object.__setattr__(self, "key", key)
+        object.__setattr__(self, "children", normalize_children(children))
+
+
+@dataclass(frozen=True)
+class FloatingActionButton(Element):
+    """Floating action button via ``streamlit_extras.floating_button.floating_button``."""
+
+    label: str = ""
+    help: str | None = field(default=None, kw_only=True)
+    on_click: Callable[..., None] | None = field(default=None, kw_only=True)
+    on_click_args: tuple[Any, ...] | None = field(default=None, kw_only=True)
+    on_click_kwargs: dict[str, Any] | None = field(default=None, kw_only=True)
+    button_type: Literal["primary", "secondary"] = field(default="secondary", kw_only=True)
+    icon: str | None = field(default=None, kw_only=True)
+    disabled: bool = field(default=False, kw_only=True)
+
+    def __init__(
+        self,
+        label: str,
+        *,
+        help: str | None = None,
+        on_click: Callable[..., None] | None = None,
+        on_click_args: tuple[Any, ...] | None = None,
+        on_click_kwargs: dict[str, Any] | None = None,
+        button_type: Literal["primary", "secondary"] = "secondary",
+        icon: str | None = None,
+        disabled: bool = False,
+        key: str | None = None,
+    ) -> None:
+        object.__setattr__(self, "key", key)
+        object.__setattr__(self, "label", label)
+        object.__setattr__(self, "help", help)
+        object.__setattr__(self, "on_click", on_click)
+        object.__setattr__(self, "on_click_args", on_click_args)
+        object.__setattr__(self, "on_click_kwargs", on_click_kwargs)
+        object.__setattr__(self, "button_type", button_type)
+        object.__setattr__(self, "icon", icon)
+        object.__setattr__(self, "disabled", disabled)
 
 
 @dataclass(frozen=True)
@@ -83,8 +132,10 @@ class StyleMetricCards(Element):
 
 
 __all__ = [
+    "BottomDock",
     "ColoredHeader",
     "ColoredHeaderColor",
+    "FloatingActionButton",
     "SocialBadge",
     "SocialBadgeKind",
     "StyleMetricCards",

@@ -5,6 +5,7 @@ from __future__ import annotations
 from streamtree.auth import AuthGate
 from streamtree.core.element import fragment
 from streamtree.elements import (
+    BottomDock,
     Button,
     Card,
     Checkbox,
@@ -17,6 +18,7 @@ from streamtree.elements import (
     Divider,
     ErrorBoundary,
     Expander,
+    FloatingActionButton,
     Form,
     Grid,
     HStack,
@@ -26,11 +28,14 @@ from streamtree.elements import (
     Page,
     PageLink,
     Popover,
+    Portal,
+    PortalMount,
     Routes,
     Selectbox,
     Sidebar,
     SocialBadge,
     Spacer,
+    SplitView,
     StyleMetricCards,
     Subheader,
     Tabs,
@@ -90,8 +95,13 @@ def test_render_to_tree_exercises_all_node_types() -> None:
                 SocialBadge(kind="pypi", name="pkg"),
                 StyleMetricCards(),
                 VerticalSpaceLines(2),
+                SplitView(narrow=Text("nav"), main=Text("main")),
+                PortalMount(slot="z"),
+                Portal(slot="z", child=Text("portal child")),
+                BottomDock(Text("dock")),
+                FloatingActionButton("fab", key="faball"),
             ),
         )
     )
     assert tree["kind"] == "Page"
-    assert len(tree["children"][0]["children"]) >= 20
+    assert len(tree["children"][0]["children"]) >= 24

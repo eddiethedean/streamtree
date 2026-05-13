@@ -25,6 +25,7 @@ This note captures **larger or cross-cutting** Phase 2 themes that were intentio
 
 ## References
 
+- [PHASE2_PORTALS_AND_PREFETCH.md](./PHASE2_PORTALS_AND_PREFETCH.md) — portals, prefetch, and layout-form semantics (implementation contract).
 - [ROADMAP.md](ROADMAP.md) — Phase 2 backlog table and release index.
 - [PLAN.md](PLAN.md) — packaging philosophy and optional extras.
 - [DEPENDENCY_STRATEGY.md](DEPENDENCY_STRATEGY.md) — pins, limits, and security posture for optional stacks.

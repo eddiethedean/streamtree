@@ -33,6 +33,14 @@ drops the session slot for a ``key`` so the next **`submit`** can reuse that key
 query params into session (similar to **`sync_route`** but with empty-string defaults
 allowed). Pair with **`state()`** for values you do not want in the URL.
 
+## Multipage prefetch (0.9+)
+
+Use **`streamtree.helpers.iter_page_entries`** for lazy iteration and
+**`streamtree.helpers.prefetch_page_sources`** to **`compile()`** page script text
+without importing modules (catches syntax errors early). This does **not** run
+another page’s Streamlit script ahead of time; UI still advances on reruns. See
+**`docs/PHASE2_PORTALS_AND_PREFETCH.md`**.
+
 ## Optional data extras
 
 - **`pip install "streamtree[tables]"`** — **`DataGrid`** (streamlit-aggrid).

@@ -30,7 +30,7 @@ def test_render_invokes_streamlit_renderer() -> None:
         seen.append(root)
 
     cmod = importlib.import_module("streamtree.core.component")
-    with patch.object(cmod, "_render_streamlit", capture):
+    with patch.object(cmod, "_render_streamlit_tree", capture):
         render(Page(Text("z"), key="root"))
 
     assert len(seen) == 1
