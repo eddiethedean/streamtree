@@ -21,7 +21,10 @@ virtual elements, so StreamTree does not wrap it unnecessarily.
 Use **`streamtree.asyncio.submit`** / **`submit_many`** for thread offload; poll
 **`TaskHandle.status`** (and **`progress()`**) on reruns. For declarative trees, use
 **`streamtree.loading.match_task`** to map status to `loading` / `ready` / `error`
-elements (see `examples/async_loader_demo.py`).
+elements (see `examples/async_loader_demo.py`). For **several** parallel handles (for example
+after **`submit_many`**), use **`streamtree.loading.match_task_many`**: it shows **`loading`**
+until **all** are **`done`**, **`error`** if **any** failed, **`cancelled`** (or **`error`**) if
+**any** cancelled, and then **`ready(tuple of results))`**.
 
 After a terminal **done** / **error** / **cancelled** run, **`streamtree.asyncio.dismiss_task`**
 drops the session slot for a ``key`` so the next **`submit`** can reuse that key safely
@@ -48,7 +51,7 @@ same discovery data, use **`page_links_sidebar_sections`** / **`multipage_sideba
 ## Optional data extras
 
 - **`pip install "streamtree[tables]"`** — **`DataGrid`** (streamlit-aggrid).
-- **`pip install "streamtree[charts]"`** — **`Chart`** (Plotly via `st.plotly_chart`).
+- **`pip install "streamtree[charts]"`** — **`Chart`** (Plotly) and **`AltairChart`** (Altair via `st.altair_chart`).
 
 Keep expensive third-party imports inside render paths or optional modules so
 `pip install streamtree` stays lean.

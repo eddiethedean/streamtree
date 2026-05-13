@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from typing import Any, Protocol, TypeVar, runtime_checkable
 
 from streamtree.core.element import Element
@@ -48,4 +48,43 @@ def match_task(
     return loading
 
 
-__all__ = ["match_task"]
+_KNOWN = frozenset({"pending", "running", "missing", "done", "error", "cancelled"})
+
+
+def match_task_many(
+    handles: Sequence[_PollableTask[Any]],
+    *,
+    loading: Element,
+    ready: Callable[[tuple[Any, ...]], Element],
+    error: Element,
+    cancelled: Element | None = None,
+) -> Element:
+    """Pick one subtree from several pollable handles (e.g. :class:`streamtree.asyncio.TaskHandle`).
+
+    **Semantics (fixed order):**
+
+    1. If **any** handle has status ``error``, return ``error``.
+    2. Else if **any** has ``cancelled``, return ``cancelled`` when provided, otherwise ``error``.
+    3. Else if **any** has ``pending``, ``running``, or ``missing``, return ``loading``.
+    4. Else if **any** has an unknown status, log at debug and return ``loading``.
+    5. Else (**all** ``done``), return ``ready`` with a tuple of each ``result()`` (``()`` when
+       ``handles`` is empty).
+
+    Use after :func:`streamtree.asyncio.submit_many` when the UI should wait for **every**
+    task to finish before showing a combined ready branch.
+    """
+    statuses = [h.status() for h in handles]
+    if any(s == "error" for s in statuses):
+        return error
+    if any(s == "cancelled" for s in statuses):
+        return error if cancelled is None else cancelled
+    if any(s in ("pending", "running", "missing") for s in statuses):
+        return loading
+    for s in statuses:
+        if s not in _KNOWN:
+            _LOGGER.debug("match_task_many: unknown task status %r; using loading branch", s)
+            return loading
+    return ready(tuple(h.result() for h in handles))
+
+
+__all__ = ["match_task", "match_task_many"]

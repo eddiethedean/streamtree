@@ -27,7 +27,7 @@ from .core import (
 )
 from .theme import Theme, ThemeRoot, theme, theme_css
 
-__version__ = "0.9.0"
+__version__ = "0.10.0"
 
 __all__ = [
     "App",

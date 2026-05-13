@@ -19,6 +19,7 @@ nav:
       - Roadmap: ROADMAP.md
       - Dependency strategy: DEPENDENCY_STRATEGY.md
       - Performance: PERFORMANCE.md
+      - Phase 3 CRUD patterns: PHASE3_CRUD.md
       - Phase 2 tail: PHASE2_TAIL.md
       - Phase 2 portals & prefetch: PHASE2_PORTALS_AND_PREFETCH.md
       - Phase 2 form layout: PHASE2_FORMS.md

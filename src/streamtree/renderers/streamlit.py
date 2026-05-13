@@ -65,6 +65,7 @@ __all__ = ["render", "render_element"]
 
 _DG_TYPE: type | None = None
 _CHART_TYPE: type | None = None
+_ALTAIR_CHART_TYPE: type | None = None
 
 
 def _datagrid_type() -> type:
@@ -83,6 +84,15 @@ def _chart_type() -> type:
 
         _CHART_TYPE = Chart
     return _CHART_TYPE
+
+
+def _altair_chart_type() -> type:
+    global _ALTAIR_CHART_TYPE
+    if _ALTAIR_CHART_TYPE is None:
+        from streamtree.charts import AltairChart
+
+        _ALTAIR_CHART_TYPE = AltairChart
+    return _ALTAIR_CHART_TYPE
 
 
 def _coerce_open_flag(open_v: object) -> bool:
@@ -508,6 +518,12 @@ def render_element(el: Element, *, slot: str = "0") -> None:
         from streamtree.tables import DataGrid, render_datagrid
 
         render_datagrid(cast(DataGrid, el), widget_key=_widget_key(el, "datagrid", slot))
+        return
+
+    if isinstance(el, _altair_chart_type()):
+        from streamtree.charts import AltairChart, render_altair_chart
+
+        render_altair_chart(cast(AltairChart, el), widget_key=_widget_key(el, "altair", slot))
         return
 
     if isinstance(el, _chart_type()):

@@ -34,10 +34,10 @@ StreamTree is an **architecture layer** for Streamlit, not a React-style web fra
 - **Overlays (0.6+)** — **`Dialog`** / **`Popover`** elements mapped to **`st.dialog`** / **`st.popover`**. On older Streamlit builds without **`st.dialog`**, **`Dialog`** shows a warning and renders its children **inline** on the page (not a modal); **`Popover`** falls back to **`st.expander`**.
 - **Portals and split shell (0.9.0+)** — **`Portal` / `PortalMount`** (named slots; see **`docs/PHASE2_PORTALS_AND_PREFETCH.md`**), **`SplitView`** (narrow + main columns as a pseudo-sidebar), and **`streamtree.portals`** helpers for gather/render wiring.
 - **Form layout (0.9.0+)** — **`streamtree.forms_layout.model_field_grid`** and **`build_model_from_bindings`** for Pydantic models in row/column grids, including **bool** fields (see **`docs/PHASE2_FORMS.md`**, **`examples/phase2_layout_demo.py`**).
-- **Data toolkit (0.8+)** — **`pip install "streamtree[tables]"`**: **`DataGrid`** (streamlit-aggrid); **`pip install "streamtree[charts]"`**: **`Chart`** (Plotly via **`st.plotly_chart`**); **`streamtree.loading.match_task`** for declarative loading / ready / error subtrees from **`TaskHandle`**; **`routing.sync_query_value`** / **`set_query_value`** for URL-backed filter strings. See [docs/PERFORMANCE.md](docs/PERFORMANCE.md).
+- **Data toolkit (0.8+)** — **`pip install "streamtree[tables]"`**: **`DataGrid`** (streamlit-aggrid); **`pip install "streamtree[charts]"`**: **`Chart`** (Plotly via **`st.plotly_chart`**) and **`AltairChart`** (Altair via **`st.altair_chart`**, **0.10.0+**); **`streamtree.loading.match_task`** and **0.10.0+** **`match_task_many`** for declarative loading / ready / error subtrees from **`TaskHandle`** (including parallel **all-done** waits); **`routing.sync_query_value`** / **`set_query_value`** for URL-backed filter strings. See [docs/PERFORMANCE.md](docs/PERFORMANCE.md) and [docs/PHASE3_CRUD.md](docs/PHASE3_CRUD.md).
 - **Quality** — Pydantic v2 in the default install, typing-first APIs, and `render_to_tree` for structural tests.
 
-Optional extras: **`[tables]`** pins **`streamlit-aggrid`**; **`[charts]`** pins **`plotly`**. **`[ui]`** and **`[auth]`** pin **`streamlit-extras`** and **`streamlit-authenticator`** (0.6+). **`[cli]`** adds **Typer** and the **`streamtree`** console script (`run`, `doctor`, `init`). **`[asyncio]`** / **`[async]`**, **`[pages]`**, and **`[runner]`** remain metadata-oriented. See [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md). The `streamtree.asyncio` module and **`streamtree.helpers`** ( **`pages`**, **`runner`**, **`scaffold`** ) ship in the default install; **`import streamtree`** exposes **`streamtree.helpers`** on the root package.
+Optional extras: **`[tables]`** pins **`streamlit-aggrid`** (+ **pandas**); **`[charts]`** pins **`plotly`** and **`altair`** (**0.10.0+**). **`[ui]`** and **`[auth]`** pin **`streamlit-extras`** and **`streamlit-authenticator`** (0.6+). **`[cli]`** adds **Typer** and the **`streamtree`** console script (`run`, `doctor`, `init`). **`[asyncio]`** / **`[async]`**, **`[pages]`**, and **`[runner]`** remain metadata-oriented. See [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md). The `streamtree.asyncio` module and **`streamtree.helpers`** ( **`pages`**, **`runner`**, **`scaffold`** ) ship in the default install; **`import streamtree`** exposes **`streamtree.helpers`** on the root package.
 
 ## Requirements
 
@@ -46,7 +46,7 @@ Python **3.10+**, with **Streamlit ≥ 1.33** (for **`st.dialog`** / **`st.popov
 ## Installation
 
 ```bash
-pip install streamtree==0.9.0
+pip install streamtree==0.10.0
 pip install "streamtree[cli]"   # Typer + ``streamtree run`` / ``doctor`` / ``init``
 pip install "streamtree[auth]"  # streamlit-authenticator
 pip install "streamtree[ui]"    # streamlit-extras wrappers
@@ -99,7 +99,9 @@ streamlit run examples/overlay_demo.py
 streamlit run examples/auth_demo.py
 streamlit run examples/datagrid_demo.py
 streamlit run examples/chart_demo.py
+streamlit run examples/altair_chart_demo.py
 streamlit run examples/async_loader_demo.py
+streamlit run examples/crud_pattern_demo.py
 streamlit run examples/phase2_layout_demo.py
 streamlit run examples/phase2_composite_demo.py
 # With Typer installed (``pip install "streamtree[cli]"``):
@@ -206,9 +208,10 @@ Use **`streamtree.helpers.pages.discover_pages(__file__)`** to list scripts unde
 | [Phase 2 tail](https://github.com/streamtree-dev/streamtree/blob/main/docs/PHASE2_TAIL.md) | Grooming after **0.6.0** (navigation, asyncio, forms) |
 | [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md) | Optional extras, **default-install** helpers (`runner`, `pages`), and CI typing notes |
 | [Performance](https://github.com/streamtree-dev/streamtree/blob/main/docs/PERFORMANCE.md) | Memoization, background work, URL filter params, optional data extras |
+| [Phase 3 CRUD patterns](https://github.com/streamtree-dev/streamtree/blob/main/docs/PHASE3_CRUD.md) | List/detail/save patterns with **`DataGrid`**, async, **`match_task_many`** |
 | [Phase 2 portals / prefetch](https://github.com/streamtree-dev/streamtree/blob/main/docs/PHASE2_PORTALS_AND_PREFETCH.md) | Portals, prefetch, form-layout semantics (Phase 2 contract) |
 | [Phase 2 form layout](https://github.com/streamtree-dev/streamtree/blob/main/docs/PHASE2_FORMS.md) | **`forms_layout`**, **`build_model_from_bindings`**, and bool-aware grids |
-| [CHANGELOG](https://github.com/streamtree-dev/streamtree/blob/main/CHANGELOG.md) | Release history (e.g. **0.9.0** Phase 2 completion; **0.8.0** data toolkit) |
+| [CHANGELOG](https://github.com/streamtree-dev/streamtree/blob/main/CHANGELOG.md) | Release history (e.g. **0.10.0** Phase 3 slice; **0.9.0** Phase 2; **0.8.0** data toolkit) |
 
 ## Contributing
 
@@ -228,9 +231,9 @@ Equivalent with **pip**: `pip install -e ".[dev]"`, then `ruff`, `ruff format` /
 
 ## Releases
 
-Before tagging **`v0.9.0`** (or any **`v*.*.*`** release), confirm **`uv build`** succeeds, **`uv run pytest`** passes with coverage, and **`pyproject.toml`**, **`streamtree.__version__`**, **`tests/test_package_meta.py`**, and **`CHANGELOG.md`** all agree on the version.
+Before tagging **`v0.10.0`** (or any **`v*.*.*`** release), confirm **`uv build`** succeeds, **`uv run pytest`** passes with coverage, and **`pyproject.toml`**, **`streamtree.__version__`**, **`tests/test_package_meta.py`**, and **`CHANGELOG.md`** all agree on the version.
 
-**Automated:** Add a **`PYPI_API_TOKEN`** secret to the repository. When `main` is green, push a tag of the form **`v0.9.0`**. The [release workflow](https://github.com/streamtree-dev/streamtree/blob/main/.github/workflows/release.yml) runs lint, type check, pytest (including coverage), builds with `uv build`, and publishes to PyPI.
+**Automated:** Add a **`PYPI_API_TOKEN`** secret to the repository. When `main` is green, push a tag of the form **`v0.10.0`**. The [release workflow](https://github.com/streamtree-dev/streamtree/blob/main/.github/workflows/release.yml) runs lint, type check, pytest (including coverage), builds with `uv build`, and publishes to PyPI.
 
 **Manual:** `uv build` (or `python -m build`), then upload `dist/` with **twine** or **`uv publish`**. Keep `pyproject.toml`, `streamtree.__version__`, `tests/test_package_meta.py`, and `CHANGELOG.md` in sync when cutting a release.
 

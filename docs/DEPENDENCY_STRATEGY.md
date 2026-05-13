@@ -334,7 +334,7 @@ tables = [
 
 ---
 
-# Charts Extra (Plotly MVP shipped in 0.8.0; Altair / echarts remain roadmap)
+# Charts Extra (Plotly + Altair shipped in 0.10.0; echarts remains roadmap)
 
 ```bash
 pip install streamtree[charts]
@@ -360,25 +360,16 @@ Useful for:
 
 **`Chart`** (optional **`[charts]`**) accepts a Plotly figure and renders via **`st.plotly_chart`**; see **`streamtree.charts`** and **`examples/chart_demo.py`**.
 
-Design directions still on the roadmap (Altair / echarts, higher-level constructors):
-
-```python
-Chart(fig)
-```
-
-or:
-
-```python
-LineChart(data, x="date", y="revenue")
-```
+**`AltairChart`** (optional **`[charts]`**, **0.10.0+**) accepts an Altair chart object and renders via **`st.altair_chart`**; see **`streamtree.charts`** and **`examples/altair_chart_demo.py`**. The **`[charts]`** extra pins **altair** alongside **plotly**.
 
 ### Recommendation
 
-Optional dependency under `charts`.
+Optional dependencies under `charts`:
 
 ```toml
 charts = [
-    "plotly",
+    "plotly>=5.18.0",
+    "altair>=5.0.0",
 ]
 ```
 
@@ -425,31 +416,9 @@ charts = [
 
 ---
 
-## altair
+## altair (shipped)
 
-### Why
-
-Altair is declarative and works naturally with Streamlit.
-
-It fits StreamTree’s declarative philosophy well.
-
-### Usefulness
-
-Useful for:
-- concise statistical charts
-- declarative chart specs
-- simple data visualization
-- built-in Streamlit compatibility
-
-### Recommendation
-
-Optional dependency under `charts`.
-
-```toml
-charts = [
-    "altair",
-]
-```
+**0.10.0:** **`AltairChart`** wraps **`st.altair_chart`**; the **`[charts]`** extra pins **altair** with **plotly** (see **`pyproject.toml`**).
 
 ---
 
@@ -693,7 +662,7 @@ dev = [
 
 # Suggested pyproject.toml Structure
 
-**Canonical source:** the repository’s **`pyproject.toml`** (pins and extras change there first). The skeleton below matches the **0.9.0** dependency tiers; omit version bounds when drafting locally.
+**Canonical source:** the repository’s **`pyproject.toml`** (pins and extras change there first). The skeleton below matches the **0.10.0** dependency tiers; omit version bounds when drafting locally.
 
 ```toml
 [project]
@@ -706,7 +675,7 @@ dependencies = [
 
 [project.optional-dependencies]
 tables = ["streamlit-aggrid>=0.3.0", "pandas>=2.0.0"]
-charts = ["plotly>=5.18.0"]
+charts = ["plotly>=5.18.0", "altair>=5.0.0"]
 ui = ["streamlit-extras>=0.4.3"]
 auth = ["streamlit-authenticator>=0.3.3"]
 cli = ["typer>=0.12.3"]
@@ -718,6 +687,7 @@ all = [
     "streamlit-aggrid>=0.3.0",
     "pandas>=2.0.0",
     "plotly>=5.18.0",
+    "altair>=5.0.0",
     "streamlit-extras>=0.4.3",
     "streamlit-authenticator>=0.3.3",
     "typer>=0.12.3",
@@ -735,6 +705,7 @@ dev = [
     "streamlit-aggrid>=0.3.0",
     "pandas>=2.0.0",
     "plotly>=5.18.0",
+    "altair>=5.0.0",
 ]
 ```
 
@@ -780,26 +751,27 @@ Users should be able to stay inside the StreamTree mental model.
 2. **pydantic**
 3. **typing-extensions**
 
-## Best optional dependencies (pinned in `pyproject.toml` as of 0.9.0)
+## Best optional dependencies (pinned in `pyproject.toml` as of 0.10.0)
 
 1. **streamlit-aggrid** — **`[tables]`**
 2. **plotly** — **`[charts]`**
-3. **streamlit-extras** — **`[ui]`**
-4. **streamlit-authenticator** — **`[auth]`**
-5. **typer** — **`[cli]`**
+3. **altair** — **`[charts]`**
+4. **streamlit-extras** — **`[ui]`**
+5. **streamlit-authenticator** — **`[auth]`**
+6. **typer** — **`[cli]`**
 
 ## Exploratory / design-note dependencies
 
-Not pinned in the default manifest; sections below discuss if/when to adopt **streamlit-echarts**, **altair**, **streamlit-shadcn-ui**, **extra-streamlit-components**, **asynclit**, etc.
+Not pinned in the default manifest; sections below discuss if/when to adopt **streamlit-echarts**, **streamlit-shadcn-ui**, **extra-streamlit-components**, **asynclit**, etc.
 
 ---
 
 # Final recommendation
 
-The **authoritative** dependency list is **`pyproject.toml`**. As of **0.9.0**:
+The **authoritative** dependency list is **`pyproject.toml`**. As of **0.10.0**:
 
 - **Core:** `streamlit`, `pydantic`, `typing-extensions`.
-- **Extras:** `tables` (streamlit-aggrid + pandas), `charts` (plotly), `ui` (streamlit-extras), `auth` (streamlit-authenticator), `cli` (typer); **`[all]`** bundles those five.
+- **Extras:** `tables` (streamlit-aggrid + pandas), `charts` (plotly + altair), `ui` (streamlit-extras), `auth` (streamlit-authenticator), `cli` (typer); **`[all]`** bundles those five.
 - **`[asyncio]`** / **`[async]`**, **`[pages]`**, **`[runner]`** remain empty metadata slots unless future pins are added.
 
 ```toml
@@ -812,7 +784,7 @@ dependencies = [
 
 [project.optional-dependencies]
 tables = ["streamlit-aggrid>=0.3.0", "pandas>=2.0.0"]
-charts = ["plotly>=5.18.0"]
+charts = ["plotly>=5.18.0", "altair>=5.0.0"]
 ui = ["streamlit-extras>=0.4.3"]
 auth = ["streamlit-authenticator>=0.3.3"]
 cli = ["typer>=0.12.3"]
@@ -820,6 +792,7 @@ all = [
     "streamlit-aggrid>=0.3.0",
     "pandas>=2.0.0",
     "plotly>=5.18.0",
+    "altair>=5.0.0",
     "streamlit-extras>=0.4.3",
     "streamlit-authenticator>=0.3.3",
     "typer>=0.12.3",

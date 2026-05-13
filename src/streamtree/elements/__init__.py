@@ -1,6 +1,6 @@
 """Declarative layout and widget primitives."""
 
-from streamtree.charts import Chart
+from streamtree.charts import AltairChart, Chart
 from streamtree.core.element import Element, Fragment, fragment
 from streamtree.elements.auth_gate import AuthGate
 from streamtree.elements.layout import (
@@ -54,6 +54,7 @@ from streamtree.tables import DataGrid
 from streamtree.theme import Theme, ThemeRoot
 
 __all__ = [
+    "AltairChart",
     "AuthGate",
     "BottomDock",
     "Button",

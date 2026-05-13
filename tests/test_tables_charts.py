@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from streamtree.charts import Chart, render_chart
+from streamtree.charts import AltairChart, Chart, render_altair_chart, render_chart
 from streamtree.tables import DataGrid, render_datagrid
 
 
@@ -70,7 +70,25 @@ def test_render_datagrid_missing_aggrid_raises() -> None:
             render_datagrid(DataGrid([{"x": 1}]), widget_key="k")
 
 
-def test_render_chart_missing_plotly_raises() -> None:
+@patch("streamtree.charts.st")
+def test_render_altair_chart_delegates(mock_st: MagicMock) -> None:
+    spec = object()
+    render_altair_chart(AltairChart(spec, use_container_width=False), widget_key="ak")
+    mock_st.altair_chart.assert_called_once_with(spec, use_container_width=False, key="ak")
+
+
+def test_render_altair_chart_missing_altair_raises() -> None:
+    real_import = builtins.__import__
+
+    def _fake(name: str, *a: object, **kw: object):
+        if name == "altair":
+            raise ImportError("blocked")
+        return real_import(name, *a, **kw)
+
+    with patch.object(builtins, "__import__", side_effect=_fake):
+        with pytest.raises(ImportError, match=r"streamtree\[charts\]"):
+            render_altair_chart(AltairChart(MagicMock()), widget_key="k")
+
     real_import = builtins.__import__
 
     def _fake(name: str, *a: object, **kw: object):

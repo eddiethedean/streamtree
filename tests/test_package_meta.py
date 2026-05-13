@@ -6,7 +6,7 @@ import streamtree
 
 
 def test_version_matches_release_series() -> None:
-    assert streamtree.__version__ == "0.9.0"
+    assert streamtree.__version__ == "0.10.0"
 
 
 def test_public_exports_are_importable() -> None:
@@ -40,6 +40,7 @@ def test_asyncio_and_forms_submodules_exposed() -> None:
 def test_loading_submodule_exposed() -> None:
     assert hasattr(streamtree, "loading")
     assert hasattr(streamtree.loading, "match_task")
+    assert hasattr(streamtree.loading, "match_task_many")
 
 
 def test_helpers_exports_page_links() -> None:
@@ -60,6 +61,7 @@ def test_tables_and_charts_submodules_exposed() -> None:
     assert hasattr(streamtree.tables, "DataGrid")
     assert hasattr(streamtree, "charts")
     assert hasattr(streamtree.charts, "Chart")
+    assert hasattr(streamtree.charts, "AltairChart")
 
 
 def test_routing_query_helpers() -> None:

@@ -14,6 +14,7 @@ from streamtree.core.component import component
 from streamtree.core.context import render_context
 from streamtree.core.element import ComponentCall, Element
 from streamtree.elements import (
+    AltairChart,
     BottomDock,
     Button,
     Card,
@@ -875,6 +876,20 @@ def test_render_datagrid_and_chart_delegate_to_helpers() -> None:
                     rs.render_element(tree)
         rd.assert_called_once()
         rc.assert_called_once()
+
+
+def test_render_altair_chart_delegates_to_helper() -> None:
+    st = _make_st()
+    spec = MagicMock()
+    with _patched_st(st):
+        with patch("streamtree.charts.render_altair_chart") as ra:
+            with render_context("p3a"):
+                tree = Page(VStack(AltairChart(spec, key="a1")))
+                from streamtree.portals import portal_render_context
+
+                with portal_render_context(tree):
+                    rs.render_element(tree)
+        ra.assert_called_once()
 
 
 def test_render_splitview_mocked() -> None:

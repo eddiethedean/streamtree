@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "streamtree"
-version = "0.9.0"
+version = "0.10.0"
 description = "StreamTree: declarative, typed composition for Streamlit."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -34,7 +34,7 @@ streamtree = "streamtree.cli:main"
 [project.optional-dependencies]
 # Optional extras (see docs/DEPENDENCY_STRATEGY.md).
 tables = ["streamlit-aggrid>=0.3.0", "pandas>=2.0.0"]
-charts = ["plotly>=5.18.0"]
+charts = ["plotly>=5.18.0", "altair>=5.0.0"]
 ui = ["streamlit-extras>=0.4.3"]
 auth = ["streamlit-authenticator>=0.3.3"]
 asyncio = []
@@ -51,6 +51,7 @@ all = [
   "streamlit-aggrid>=0.3.0",
   "pandas>=2.0.0",
   "plotly>=5.18.0",
+  "altair>=5.0.0",
   "streamlit-extras>=0.4.3",
   "streamlit-authenticator>=0.3.3",
   "typer>=0.12.3",
@@ -69,6 +70,7 @@ dev = [
   "streamlit-aggrid>=0.3.0",
   "pandas>=2.0.0",
   "plotly>=5.18.0",
+  "altair>=5.0.0",
 ]
 
 [project.urls]

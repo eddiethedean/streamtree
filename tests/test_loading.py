@@ -10,7 +10,7 @@ import pytest
 
 from streamtree.core.element import Element
 from streamtree.elements import Text, VStack
-from streamtree.loading import match_task
+from streamtree.loading import match_task, match_task_many
 
 
 @dataclass
@@ -114,3 +114,67 @@ def test_match_task_done_ready_raises_propagates() -> None:
             ready=boom,
             error=VStack(_t("E")),
         )
+
+
+def test_match_task_many_empty_all_done() -> None:
+    out = match_task_many(
+        [],
+        loading=VStack(_t("L")),
+        ready=lambda xs: VStack(_t(f"n={len(xs)}")),
+        error=VStack(_t("E")),
+    )
+    assert isinstance(out.children[0], Text)
+    assert out.children[0].body == "n=0"
+
+
+def test_match_task_many_all_done_tuple() -> None:
+    out = match_task_many(
+        [_FakeHandle("done", _result=1), _FakeHandle("done", _result=2)],
+        loading=VStack(_t("L")),
+        ready=lambda xs: VStack(_t(f"{xs}")),
+        error=VStack(_t("E")),
+    )
+    assert out.children[0].body == "(1, 2)"
+
+
+def test_match_task_many_one_pending_uses_loading() -> None:
+    out = match_task_many(
+        [_FakeHandle("done", _result=1), _FakeHandle("pending")],
+        loading=VStack(_t("L")),
+        ready=lambda xs: VStack(_t("R")),
+        error=VStack(_t("E")),
+    )
+    assert out.children[0].body == "L"
+
+
+def test_match_task_many_any_error() -> None:
+    out = match_task_many(
+        [_FakeHandle("done", _result=1), _FakeHandle("error", _error="x")],
+        loading=VStack(_t("L")),
+        ready=lambda xs: VStack(_t("R")),
+        error=VStack(_t("E")),
+    )
+    assert out.children[0].body == "E"
+
+
+def test_match_task_many_cancelled_custom() -> None:
+    out = match_task_many(
+        [_FakeHandle("cancelled"), _FakeHandle("done", _result=0)],
+        loading=VStack(_t("L")),
+        ready=lambda xs: VStack(_t("R")),
+        error=VStack(_t("E")),
+        cancelled=VStack(_t("X")),
+    )
+    assert out.children[0].body == "X"
+
+
+def test_match_task_many_unknown_status(caplog: pytest.LogCaptureFixture) -> None:
+    with caplog.at_level(logging.DEBUG, logger="streamtree.loading"):
+        out = match_task_many(
+            [_FakeHandle("done", _result=1), _FakeHandle("weird")],
+            loading=VStack(_t("L")),
+            ready=lambda xs: VStack(_t("R")),
+            error=VStack(_t("E")),
+        )
+    assert out.children[0].body == "L"
+    assert "match_task_many" in caplog.text and "weird" in caplog.text

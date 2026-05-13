@@ -5,6 +5,15 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0] — 2026-05-13
+
+### Added
+
+- **`AltairChart`** (`[charts]` extra): Altair specs via **`st.altair_chart`**; **`altair`** pinned alongside **`plotly`** in **`[charts]`** / **`[all]`** / **`[dev]`**.
+- **`streamtree.loading.match_task_many`**: declarative subtree when **all** pollable handles are **`done`**, with **any-error** and **any-cancelled** semantics (see docstring and **`docs/PERFORMANCE.md`**).
+- **Docs:** **`docs/PHASE3_CRUD.md`** — Phase 3 list/detail/save patterns with **`DataGrid`**, routing, async, **`match_task`** / **`match_task_many`**.
+- **Example:** **`examples/altair_chart_demo.py`**, **`examples/crud_pattern_demo.py`**.
+
 ## [0.9.0] — 2026-05-13
 
 ### Added
@@ -193,6 +202,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Runnable example: `examples/counter.py`.
 - Design docs under `docs/` (plan, roadmap, dependency strategy).
 
+[0.10.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.10.0
 [0.9.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.9.0
 [0.8.0]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.8.0
 [0.7.1]: https://github.com/streamtree-dev/streamtree/releases/tag/v0.7.1

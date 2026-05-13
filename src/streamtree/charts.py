@@ -1,4 +1,4 @@
-"""Plotly charts behind ``pip install \"streamtree[charts]\"``."""
+"""Optional charts (Plotly, Altair) behind ``pip install \"streamtree[charts]\"``."""
 
 from __future__ import annotations
 
@@ -45,4 +45,39 @@ def render_chart(el: Chart, *, widget_key: str) -> None:
     )
 
 
-__all__ = ["Chart", "render_chart"]
+@dataclass(frozen=True)
+class AltairChart(Element):
+    """Render an Altair chart via ``st.altair_chart`` (install the ``[charts]`` extra)."""
+
+    spec: Any = None
+    use_container_width: bool | None = True
+
+    def __init__(
+        self,
+        spec: Any,
+        *,
+        use_container_width: bool | None = True,
+        key: str | None = None,
+    ) -> None:
+        object.__setattr__(self, "key", key)
+        object.__setattr__(self, "spec", spec)
+        object.__setattr__(self, "use_container_width", use_container_width)
+
+
+def render_altair_chart(el: AltairChart, *, widget_key: str) -> None:
+    try:
+        import altair as alt
+    except ImportError as exc:
+        raise ImportError(
+            'AltairChart requires altair. Install with: pip install "streamtree[charts]"'
+        ) from exc
+
+    _ = alt.__version__
+    st.altair_chart(
+        el.spec,
+        use_container_width=el.use_container_width,
+        key=widget_key,
+    )
+
+
+__all__ = ["AltairChart", "Chart", "render_altair_chart", "render_chart"]

@@ -12,6 +12,7 @@ from streamtree.elements import (
     ColoredHeader,
     Columns,
     Chart,
+    AltairChart,
     DataFrame,
     DataGrid,
     Dialog,
@@ -85,6 +86,7 @@ def test_render_to_tree_exercises_all_node_types() -> None:
                 DataFrame([]),
                 DataGrid([], key="dg"),
                 Chart(object(), key="ch"),
+                AltairChart(object(), key="ac"),
                 Image("x.png"),
                 ErrorBoundary(child=Text("safe"), fallback=Text("fb")),
                 Routes(routes=(("home", Text("home body")),), default="home"),
@@ -110,4 +112,4 @@ def test_render_to_tree_exercises_all_node_types() -> None:
         )
     )
     assert tree["kind"] == "Page"
-    assert len(tree["children"][0]["children"]) >= 27
+    assert len(tree["children"][0]["children"]) >= 28
