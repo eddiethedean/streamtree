@@ -12,12 +12,32 @@ to publish rerun-polled progress values.
 Treat handles as **rerun-polled**: do not assume every intermediate status is
 visible between bytecode steps; wait for the next Streamlit rerun to observe
 updates after work completes or fails.
+
+Stale runs and keys
+---------------------
+
+The first :func:`submit` for a given ``key`` owns that session slot until the task
+dict is removed or replaced. Later reruns that call :func:`submit` with the **same**
+``key`` return the **same** logical :class:`TaskHandle` without starting duplicate
+work. To represent **new** work after a logical supersession (new user action,
+new query generation, etc.), choose a **fresh** ``key`` (for example include a
+monotonic id stored in ``st.session_state`` or a query token).
+
+Cooperative cancellation
+------------------------
+
+Daemon threads cannot be force-stopped safely. :meth:`TaskHandle.cancel` on a
+**pending** task marks it **cancelled** before the worker starts. On a **running**
+task it sets ``cancel_requested``; the worker should poll :func:`is_task_cancel_requested`
+and then call :func:`complete_cancelled` when exiting early. If the worker finishes
+normally instead, **done** / **error** wins over a late cancel request (the normal
+completion path clears the cancel flag).
 """
 
 from __future__ import annotations
 
 import threading
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any, Generic, TypeVar, cast
 
@@ -64,6 +84,44 @@ def set_task_progress(*, key: str, value: Any) -> None:
 
     def write() -> None:
         box["progress"] = value
+
+    _with_box_lock(box, write)
+
+
+def is_task_cancel_requested(*, key: str) -> bool:
+    """Return whether the UI thread requested cancel for a **running** task (worker polls)."""
+    sk = _task_session_key(key)
+    raw = st.session_state.get(sk)
+    if not _is_managed_task_box(raw):
+        return False
+    box = cast(dict[str, Any], raw)
+
+    def read() -> bool:
+        return bool(box.get("cancel_requested"))
+
+    return _with_box_lock(box, read)
+
+
+def complete_cancelled(*, key: str) -> None:
+    """Mark a **running** task as **cancelled** after the worker exits early (cooperative cancel).
+
+    No-ops unless ``status`` is **running** and :func:`is_task_cancel_requested` would be
+    true. Safe to call from the worker thread; uses the same per-task lock as other
+    mutations.
+    """
+    sk = _task_session_key(key)
+    raw = st.session_state.get(sk)
+    if not _is_managed_task_box(raw):
+        return
+    box = cast(dict[str, Any], raw)
+
+    def write() -> None:
+        if box.get("status") == "running" and box.get("cancel_requested"):
+            box["status"] = "cancelled"
+            box["result"] = None
+            box["error"] = None
+            box["progress"] = None
+            box["cancel_requested"] = False
 
     _with_box_lock(box, write)
 
@@ -121,17 +179,44 @@ class TaskHandle(Generic[T]):
         return _with_box_lock(box, read)
 
     def cancel(self) -> None:
-        """Request cancellation before work starts; running threads are not force-killed."""
+        """Cancel **pending** work, or request cooperative cancel while **running**.
+
+        Running daemon threads are not force-killed; use :func:`is_task_cancel_requested`
+        and :func:`complete_cancelled` inside long workers.
+        """
         raw = st.session_state.get(self._session_key)
         if not _is_managed_task_box(raw):
             return
         box = cast(dict[str, Any], raw)
 
         def write() -> None:
-            if box.get("status") == "pending":
+            stat = box.get("status")
+            if stat == "pending":
                 box["status"] = "cancelled"
+            elif stat == "running":
+                box["cancel_requested"] = True
 
         _with_box_lock(box, write)
+
+
+def submit_many(jobs: Sequence[tuple[str, Callable[[], Any]]]) -> tuple[TaskHandle[Any], ...]:
+    """Start several independent tasks (gather-style); each entry is ``(key, fn)``.
+
+    Keys must be unique after stripping; raises :exc:`ValueError` on duplicates or
+    blank keys. Returns a tuple of :class:`TaskHandle` in the same order as ``jobs``.
+    An empty ``jobs`` sequence returns an empty tuple.
+    """
+    seen: set[str] = set()
+    out: list[TaskHandle[Any]] = []
+    for key, fn in jobs:
+        if not isinstance(key, str) or not key.strip():
+            raise ValueError("submit_many: each task key must be a non-empty string")
+        k = key.strip()
+        if k in seen:
+            raise ValueError(f"submit_many: duplicate task key {k!r}")
+        seen.add(k)
+        out.append(submit(fn, key=k))
+    return tuple(out)
 
 
 def submit(fn: Callable[..., T], /, *args: Any, key: str, **kwargs: Any) -> TaskHandle[T]:
@@ -157,6 +242,7 @@ def submit(fn: Callable[..., T], /, *args: Any, key: str, **kwargs: Any) -> Task
         "result": None,
         "error": None,
         "progress": None,
+        "cancel_requested": False,
         "_submitted": True,
         "_lock": threading.Lock(),
     }
@@ -180,13 +266,18 @@ def submit(fn: Callable[..., T], /, *args: Any, key: str, **kwargs: Any) -> Task
             def mark_error() -> None:
                 box["error"] = err
                 box["status"] = "error"
+                box["cancel_requested"] = False
 
             _with_box_lock(box, mark_error)
             return
 
         def mark_done() -> None:
+            # Worker may have called :func:`complete_cancelled` (``cancelled``); do not overwrite.
+            if box.get("status") != "running":
+                return
             box["result"] = result
             box["status"] = "done"
+            box["cancel_requested"] = False
 
         _with_box_lock(box, mark_done)
 
@@ -194,4 +285,11 @@ def submit(fn: Callable[..., T], /, *args: Any, key: str, **kwargs: Any) -> Task
     return TaskHandle(_session_key=sk)
 
 
-__all__ = ["TaskHandle", "set_task_progress", "submit"]
+__all__ = [
+    "TaskHandle",
+    "complete_cancelled",
+    "is_task_cancel_requested",
+    "set_task_progress",
+    "submit",
+    "submit_many",
+]

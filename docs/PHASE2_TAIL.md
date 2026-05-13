@@ -9,7 +9,8 @@ This note captures **larger or cross-cutting** Phase 2 themes that are intention
 
 ## `streamtree.asyncio` orchestration
 
-- `gather`-style composition helpers, cancellation UX, and documented stale-run rules (overlaps some Phase 3 language in the roadmap but remains fair game here).
+- **Shipped in 0.7.0:** `submit_many`, cooperative cancel (`is_task_cancel_requested`, `complete_cancelled`), and stale-key documentation on the asyncio module.
+- Further ideas: richer composition, cancellation UX polish, route prefetch (overlaps some Phase 3 language in the roadmap but remains fair game here).
 
 ## Form builder
 

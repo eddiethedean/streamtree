@@ -22,10 +22,14 @@ _Last updated: 2026-05-12._
 |-------|--------|--------|
 | Phase 0 — Foundation | **Complete** | Package layout, Streamlit renderer, design docs in `docs/`. |
 | Phase 1 — MVP | In progress | **0.1.0** core tree + state; **0.2.0** Pydantic + stub extras; deeper memoization / `streamlit-extras` curation still open. |
-| Phase 2 — Application | In progress | **Shipped through 0.6.0:** routing, `Routes`, `ErrorBoundary`, `app_context`, forms (str + numeric), **`App` / `render_app`**, theme, **`streamtree.asyncio`** (submit / `TaskHandle` + progress), **`PageLink`**, **`streamtree.helpers.runner`**, **`streamtree.helpers.pages`**, optional **`[cli]`** (`run` / `doctor` / **`init`**), **`AuthGate`** + **`[auth]`**, **`Dialog` / `Popover`**, optional **`[ui]`** (`streamlit-extras` wrappers). **Next:** deeper navigation polish, portals beyond dialogs, more `streamlit-extras` names, richer async orchestration, **`streamtree init`** templates evolution — see [PHASE2_TAIL.md](./PHASE2_TAIL.md). |
+| Phase 2 — Application | In progress | **Shipped through 0.7.0:** same as **0.6.0** plus **`streamtree.asyncio`** **`submit_many`**, cooperative cancel helpers, and stale-key docs (**0.7.0**). **Next:** navigation polish, portals, more **`streamlit-extras`** names, further async orchestration, **`streamtree init`** templates — see [PHASE2_TAIL.md](./PHASE2_TAIL.md). |
 | Phase 3 — Data toolkit | Planned | Tables, charts, performance playbooks; follows Phase 2. |
 | Phase 4 — Tooling | Planned | Testing, dev introspection; **`streamtree` CLI** MVP shipped in **0.4.0**; overlaps RTD handoff. |
 | Docs — Read the Docs | Planned | [Manual, guides, API](#documentation-platform-read-the-docs); **stable** / **latest**; CI doc builds. |
+
+### 0.7.0 (shipped)
+
+- **`streamtree.asyncio`:** **`submit_many`** for parallel independent tasks; cooperative cancellation (**`TaskHandle.cancel()`** on running work sets **`cancel_requested`**; **`is_task_cancel_requested`** / **`complete_cancelled`** for workers); **`mark_done`** respects worker-initiated **cancelled**; module docstring covers **stale keys** (same `key` = same logical task across reruns).
 
 ### 0.6.0 (shipped)
 

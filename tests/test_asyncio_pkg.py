@@ -9,7 +9,14 @@ from unittest.mock import patch
 
 import pytest
 
-from streamtree.asyncio import TaskHandle, set_task_progress, submit
+from streamtree.asyncio import (
+    TaskHandle,
+    complete_cancelled,
+    is_task_cancel_requested,
+    set_task_progress,
+    submit,
+    submit_many,
+)
 
 
 def test_submit_completes() -> None:
@@ -357,6 +364,9 @@ def test_with_box_lock_runs_fn_when_lock_missing() -> None:
     import streamtree.asyncio as aio_mod
 
     assert aio_mod._with_box_lock({"_lock": "not-a-lock"}, lambda: 42) == 42
+
+
+def test_set_task_progress_noop_for_foreign_dict_at_task_key() -> None:
     st = SimpleNamespace(session_state={})
     sk = "streamtree.asyncio.task.foreign"
     st.session_state[sk] = {"note": "not a task box"}
@@ -389,3 +399,106 @@ def test_submit_replaces_submitted_flag_without_lock() -> None:
         assert box.get("_submitted") is True
         lk = box["_lock"]
         assert hasattr(lk, "acquire") and hasattr(lk, "release")
+
+
+def test_is_task_cancel_requested_false_when_missing() -> None:
+    st = SimpleNamespace(session_state={})
+    with patch("streamtree.asyncio.st", st):
+        assert is_task_cancel_requested(key="nope") is False
+
+
+def test_complete_cancelled_noop_when_missing() -> None:
+    st = SimpleNamespace(session_state={})
+    with patch("streamtree.asyncio.st", st):
+        complete_cancelled(key="nope")
+
+
+def test_submit_many_completes_two_tasks() -> None:
+    st = SimpleNamespace(session_state={})
+
+    def a() -> int:
+        return 1
+
+    def b() -> int:
+        return 2
+
+    with patch("streamtree.asyncio.st", st):
+        h1, h2 = submit_many((("ja", a), ("jb", b)))
+        deadline = time.monotonic() + 2.0
+        while time.monotonic() < deadline:
+            if h1.status() == "done" and h2.status() == "done":
+                break
+            time.sleep(0.01)
+        assert h1.result() == 1
+        assert h2.result() == 2
+
+
+def test_submit_many_empty() -> None:
+    st = SimpleNamespace(session_state={})
+    with patch("streamtree.asyncio.st", st):
+        assert submit_many(()) == ()
+
+
+def test_submit_many_duplicate_keys() -> None:
+    st = SimpleNamespace(session_state={})
+    with patch("streamtree.asyncio.st", st), pytest.raises(ValueError, match="duplicate"):
+        submit_many((("x", lambda: 1), ("x", lambda: 2)))
+
+
+def test_submit_many_blank_key() -> None:
+    st = SimpleNamespace(session_state={})
+    with patch("streamtree.asyncio.st", st), pytest.raises(ValueError, match="non-empty"):
+        submit_many((("  ", lambda: 1),))
+
+
+def test_cooperative_cancel_while_running() -> None:
+    st = SimpleNamespace(session_state={})
+    started = threading.Event()
+    proceed = threading.Event()
+
+    def work() -> int | None:
+        started.set()
+        assert proceed.wait(timeout=2.0)
+        if is_task_cancel_requested(key="coop"):
+            complete_cancelled(key="coop")
+            return None
+        return 99
+
+    with patch("streamtree.asyncio.st", st):
+        h = submit(work, key="coop")
+        assert started.wait(timeout=2.0)
+        assert h.status() == "running"
+        h.cancel()
+        proceed.set()
+        deadline = time.monotonic() + 2.0
+        while time.monotonic() < deadline:
+            if h.status() == "cancelled":
+                break
+            time.sleep(0.01)
+        assert h.status() == "cancelled"
+        assert h.result() is None
+
+
+def test_normal_completion_wins_over_cancel_requested() -> None:
+    st = SimpleNamespace(session_state={})
+    started = threading.Event()
+    proceed = threading.Event()
+
+    def work() -> int:
+        started.set()
+        assert proceed.wait(timeout=2.0)
+        return 42
+
+    with patch("streamtree.asyncio.st", st):
+        h = submit(work, key="win")
+        assert started.wait(timeout=2.0)
+        h.cancel()
+        assert is_task_cancel_requested(key="win")
+        proceed.set()
+        deadline = time.monotonic() + 2.0
+        while time.monotonic() < deadline:
+            if h.status() == "done":
+                break
+            time.sleep(0.01)
+        assert h.status() == "done"
+        assert h.result() == 42
