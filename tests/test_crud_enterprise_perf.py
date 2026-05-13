@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -38,11 +40,27 @@ def test_emit_event_no_sink() -> None:
     emit_event("x", {"a": 1})
 
 
+class RecordingSink:
+    """Concrete sink: ``MagicMock`` is not always ``isinstance(..., EventSink)`` on 3.12+."""
+
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, dict[str, Any]]] = []
+
+    def emit(self, name: str, payload: Mapping[str, Any]) -> None:
+        self.calls.append((name, dict(payload)))
+
+
 def test_emit_event_calls_sink() -> None:
-    sink = MagicMock()
+    sink = RecordingSink()
     with provider(**{EVENT_SINK_KEY: sink}):
         emit_event("evt", {"ok": True})
-    sink.emit.assert_called_once_with("evt", {"ok": True})
+    assert sink.calls == [("evt", {"ok": True})]
+
+
+def test_emit_event_skips_lookup_value_that_is_not_event_sink() -> None:
+    """Non-protocol values in the bag are ignored (no exception)."""
+    with provider(**{EVENT_SINK_KEY: {"not": "a sink"}}):
+        emit_event("evt", {"ok": True})
 
 
 def test_emit_event_empty_name() -> None:
