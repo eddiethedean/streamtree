@@ -24,7 +24,7 @@ _Last updated: 2026-05-13._
 | Phase 1 — MVP | In progress | **0.1.0** core tree + state; **0.2.0** Pydantic + stub extras; deeper memoization / `streamlit-extras` curation still open. |
 | Phase 2 — Application | In progress | **Shipped through 0.8.0:** **`helpers.page_links`**, **`asyncio.dismiss_task`**, **`SocialBadge`** / **`StyleMetricCards`** (`[ui]`), **`init --with-pages`** sidebar wiring. **Still open:** portals, imperative handles, route prefetch, broader **`streamlit-extras`** curation, layout form builder — see [PHASE2_TAIL.md](./PHASE2_TAIL.md). |
 | Phase 3 — Data toolkit | In progress | **0.8.0:** **`[tables]`** / **`DataGrid`**, **`[charts]`** / **`Chart`**, **`sync_query_value`**, **`match_task`**, **`docs/PERFORMANCE.md`**. **Next:** richer CRUD patterns, chart breadth (Altair / echarts), deferred regions, performance hardening. |
-| Phase 4 — Tooling | Planned | Testing, dev introspection; **`streamtree` CLI** MVP shipped in **0.4.0**; overlaps RTD handoff. |
+| Phase 4 — Tooling | In progress | **`streamtree.testing.render_to_tree`** (JSON tree snapshots) shipped; CI runs **pytest** (100% coverage), **ruff**, **ty** on **`src`**. **`[cli]`** ships **`run`** / **`doctor`** / **`init`** (incl. **`--with-pages`**, **0.8.0**). **Still open:** richer dev introspection, **`tree` / `preview`**-style CLI, RTD — see [Phase 4](#phase-4--testing-and-tooling). |
 | Docs — Read the Docs | Planned | [Manual, guides, API](#documentation-platform-read-the-docs); **stable** / **latest**; CI doc builds. |
 
 ### 0.8.0 (shipped)
@@ -92,7 +92,7 @@ _Last updated: 2026-05-13._
 
 ### Backlog (post-0.6.0)
 
-- Richer **App** / **navigation** (beyond shell + `Routes` + `PageLink` + `init` template).
+- Richer **App** / **navigation** (beyond **`page_links`**, **`init --with-pages`**, and **`Routes`** + **`PageLink`** today).
 - **Auth** hardening and alternative providers (beyond **`streamlit-authenticator`**).
 - **Portals**, **imperative handles**, **route prefetch**, richer **async orchestration** beyond progress (e.g. composition, cancellation UX) on `streamtree.asyncio`.
 - **More** **`streamlit-extras`** curation behind stable StreamTree names (see [`PHASE2_TAIL.md`](./PHASE2_TAIL.md)).
@@ -202,23 +202,24 @@ StreamTree is **not** React and will **not** ship a browser VDOM. The list below
 
 - Production-grade apps on Streamlit: routing, resilience, theming, async slice, forms.
 
-### Completed (through 0.6.0)
+### Shipped on the Phase 2 track (0.2.0–0.8.0)
 
-The following Phase 2 themes are **done** for the current minor line; details and version pins live in the [Release index](#release-index).
+The bullets below are **delivered** today; per-version pins and changelog prose live in the [Release index](#release-index) and [CHANGELOG.md](../CHANGELOG.md).
 
 - **Routing & resilience:** `sync_route` / `set_route`, `Routes`, `ErrorBoundary`, `app_context`.
 - **Forms:** Pydantic-first string + scalar numeric bindings and inputs.
 - **App shell:** `App`, `apply_page_config`, `render_app`, sidebar composition, `PageLink` + `st.page_link`, `initial_sidebar_state` / `menu_items` passthrough.
 - **Theming:** `Theme` / `theme()` / `ThemeRoot`.
-- **Async worker slice:** `streamtree.asyncio` `submit` / `TaskHandle`, session task dict, **progress** field + **`set_task_progress`** / **`TaskHandle.progress()`**.
-- **Run / multipage DX (stdlib):** `streamtree.helpers.runner`, optional **`[cli]`** `streamtree run` / `doctor` / **`init`**, **`streamtree.helpers.pages`** for `pages/` discovery.
+- **Async worker slice:** `streamtree.asyncio` **`submit`** / **`TaskHandle`**, session task dict, **progress** + **`set_task_progress`** / **`TaskHandle.progress()`**; **`submit_many`** and **cooperative cancel** (**0.7.0**); **`dismiss_task`** for terminal cleanup before key reuse (**0.8.0**).
+- **Run / multipage DX (stdlib):** `streamtree.helpers.runner`, optional **`[cli]`** **`streamtree run`** / **`doctor`** / **`init`** (with **`--with-pages`** shell + **`page_links`**, **0.8.0**), **`streamtree.helpers.pages`** (`discover_pages`, **`page_links`**, …).
+- **Package surface:** **`helpers`** is exposed on the **`streamtree`** root package (**`streamtree.helpers`**).
 - **Optional auth:** **`AuthGate`** + **`[auth]`** (`streamlit-authenticator`).
 - **Overlays:** **`Dialog`**, **`Popover`** (Streamlit-native; version floor **1.33**).
-- **Optional UI extras:** **`[ui]`** first wrappers (`ColoredHeader`, `VerticalSpaceLines`).
+- **Optional UI extras:** **`[ui]`** — **`ColoredHeader`**, **`VerticalSpaceLines`** (**0.6.0**); **`SocialBadge`**, **`StyleMetricCards`** (**0.8.0**).
 
 ### Release notes
 
-Shipped scope for **0.2.0** through **0.6.0** is in the [Release index](#release-index) and subsections above. **Open** work is in the [backlog](#phase-2-backlog--near-term-themes) and [PHASE2_TAIL.md](./PHASE2_TAIL.md).
+Shipped scope for **0.2.0** through **0.8.0** is in the [Release index](#release-index) and subsections above. **Open** work is in the [backlog](#phase-2-backlog--near-term-themes) and [PHASE2_TAIL.md](./PHASE2_TAIL.md).
 
 ### Optional dependency alignment
 
@@ -228,7 +229,7 @@ Shipped scope for **0.2.0** through **0.6.0** is in the [Release index](#release
 
 ### Deliverables (remaining / stretch)
 
-Everything listed under **Completed (through 0.6.0)** above is **closed** for the current release line; items below are still **open**.
+Everything listed under **Shipped on the Phase 2 track** above is **closed** for those themes; items below are still **open**.
 
 - Deeper navigation framework, auth, portals, richer theme/forms/async as backlog clears.
 - Example apps for error boundaries + context + parallel loads + async UI branches.
@@ -243,8 +244,8 @@ Everything listed under **Completed (through 0.6.0)** above is **closed** for th
 
 ### Features
 
-- Tables, CRUD patterns, filters, query-state, dashboards, chart wrappers.
-- Memo for expensive branches; deferred regions; async loaders + **`streamtree.asyncio`** `gather`-style composition; declarative loader + ready/loading/error subtrees.
+- **Shipped (0.8.0):** optional **`[tables]`** / **`DataGrid`**, **`[charts]`** / **`Chart`** (Plotly MVP); **`routing.sync_query_value`** / **`set_query_value`**; **`streamtree.loading.match_task`** for declarative **loading / ready / error** subtrees from **`TaskHandle`**.
+- **Next:** richer CRUD, filters, and dashboards; chart breadth (Altair / echarts); subtree memoization for heavy branches; **deferred regions**; async loaders composed with **`submit_many`** and related **`streamtree.asyncio`** patterns.
 
 ### Optional dependency alignment
 
@@ -255,7 +256,8 @@ Everything listed under **Completed (through 0.6.0)** above is **closed** for th
 ### Deliverables
 
 - Templates, exploration toolkit, enterprise-oriented components.
-- Performance playbook; **`streamtree.asyncio`** reference (cancellation, stale-run rules).
+- **Shipped:** [`docs/PERFORMANCE.md`](./PERFORMANCE.md) playbook; examples **`datagrid_demo`**, **`chart_demo`**, **`async_loader_demo`**.
+- **Ongoing:** **`streamtree.asyncio`** reference depth (cancellation, stale-run rules) in RTD / guides when the docs site lands.
 
 ---
 
@@ -267,8 +269,9 @@ Everything listed under **Completed (through 0.6.0)** above is **closed** for th
 
 ### Features
 
-- Snapshot / `render_to_tree` JSON workflows; component tree visualization; dev introspection; in-flight async inspection in dev.
-- **Typer `streamtree` CLI** (`[cli]`): **`run` / `serve`**, `preview`, `doctor`, `tree`, optional **`init`**.
+- **Shipped:** **`streamtree.testing.render_to_tree`** for JSON snapshot workflows in tests (see README testing row).
+- **Planned:** component tree visualization; dev introspection; in-flight async inspection in dev.
+- **`[cli]` Typer entrypoint:** **Shipped** — **`run`**, **`doctor`**, **`init`** (with **`--with-pages`**). **Planned** — e.g. **`tree`**, **`preview`**, optional **`serve`** alias if we outgrow forwarding to **`streamlit run`**.
 - Storybook-style previews, visual regression, state inspection helpers.
 
 ### Optional dependency alignment
@@ -278,8 +281,9 @@ Everything listed under **Completed (through 0.6.0)** above is **closed** for th
 
 ### Deliverables
 
-- pytest + preview server + introspection surfaces; async testing kit (e.g. AppTest patterns).
-- **`streamtree` entry point** + non-interactive flags; **RTD ↔ CLI** copy alignment ([Documentation platform](#documentation-platform-read-the-docs)).
+- **Shipped / in repo today:** pytest + coverage gate in CI; **`render_to_tree`** workflows.
+- **Planned:** preview server + richer introspection surfaces; async testing kit (e.g. AppTest patterns).
+- **`streamtree` entry point** — extend with non-interactive flags (**`tree`**, etc.); **RTD ↔ CLI** copy alignment ([Documentation platform](#documentation-platform-read-the-docs)).
 
 ---
 
