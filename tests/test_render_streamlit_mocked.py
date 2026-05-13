@@ -503,6 +503,26 @@ def test_render_hstack_with_gap_inserts_gutter_columns() -> None:
     assert recorded == [[1.0, 0.12, 1.0]]
 
 
+def test_hstack_gap_strips_whitespace() -> None:
+    h = HStack(Text("a"), gap="  12px  ")
+    assert h.gap == "12px"
+
+
+def test_hstack_gap_empty_after_strip_is_none() -> None:
+    h = HStack(Text("a"), gap="   ")
+    assert h.gap is None
+
+
+def test_hstack_gap_rejects_html_injection() -> None:
+    with pytest.raises(ValueError, match="simple CSS length"):
+        HStack(Text("a"), gap='10px"></div><img src=x onerror=1>')
+
+
+def test_hstack_gap_rejects_calc() -> None:
+    with pytest.raises(ValueError, match="simple CSS length"):
+        HStack(Text("a"), gap="calc(100% - 20px)")
+
+
 def test_render_component_returns_none_raises() -> None:
     @component
     def N() -> Element:

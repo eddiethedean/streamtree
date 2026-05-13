@@ -33,7 +33,7 @@ streamtree = "streamtree.cli:main"
 
 [project.optional-dependencies]
 # Optional extras (see docs/DEPENDENCY_STRATEGY.md).
-tables = ["streamlit-aggrid>=0.3.0"]
+tables = ["streamlit-aggrid>=0.3.0", "pandas>=2.0.0"]
 charts = ["plotly>=5.18.0"]
 ui = ["streamlit-extras>=0.4.3"]
 auth = ["streamlit-authenticator>=0.3.3"]
@@ -49,6 +49,7 @@ runner = []
 # Combined: pip install "streamtree[tables,charts,ui,auth,asyncio,async,cli]" (meta-extra omitted; names like "cli" are PyPI packages in lists).
 all = [
   "streamlit-aggrid>=0.3.0",
+  "pandas>=2.0.0",
   "plotly>=5.18.0",
   "streamlit-extras>=0.4.3",
   "streamlit-authenticator>=0.3.3",
@@ -66,6 +67,7 @@ dev = [
   "streamlit-authenticator>=0.3.3",
   "streamlit-extras>=0.4.3",
   "streamlit-aggrid>=0.3.0",
+  "pandas>=2.0.0",
   "plotly>=5.18.0",
 ]
 

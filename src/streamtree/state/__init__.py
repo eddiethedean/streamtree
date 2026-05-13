@@ -156,7 +156,13 @@ def form_state(initial: T, *, key: str | None = None) -> FormState[T]:
 
 
 def memo(key: str, factory: Callable[[], T]) -> T:
-    """Run ``factory`` once per session for ``key`` (simple memoization)."""
+    """Run ``factory`` once per session for ``key`` (simple memoization).
+
+    Storage uses ``streamtree.memo.<key>`` in ``st.session_state``. That slot is **global to
+    the Streamlit session** (not namespaced by the active render path like :func:`state`).
+    Choose ``key`` values that are unique across your app—e.g. prefix with an app or
+    subsystem name—so unrelated components never share the same memo slot.
+    """
     sk = f"streamtree.memo.{key}"
     if sk not in st.session_state:
         st.session_state[sk] = factory()
@@ -164,7 +170,11 @@ def memo(key: str, factory: Callable[[], T]) -> T:
 
 
 def cache(key: str, value: T) -> T:
-    """Alias of memo with a precomputed value (store if missing)."""
+    """Alias of memo with a precomputed value (store if missing).
+
+    Uses ``streamtree.cache.<key>`` in ``st.session_state`` — **session-global**, not
+    render-path scoped (see :func:`memo`). Use distinct ``key`` strings to avoid collisions.
+    """
     sk = f"streamtree.cache.{key}"
     if sk not in st.session_state:
         st.session_state[sk] = value

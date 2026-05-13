@@ -2,11 +2,33 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
 from streamtree.core.element import Element, ElementChild, normalize_children
 from streamtree.state import StateVar, ToggleState
+
+# Gutter ``min-width`` is embedded in HTML (``unsafe_allow_html``); allow only simple lengths.
+_HSTACK_GAP_CSS = re.compile(
+    r"^(?:0|(?:\d+(?:\.\d+)?|\.\d+)(?:px|rem|em|ch|vw|vh|%))$",
+    re.IGNORECASE,
+)
+
+
+def _normalize_hstack_gap(gap: str | None) -> str | None:
+    if gap is None:
+        return None
+    stripped = gap.strip()
+    if not stripped:
+        return None
+    if not _HSTACK_GAP_CSS.fullmatch(stripped):
+        raise ValueError(
+            "HStack gap must be a simple CSS length (e.g. '8px', '0.5rem', '2ch', '10%'); "
+            f"got {gap!r}. Richer values like calc() are unsupported because gap is rendered "
+            "inside HTML with unsafe_allow_html."
+        )
+    return stripped
 
 
 @dataclass(frozen=True)
@@ -26,6 +48,8 @@ class HStack(Element):
 
     When ``gap`` is a non-empty string (e.g. ``\"12px\"`` or ``\"0.5rem\"``), narrow gutter columns
     are inserted between children; each gutter uses the string as CSS ``min-width`` on a spacer.
+    ``gap`` must be a simple length (``0``, ``<number>px|rem|em|ch|vw|vh|%``) so it is safe to
+    embed in gutter HTML; arbitrary strings are rejected.
     """
 
     children: tuple[Element, ...] = field(default_factory=tuple)
@@ -38,7 +62,7 @@ class HStack(Element):
         key: str | None = None,
     ) -> None:
         object.__setattr__(self, "key", key)
-        object.__setattr__(self, "gap", gap)
+        object.__setattr__(self, "gap", _normalize_hstack_gap(gap))
         object.__setattr__(self, "children", normalize_children(children))
 
 

@@ -92,3 +92,13 @@ def test_theme_rejects_custom_css_expression_url() -> None:
 def test_theme_rejects_custom_css_script_tag() -> None:
     with pytest.raises(ValidationError):
         Theme(custom_css="body <script>alert(1)</script>")
+
+
+def test_theme_rejects_custom_css_at_import() -> None:
+    with pytest.raises(ValidationError, match="@import"):
+        Theme(custom_css="@import url('x.css');")
+
+
+def test_theme_rejects_custom_css_javascript_url() -> None:
+    with pytest.raises(ValidationError, match="javascript:"):
+        Theme(custom_css="a { background: url('javascript:alert(1)'); }")

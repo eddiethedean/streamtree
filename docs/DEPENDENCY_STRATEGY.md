@@ -312,6 +312,8 @@ DataGrid(
 
 Under the hood, this uses streamlit-aggrid when installed.
 
+**pandas:** ``streamtree.tables`` coerces inputs with **pandas** (``DataFrame`` / tabular data). The **`[tables]`** extra pins **pandas** alongside **streamlit-aggrid** so installs stay reproducible if upstream packages relax their transitive pandas requirement.
+
 ### Strategic Value
 
 This is one of the most important optional dependencies for serious business apps.
@@ -325,7 +327,8 @@ Optional dependency under `tables`.
 ```toml
 [project.optional-dependencies]
 tables = [
-    "streamlit-aggrid",
+    "streamlit-aggrid>=0.3.0",
+    "pandas>=2.0.0",
 ]
 ```
 
@@ -702,7 +705,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-tables = ["streamlit-aggrid>=0.3.0"]
+tables = ["streamlit-aggrid>=0.3.0", "pandas>=2.0.0"]
 charts = ["plotly>=5.18.0"]
 ui = ["streamlit-extras>=0.4.3"]
 auth = ["streamlit-authenticator>=0.3.3"]
@@ -713,6 +716,7 @@ pages = []
 runner = []
 all = [
     "streamlit-aggrid>=0.3.0",
+    "pandas>=2.0.0",
     "plotly>=5.18.0",
     "streamlit-extras>=0.4.3",
     "streamlit-authenticator>=0.3.3",
@@ -729,6 +733,7 @@ dev = [
     "streamlit-authenticator>=0.3.3",
     "streamlit-extras>=0.4.3",
     "streamlit-aggrid>=0.3.0",
+    "pandas>=2.0.0",
     "plotly>=5.18.0",
 ]
 ```
@@ -794,7 +799,7 @@ Not pinned in the default manifest; sections below discuss if/when to adopt **st
 The **authoritative** dependency list is **`pyproject.toml`**. As of **0.9.0**:
 
 - **Core:** `streamlit`, `pydantic`, `typing-extensions`.
-- **Extras:** `tables` (aggrid), `charts` (plotly), `ui` (streamlit-extras), `auth` (streamlit-authenticator), `cli` (typer); **`[all]`** bundles those five.
+- **Extras:** `tables` (streamlit-aggrid + pandas), `charts` (plotly), `ui` (streamlit-extras), `auth` (streamlit-authenticator), `cli` (typer); **`[all]`** bundles those five.
 - **`[asyncio]`** / **`[async]`**, **`[pages]`**, **`[runner]`** remain empty metadata slots unless future pins are added.
 
 ```toml
@@ -806,13 +811,14 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-tables = ["streamlit-aggrid>=0.3.0"]
+tables = ["streamlit-aggrid>=0.3.0", "pandas>=2.0.0"]
 charts = ["plotly>=5.18.0"]
 ui = ["streamlit-extras>=0.4.3"]
 auth = ["streamlit-authenticator>=0.3.3"]
 cli = ["typer>=0.12.3"]
 all = [
     "streamlit-aggrid>=0.3.0",
+    "pandas>=2.0.0",
     "plotly>=5.18.0",
     "streamlit-extras>=0.4.3",
     "streamlit-authenticator>=0.3.3",

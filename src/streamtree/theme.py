@@ -19,8 +19,9 @@ _HEX_COLOR = re.compile(r"^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
 class Theme(BaseModel):
     """Serializable theme tokens for custom CSS (Streamlit-native config stays separate).
 
-    ``primary_color`` and ``font_stack`` are validated as safe CSS tokens. ``custom_css`` is not
-    sandboxed: treat it as **trusted** input (same privilege as app code writing ``<style>``).
+    ``primary_color`` and ``font_stack`` are validated as safe CSS tokens. ``custom_css`` is only
+    lightly filtered (``<script``, ``expression(``, ``@import``, ``javascript:``); it is not a
+    full CSS sandbox—treat it as **trusted** input (same privilege as app code writing ``<style>``).
     """
 
     model_config = {"frozen": True}
@@ -36,7 +37,11 @@ class Theme(BaseModel):
     mode: Literal["light", "dark"] = "light"
     custom_css: str = Field(
         default="",
-        description="Appended after generated tokens; trusted CSS only (no ``<script>``).",
+        description=(
+            "Appended after generated tokens; trusted CSS only. "
+            "Blocks ``<script``, ``expression(``, ``@import``, and ``javascript:``; "
+            "other vectors (e.g. ``data:`` URLs) remain possible—keep inputs privileged."
+        ),
     )
 
     @field_validator("primary_color")
@@ -61,6 +66,14 @@ class Theme(BaseModel):
         low = v.lower()
         if "<script" in low or "expression(" in low:
             raise ValueError("custom_css contains disallowed patterns; keep Theme inputs trusted")
+        if "@import" in low:
+            raise ValueError(
+                "custom_css must not use @import; keep Theme inputs trusted or bundle CSS elsewhere"
+            )
+        if "javascript:" in low:
+            raise ValueError(
+                "custom_css must not contain javascript: URLs; keep Theme inputs trusted"
+            )
         return v
 
 

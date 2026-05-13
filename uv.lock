@@ -2282,6 +2282,8 @@ dependencies = [
 
 [package.optional-dependencies]
 all = [
+    { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "pandas", version = "3.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "plotly" },
     { name = "streamlit-aggrid" },
     { name = "streamlit-authenticator" },
@@ -2300,6 +2302,8 @@ cli = [
 dev = [
     { name = "mkdocs" },
     { name = "mypy" },
+    { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "pandas", version = "3.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "plotly" },
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -2312,6 +2316,8 @@ dev = [
     { name = "typer" },
 ]
 tables = [
+    { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "pandas", version = "3.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "streamlit-aggrid" },
 ]
 ui = [
@@ -2322,6 +2328,9 @@ ui = [
 requires-dist = [
     { name = "mkdocs", marker = "extra == 'dev'", specifier = ">=1.6.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.8.0" },
+    { name = "pandas", marker = "extra == 'all'", specifier = ">=2.0.0" },
+    { name = "pandas", marker = "extra == 'dev'", specifier = ">=2.0.0" },
+    { name = "pandas", marker = "extra == 'tables'", specifier = ">=2.0.0" },
     { name = "plotly", marker = "extra == 'all'", specifier = ">=5.18.0" },
     { name = "plotly", marker = "extra == 'charts'", specifier = ">=5.18.0" },
     { name = "plotly", marker = "extra == 'dev'", specifier = ">=5.18.0" },
