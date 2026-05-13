@@ -5,21 +5,6 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Changed
-
-- **`session_state(..., default=None)`:** first read on a missing key now raises **`ValueError`** with a hint instead of a bare **`KeyError`**.
-- **`streamtree.helpers.scaffold.app_py_source`:** embeds **`page_title`** via **`repr()`** so generated **`app.py`** stays valid for arbitrary titles.
-- **`streamtree.asyncio`:** **`TaskHandle`** and **`set_task_progress`** only touch task dicts that include a real **`threading.Lock`** (same shape as **`submit`**); fake **`_submitted`** entries without a lock are replaced on **`submit`**.
-- **`ErrorBoundary`:** if **`on_error`** raises, the error is logged and **`fallback`** is still rendered.
-
-### Documentation
-
-- **`Dialog`:** legacy runtime without **`st.dialog`** renders children inline (not a modal); README overlay bullet clarified.
-- **`App` / `apply_page_config`:** document one-shot **`st.set_page_config`** per session.
-- **[`docs/DEPENDENCY_STRATEGY.md`](docs/DEPENDENCY_STRATEGY.md):** note that **`[all]`** is currently an empty optional extra.
-
 ## [0.6.0] — 2026-05-12
 
 ### Added
@@ -34,11 +19,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Dependencies:** **`streamlit>=1.33.0`**; **`[auth]`** pins **`streamlit-authenticator`**, **`[ui]`** pins **`streamlit-extras`**; **`[dev]`** includes both for contributor / CI installs.
+- **`session_state(..., default=None)`:** first read on a missing key raises **`ValueError`** with a hint instead of a bare **`KeyError`**.
+- **`streamtree.helpers.scaffold.app_py_source`:** embeds **`page_title`** via **`repr()`** so generated **`app.py`** stays valid for arbitrary titles.
+- **`streamtree.asyncio`:** **`TaskHandle`** and **`set_task_progress`** only touch task dicts that include a real **`threading.Lock`** (same shape as **`submit`**); fake **`_submitted`** entries without a lock are replaced on **`submit`**.
+- **`ErrorBoundary`:** if **`on_error`** raises, the error is logged and **`fallback`** is still rendered.
 
 ### Documentation
 
-- README: **0.6.0** pin, Streamlit **1.33+**, **`streamtree init`**, auth / overlay / **`[ui]`** capabilities; releases tag **`v0.6.0`**.
-- [ROADMAP.md](docs/ROADMAP.md), [PLAN.md](docs/PLAN.md), [DEPENDENCY_STRATEGY.md](docs/DEPENDENCY_STRATEGY.md): **0.6.0** shipped scope and optional-extra notes.
+- README: **0.6.0** pin, Streamlit **1.33+**, **`streamtree init`**, auth / overlay / **`[ui]`** capabilities; releases tag **`v0.6.0`**; overlay bullet clarifies **`Dialog`** legacy (inline) vs **`Popover`** (expander) fallbacks.
+- [ROADMAP.md](docs/ROADMAP.md), [PLAN.md](docs/PLAN.md), [DEPENDENCY_STRATEGY.md](docs/DEPENDENCY_STRATEGY.md): **0.6.0** shipped scope and optional-extra notes (including empty **`[all]`** placeholder).
+- **`Dialog`**, **`App` / `apply_page_config`:** docstrings for legacy dialog behavior and one-shot **`st.set_page_config`** per session.
 
 ## [0.5.0] — 2026-05-12
 
