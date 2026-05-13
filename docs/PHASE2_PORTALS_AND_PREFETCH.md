@@ -37,3 +37,5 @@ Background **thread** prefetch of file reads may be composed with **`streamtree.
 ## Imperative handles
 
 Streamlit does not expose stable focus/scroll APIs for arbitrary widgets across reruns. StreamTree documents **query params**, **`st.session_state`**, and **`st.rerun`** as the portable “imperative edge”; see README “Imperative handles” after this phase.
+
+Extended field types and **`Form`** batch notes live in [PHASE2_FORMS.md](./PHASE2_FORMS.md).

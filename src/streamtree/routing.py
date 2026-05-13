@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 import streamlit as st
 
 _DEFAULT_PARAM = "route"
@@ -130,4 +132,53 @@ def set_route(name: str, *, param: str = _DEFAULT_PARAM) -> None:
     st.query_params[param] = name
 
 
-__all__ = ["set_query_value", "set_route", "sync_query_value", "sync_route"]
+def clear_query_param(*, param: str) -> None:
+    """Remove a generic query param and its :func:`sync_query_value` session mirror."""
+    param = _validate_param(param)
+    st.session_state.pop(_query_value_session_key(param), None)
+    qp = st.query_params
+    if param not in qp:
+        return
+    try:
+        del qp[param]
+    except TypeError:
+        pop = getattr(qp, "pop", None)
+        if callable(pop):
+            pop(param, None)
+
+
+def clear_route(*, param: str = _DEFAULT_PARAM) -> None:
+    """Remove the active route name and ``param`` from the query string (session + URL)."""
+    param = _validate_param(param)
+    st.session_state.pop(_active_session_key(param), None)
+    qp = st.query_params
+    if param not in qp:
+        return
+    try:
+        del qp[param]
+    except TypeError:
+        pop = getattr(qp, "pop", None)
+        if callable(pop):
+            pop(param, None)
+
+
+def update_query_params(values: Mapping[str, str]) -> None:
+    """Set several filter-style query params (each value coerced to ``str``).
+
+    Uses :func:`set_query_value` per key so :func:`sync_query_value` session mirrors stay
+    aligned. For the special **route** slot, prefer :func:`set_route` / :func:`sync_route`
+    if you need default-route semantics.
+    """
+    for k, v in values.items():
+        set_query_value(v, param=_validate_param(k))
+
+
+__all__ = [
+    "clear_query_param",
+    "clear_route",
+    "set_query_value",
+    "set_route",
+    "sync_query_value",
+    "sync_route",
+    "update_query_params",
+]

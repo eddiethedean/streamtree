@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 from pydantic import BaseModel, Field, ValidationError
 
-from streamtree.forms import bind_numeric_fields, bind_str_fields
+from streamtree.forms import bind_bool_fields, bind_numeric_fields, bind_str_fields
 from streamtree.forms_layout import build_model_from_bindings, model_field_grid
 
 
@@ -48,7 +48,7 @@ def test_model_field_grid_builds_columns_rows() -> None:
 def test_model_field_grid_rejects_unknown_field() -> None:
     sb = bind_str_fields(RowModel, key_prefix="g2")
     nb = bind_numeric_fields(RowModel, key_prefix="g2")
-    with pytest.raises(ValueError, match="not a str or numeric"):
+    with pytest.raises(ValueError, match="not a str, numeric, or bool"):
         model_field_grid(RowModel, (("nope",),), str_bindings=sb, numeric_bindings=nb)
 
 
@@ -85,3 +85,67 @@ def test_model_field_grid_missing_numeric_binding_in_row() -> None:
     sb["name"].set("Ada")
     with pytest.raises(ValueError, match="missing numeric binding"):
         model_field_grid(RowModel, (("age",),), str_bindings=sb, numeric_bindings={})
+
+
+def test_model_field_grid_bool_row() -> None:
+    class Flags(BaseModel):
+        name: str
+        active: bool
+
+    nb = bind_numeric_fields(Flags, key_prefix="bf2")
+    sb = bind_str_fields(Flags, key_prefix="bf2")
+    bb = bind_bool_fields(Flags, key_prefix="bf2")
+    sb["name"].set("Ada")
+    bb["active"].set(False)
+    grid = model_field_grid(
+        Flags,
+        (("name", "active"),),
+        str_bindings=sb,
+        numeric_bindings=nb,
+        bool_bindings=bb,
+    )
+    from streamtree.testing import render_to_tree
+
+    tree = render_to_tree(grid)
+    assert tree["kind"] == "VStack"
+    kinds = [c["kind"] for c in tree["children"][0]["children"]]
+    assert "TextInput" in kinds
+    assert "Checkbox" in kinds
+
+
+def test_build_model_with_bool() -> None:
+    class Flags(BaseModel):
+        name: str
+        active: bool = True
+
+    sb = bind_str_fields(Flags, key_prefix="bm")
+    bb = bind_bool_fields(Flags, key_prefix="bm")
+    nb = bind_numeric_fields(Flags, key_prefix="bm")
+    sb["name"].set("Ada")
+    bb["active"].set(False)
+    m = build_model_from_bindings(Flags, str_bindings=sb, numeric_bindings=nb, bool_bindings=bb)
+    assert m.name == "Ada"
+    assert m.active is False
+
+
+def test_build_model_missing_bool_binding() -> None:
+    class Flags(BaseModel):
+        name: str
+        active: bool
+
+    sb = bind_str_fields(Flags, key_prefix="mbb")
+    nb = bind_numeric_fields(Flags, key_prefix="mbb")
+    sb["name"].set("Ada")
+    with pytest.raises(ValueError, match="missing bool binding"):
+        build_model_from_bindings(Flags, str_bindings=sb, numeric_bindings=nb, bool_bindings={})
+
+
+def test_model_field_grid_missing_bool_binding_in_row() -> None:
+    class Flags(BaseModel):
+        name: str
+        active: bool
+
+    sb = bind_str_fields(Flags, key_prefix="mbr")
+    nb = bind_numeric_fields(Flags, key_prefix="mbr")
+    with pytest.raises(ValueError, match="missing bool binding"):
+        model_field_grid(Flags, (("active",),), str_bindings=sb, numeric_bindings=nb)

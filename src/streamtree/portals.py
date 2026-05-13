@@ -32,8 +32,11 @@ from streamtree.elements.ui_extra import (
     BottomDock,
     ColoredHeader,
     FloatingActionButton,
+    MentionChip,
     SocialBadge,
     StyleMetricCards,
+    Stoggle,
+    TaggerRow,
     VerticalSpaceLines,
 )
 from streamtree.tables import DataGrid
@@ -105,10 +108,19 @@ def _structural_children(node: Element) -> Iterator[Element]:
         yield from node.children
         return
     if isinstance(
-        node, (ColoredHeader, VerticalSpaceLines, SocialBadge, StyleMetricCards, DataGrid)
+        node,
+        (
+            ColoredHeader,
+            FloatingActionButton,
+            MentionChip,
+            SocialBadge,
+            StyleMetricCards,
+            Stoggle,
+            TaggerRow,
+            VerticalSpaceLines,
+            DataGrid,
+        ),
     ):
-        return
-    if isinstance(node, FloatingActionButton):
         return
     # Leaf widgets and other Elements: no structural children
     return

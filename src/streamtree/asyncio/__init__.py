@@ -42,7 +42,8 @@ Use :func:`submit_many` for parallel independent tasks. For declarative loading 
 
 After a terminal **done** / **error** / **cancelled** run, :func:`dismiss_task` removes the
 session entry for a ``key`` so the next :func:`submit` can reuse that key without colliding
-with stale task state.
+with stale task state. Use :func:`dismiss_tasks` to clear several terminal keys in one call
+(return count of successful removals).
 """
 
 from __future__ import annotations
@@ -324,10 +325,23 @@ def dismiss_task(*, key: str) -> bool:
     return True
 
 
+def dismiss_tasks(*, keys: Sequence[str]) -> int:
+    """Call :func:`dismiss_task` for each key; return how many returned ``True``."""
+    n = 0
+    for raw in keys:
+        key = str(raw).strip()
+        if not key:
+            raise ValueError("async task key must be a non-empty string")
+        if dismiss_task(key=key):
+            n += 1
+    return n
+
+
 __all__ = [
     "TaskHandle",
     "complete_cancelled",
     "dismiss_task",
+    "dismiss_tasks",
     "is_task_cancel_requested",
     "set_task_progress",
     "submit",

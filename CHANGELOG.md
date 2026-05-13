@@ -11,10 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`streamtree.portals`:** **`gather_portals`**, **`portal_render_context`**, **`take_portal_children`**; layout elements **`Portal`**, **`PortalMount`** (named-slot deferred rendering; see **`docs/PHASE2_PORTALS_AND_PREFETCH.md`**).
 - **`SplitView`** layout (narrow + main column strip, pseudo-sidebar without a second **`st.sidebar`**).
-- **`streamtree.helpers.pages`:** **`iter_page_entries`**, **`prefetch_page_sources`** (optional **`compile()`** syntax warm-up for page scripts without importing modules).
-- **`streamtree.forms_layout`:** **`model_field_grid`**, **`build_model_from_bindings`** for row/column Pydantic forms.
-- **`[ui]`** elements **`BottomDock`** (bottom container) and **`FloatingActionButton`** (floating action button) via **streamlit-extras**.
-- **Docs:** **`docs/PHASE2_PORTALS_AND_PREFETCH.md`** (Phase 2 portals / prefetch / form-layout contract).
+- **`streamtree.helpers.pages`:** **`iter_page_entries`**, **`prefetch_page_sources`** (optional **`compile()`** syntax warm-up for page scripts without importing modules); **`group_page_entries_by_order_prefix`**, **`page_links_sidebar_sections`**, **`multipage_sidebar_nav`** (sectioned sidebar nav).
+- **`streamtree.forms_layout`:** **`model_field_grid`**, **`build_model_from_bindings`** for row/column Pydantic forms (including **bool** fields); **`bool_field_names`**, **`bind_bool_fields`** in **`streamtree.forms`**; doc **`docs/PHASE2_FORMS.md`**.
+- **`[ui]`** elements **`BottomDock`** (bottom container), **`FloatingActionButton`**, **`Stoggle`**, **`TaggerRow`**, **`MentionChip`** (streamlit-extras).
+- **Routing:** **`clear_query_param`**, **`clear_route`**, **`update_query_params`** for URL/session cleanup and multi-key updates.
+- **Async:** **`dismiss_tasks`** batch terminal cleanup.
+- **Docs:** **`docs/PHASE2_PORTALS_AND_PREFETCH.md`** (Phase 2 portals / prefetch / form-layout contract); **`docs/PHASE2_TAIL.md`** reconciliation; roadmap Phase 2 closure.
+- **Example:** **`examples/phase2_composite_demo.py`** (ErrorBoundary, `app_context`, `Routes`, `submit_many`).
 
 ### Changed
 

@@ -8,7 +8,15 @@ from unittest.mock import patch
 import pytest
 
 from streamtree import routing as routing_mod
-from streamtree.routing import set_query_value, set_route, sync_query_value, sync_route
+from streamtree.routing import (
+    clear_query_param,
+    clear_route,
+    set_query_value,
+    set_route,
+    sync_query_value,
+    sync_route,
+    update_query_params,
+)
 
 _SK_ROUTE = "streamtree.routing.active.route"
 
@@ -229,6 +237,10 @@ def test_two_query_params_independent() -> None:
         (sync_query_value, {"default": "x", "param": "  "}),
         (set_query_value, {"value": "x", "param": ""}),
         (set_query_value, {"value": "x", "param": "  "}),
+        (clear_query_param, {"param": ""}),
+        (clear_query_param, {"param": "  "}),
+        (clear_route, {"param": ""}),
+        (clear_route, {"param": "  "}),
     ],
 )
 def test_routing_rejects_blank_strings(
@@ -238,3 +250,84 @@ def test_routing_rejects_blank_strings(
     st = SimpleNamespace(session_state={}, query_params={})
     with patch("streamtree.routing.st", st), pytest.raises(ValueError):
         fn(**kwargs)  # type: ignore[misc]
+
+
+def test_clear_query_param_removes_session_and_url() -> None:
+    qp: dict[str, str] = {"q": "v"}
+    st = SimpleNamespace(session_state={"streamtree.query.value.q": "v"}, query_params=qp)
+    with patch("streamtree.routing.st", st):
+        clear_query_param(param="q")
+    assert "q" not in qp
+    assert "streamtree.query.value.q" not in st.session_state
+
+
+def test_clear_route_removes_session_and_url() -> None:
+    qp: dict[str, str] = {"route": "home"}
+    st = SimpleNamespace(
+        session_state={"streamtree.routing.active.route": "home"},
+        query_params=qp,
+    )
+    with patch("streamtree.routing.st", st):
+        clear_route(param="route")
+    assert "route" not in qp
+    assert "streamtree.routing.active.route" not in st.session_state
+
+
+def test_update_query_params_sets_many() -> None:
+    qp: dict[str, str] = {}
+    st = SimpleNamespace(session_state={}, query_params=qp)
+    with patch("streamtree.routing.st", st):
+        update_query_params({"a": "1", "b": "2"})
+    assert qp["a"] == "1"
+    assert qp["b"] == "2"
+    assert st.session_state["streamtree.query.value.a"] == "1"
+    assert st.session_state["streamtree.query.value.b"] == "2"
+
+
+class _QueryParamsNoDel:
+    """``del`` raises ``TypeError`` (exercise ``pop`` fallback)."""
+
+    def __init__(self) -> None:
+        self._store: dict[str, str] = {"q": "v", "route": "home"}
+
+    def __contains__(self, key: object) -> bool:
+        return str(key) in self._store
+
+    def __delitem__(self, key: object) -> None:
+        raise TypeError("del not supported")
+
+    def pop(self, key: object, default: object = None) -> object:
+        return self._store.pop(str(key), default)
+
+
+def test_clear_query_param_pop_fallback() -> None:
+    qp = _QueryParamsNoDel()
+    st = SimpleNamespace(session_state={"streamtree.query.value.q": "v"}, query_params=qp)
+    with patch("streamtree.routing.st", st):
+        clear_query_param(param="q")
+    assert "q" not in qp._store
+    assert "streamtree.query.value.q" not in st.session_state
+
+
+def test_clear_route_pop_fallback() -> None:
+    qp = _QueryParamsNoDel()
+    st = SimpleNamespace(
+        session_state={"streamtree.routing.active.route": "home"},
+        query_params=qp,
+    )
+    with patch("streamtree.routing.st", st):
+        clear_route(param="route")
+    assert "route" not in qp._store
+    assert "streamtree.routing.active.route" not in st.session_state
+
+
+def test_clear_query_param_noop_when_param_absent() -> None:
+    st = SimpleNamespace(session_state={}, query_params={})
+    with patch("streamtree.routing.st", st):
+        clear_query_param(param="nope")
+
+
+def test_clear_route_noop_when_param_absent() -> None:
+    st = SimpleNamespace(session_state={}, query_params={})
+    with patch("streamtree.routing.st", st):
+        clear_route(param="route")

@@ -33,6 +33,7 @@ from streamtree.elements import (
     HStack,
     Image,
     Markdown,
+    MentionChip,
     NumberInput,
     Page,
     PageLink,
@@ -45,9 +46,11 @@ from streamtree.elements import (
     SocialBadge,
     Spacer,
     SplitView,
+    Stoggle,
     StyleMetricCards,
     Subheader,
     Tabs,
+    TaggerRow,
     Text,
     TextInput,
     Title,
@@ -937,3 +940,93 @@ def test_render_floating_action_button_import_error_message() -> None:
     with _patched_st(st), patch.object(builtins, "__import__", side_effect=_fake):
         with render_context("fabie"), pytest.raises(ImportError, match="streamtree\\[ui\\]"):
             rs.render_element(FloatingActionButton("Go", key="fab2"), slot="0")
+
+
+def test_render_stoggle_mocked() -> None:
+    st = _make_st()
+    stog = MagicMock()
+    with _patched_st(st), patch("streamlit_extras.stoggle.stoggle", stog):
+        with render_context("stg"):
+            tree = Page(Stoggle("S", "body"))
+            from streamtree.portals import portal_render_context
+
+            with portal_render_context(tree):
+                rs.render_element(tree)
+    stog.assert_called_once_with("S", "body")
+
+
+def test_render_tagger_row_mocked() -> None:
+    st = _make_st()
+    tag = MagicMock()
+    with _patched_st(st), patch("streamlit_extras.tags.tagger_component", tag):
+        with render_context("tag"):
+            tree = Page(
+                TaggerRow(
+                    "Hi",
+                    ("a", "b"),
+                    color_name=("red", "blue"),
+                    text_color_name=("w", "k"),
+                )
+            )
+            from streamtree.portals import portal_render_context
+
+            with portal_render_context(tree):
+                rs.render_element(tree)
+    tag.assert_called_once()
+    assert tag.call_args[0][0] == "Hi"
+    assert tag.call_args[0][1] == ["a", "b"]
+
+
+def test_render_mention_chip_mocked() -> None:
+    st = _make_st()
+    men = MagicMock(return_value=None)
+    with _patched_st(st), patch("streamlit_extras.mention.mention", men):
+        with render_context("men"):
+            tree = Page(MentionChip("Docs", "https://example.invalid", icon="📎"))
+            from streamtree.portals import portal_render_context
+
+            with portal_render_context(tree):
+                rs.render_element(tree)
+    men.assert_called_once_with("Docs", "https://example.invalid", icon="📎", write=True)
+
+
+def test_render_stoggle_import_error_message() -> None:
+    st = _make_st()
+    real_import = builtins.__import__
+
+    def _fake(name: str, *a: object, **kw: object):
+        if name == "streamlit_extras.stoggle":
+            raise ImportError("blocked")
+        return real_import(name, *a, **kw)
+
+    with _patched_st(st), patch.object(builtins, "__import__", side_effect=_fake):
+        with render_context("stgie"), pytest.raises(ImportError, match="streamtree\\[ui\\]"):
+            rs.render_element(Stoggle("a", "b"), slot="0")
+
+
+def test_render_tagger_row_import_error_message() -> None:
+    st = _make_st()
+    real_import = builtins.__import__
+
+    def _fake(name: str, *a: object, **kw: object):
+        if name == "streamlit_extras.tags":
+            raise ImportError("blocked")
+        return real_import(name, *a, **kw)
+
+    with _patched_st(st), patch.object(builtins, "__import__", side_effect=_fake):
+        with render_context("tagie"), pytest.raises(ImportError, match="streamtree\\[ui\\]"):
+            rs.render_element(TaggerRow("c", ("t",)), slot="0")
+
+
+def test_render_mention_chip_import_error_message() -> None:
+    st = _make_st()
+    real_import = builtins.__import__
+
+    def _fake(name: str, *a: object, **kw: object):
+        if name == "streamlit_extras.mention":
+            raise ImportError("blocked")
+        return real_import(name, *a, **kw)
+
+    with _patched_st(st), patch.object(builtins, "__import__", side_effect=_fake):
+        with render_context("menie"), pytest.raises(ImportError, match="streamtree\\[ui\\]"):
+            rs.render_element(MentionChip("L", "https://x.invalid"), slot="0")

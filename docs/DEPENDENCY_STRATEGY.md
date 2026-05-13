@@ -562,22 +562,15 @@ Useful for:
 - simple internal app authentication
 - session-based user tracking
 
-### StreamTree Integration Ideas
+### StreamTree integration (shipped)
 
-```python
-AuthProvider(
-    config=auth_config,
-    children=AppShell(...)
-)
-```
-
-or:
-
-```python
-@app.protected_page("/admin")
-def admin():
-    return AdminDashboard()
-```
+Use **`AuthGate`** with credentials from **`streamtree.auth.build_authenticator`**
+(see **`examples/auth_demo.py`**). The **`[auth]`** extra pins **`streamlit-authenticator`**.
+**Extension points:** wrap **`AuthGate`** in your own **`@component`** shells, merge
+extra keys into the authenticator config dict, or gate **`Routes`** children with
+conditional trees—there is **no** separate pluggable **`AuthProvider`** protocol in the
+library today; third-party OIDC/SAML stacks remain **bring-your-own** behind your
+components and session state.
 
 ### Strategic Value
 

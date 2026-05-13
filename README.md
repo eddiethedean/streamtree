@@ -3,7 +3,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/streamtree)](https://pypi.org/project/streamtree/)
 [![Python versions](https://img.shields.io/pypi/pyversions/streamtree)](https://pypi.org/project/streamtree/)
 [![License](https://img.shields.io/pypi/l/streamtree)](https://github.com/streamtree-dev/streamtree/blob/main/LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/streamtree-dev/streamtree/ci.yml?branch=main&label=CI)](https://github.com/streamtree-dev/streamtree/actions/workflows/ci.yml?query=branch%3Amain)
+[![CI](https://github.com/streamtree-dev/streamtree/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/streamtree-dev/streamtree/actions/workflows/ci.yml?query=branch%3Amain)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://docs.astral.sh/ruff/)
 
 Declarative, typed composition for [Streamlit](https://streamlit.io/). StreamTree adds components, layout primitives, scoped session state, and test-friendly tree rendering while keeping Streamlit’s execution model and widgets. No JavaScript or separate frontend build is required.
@@ -23,17 +23,17 @@ StreamTree is an **architecture layer** for Streamlit, not a React-style web fra
 - **Components and elements** — `@component`, `render` / `render_app`, layouts (`Page`, `Card`, `Grid`, `VStack`, `Form`, `Tabs`, `Sidebar`, `Routes`, `ErrorBoundary`, **`Dialog`**, **`Popover`**, and more), and widget wrappers.
 - **App shell (0.3+)** — `App` with a guarded `st.set_page_config`, plus optional sidebar and main composition via `render_app`.
 - **Theming (0.3+)** — `Theme`, `ThemeRoot`, `theme()`, `theme_css()`, and `app_context.provider(theme=...)`.
-- **Background work (0.3+)** — `streamtree.asyncio.submit` / **`submit_many`** and `TaskHandle` for stdlib-thread jobs you poll across reruns; **`set_task_progress` / `TaskHandle.progress()`** (0.5+); **0.7+** cooperative cancel via **`TaskHandle.cancel()`**, **`is_task_cancel_requested`**, and **`complete_cancelled`**; **0.8.0+** **`dismiss_task`** clears terminal slots before reusing a ``key`` (see module docstring in `streamtree.asyncio`).
-- **Multipage helpers (0.5+)** — **`streamtree.helpers.pages`** (`discover_pages`, **`page_links`** for **`PageLink`** rows, `PageLink`-friendly paths) for Streamlit’s `pages/` layout; ships in the default install (the **`[pages]`** extra remains reserved for future pinned deps). **`iter_page_entries`** / **`prefetch_page_sources`** (0.9.0+) optionally **`compile()`** page sources for early syntax checks without importing modules. **`streamtree init --with-pages`** (0.8.0+) scaffolds a sidebar wired to **`discover_pages`** + **`page_links`**.
-- **Forms (0.3+)** — Pydantic-oriented helpers: `bind_str_fields` / `str_text_inputs`, plus **`bind_numeric_fields` / `number_inputs`** (0.4+) for `int` / `float` fields (optional `int | None` / `float | None` use model defaults or `None` for an empty number input).
+- **Background work (0.3+)** — `streamtree.asyncio.submit` / **`submit_many`** and `TaskHandle` for stdlib-thread jobs you poll across reruns; **`set_task_progress` / `TaskHandle.progress()`** (0.5+); **0.7+** cooperative cancel via **`TaskHandle.cancel()`**, **`is_task_cancel_requested`**, and **`complete_cancelled`**; **0.8.0+** **`dismiss_task`** clears terminal slots before reusing a ``key``; **0.9.0+** **`dismiss_tasks`** for batch clears (see module docstring in `streamtree.asyncio`).
+- **Multipage helpers (0.5+)** — **`streamtree.helpers.pages`** (`discover_pages`, **`page_links`**, **`group_page_entries_by_order_prefix`**, **`page_links_sidebar_sections`**, **`multipage_sidebar_nav`**) for Streamlit’s `pages/` layout; ships in the default install (the **`[pages]`** extra remains reserved for future pinned deps). **`iter_page_entries`** / **`prefetch_page_sources`** (0.9.0+) optionally **`compile()`** page sources for early syntax checks without importing modules. **`streamtree init --with-pages`** (0.8.0+) scaffolds a sidebar wired to **`discover_pages`** + **`page_links`**.
+- **Forms (0.3+)** — Pydantic-oriented helpers: `bind_str_fields` / `str_text_inputs`, **`bind_numeric_fields` / `number_inputs`** (0.4+), and **`bind_bool_fields` / `bool_field_names`** (0.9.0+) for `int` / `float` / `bool` fields (optional unions use model defaults where applicable).
 - **CLI (0.4+)** — Optional **`streamtree[cli]`**: **`streamtree run`** delegates to Streamlit; **`streamtree doctor`** prints versions; **`streamtree init`** (0.6+) scaffolds **`app.py`** and optional **`pages/`** (see [examples/streamtree_run_demo.md](examples/streamtree_run_demo.md)).
 - **State** — `state`, `toggle_state`, `form_state`, `memo`, `cache`.
-- **Routing and context** — Query-param routing (`streamtree.routing`), `ErrorBoundary`, `streamtree.forms` utilities, and `app_context.provider` / `lookup` for shared values.
-- **Optional auth (0.6+)** — **`pip install "streamtree[auth]"`**: **`AuthGate`** + **`streamtree.auth.build_authenticator`** for **`streamlit-authenticator`** (see [examples/auth_demo.py](examples/auth_demo.py); treat config as trusted secrets).
-- **Optional UI extras (0.6+)** — **`pip install "streamtree[ui]"`**: **`ColoredHeader`**, **`VerticalSpaceLines`**, **`SocialBadge`**, **`StyleMetricCards`**, **`BottomDock`**, **`FloatingActionButton`** (curated **`streamlit-extras`** wrappers).
+- **Routing and context** — Query-param routing (`streamtree.routing`, including **0.9.0+** **`clear_query_param`**, **`clear_route`**, **`update_query_params`**), `ErrorBoundary`, `streamtree.forms` utilities, and `app_context.provider` / `lookup` for shared values. **Native `pages/` scripts** are separate entrypoints; **`Routes`** switches subtrees **inside one script** via query params—pick one primary navigation model per app (see **`docs/ROADMAP.md`**).
+- **Optional auth (0.6+)** — **`pip install "streamtree[auth]"`**: **`AuthGate`** + **`streamtree.auth.build_authenticator`** for **`streamlit-authenticator`** (see [examples/auth_demo.py](examples/auth_demo.py); treat config as trusted secrets). Alternative identity providers stay **app-specific** unless/until a pinned abstraction ships; see **`docs/DEPENDENCY_STRATEGY.md`** (Auth extra).
+- **Optional UI extras (0.6+)** — **`pip install "streamtree[ui]"`**: **`ColoredHeader`**, **`VerticalSpaceLines`**, **`SocialBadge`**, **`StyleMetricCards`**, **`BottomDock`**, **`FloatingActionButton`**, **`Stoggle`**, **`TaggerRow`**, **`MentionChip`** (curated **`streamlit-extras`** wrappers).
 - **Overlays (0.6+)** — **`Dialog`** / **`Popover`** elements mapped to **`st.dialog`** / **`st.popover`**. On older Streamlit builds without **`st.dialog`**, **`Dialog`** shows a warning and renders its children **inline** on the page (not a modal); **`Popover`** falls back to **`st.expander`**.
 - **Portals and split shell (0.9+)** — **`Portal` / `PortalMount`** (named slots; see **`docs/PHASE2_PORTALS_AND_PREFETCH.md`**), **`SplitView`** (narrow + main columns as a pseudo-sidebar), and **`streamtree.portals`** helpers for gather/render wiring.
-- **Form layout (0.9+)** — **`streamtree.forms_layout.model_field_grid`** and **`build_model_from_bindings`** for Pydantic models in row/column grids (see **`examples/phase2_layout_demo.py`**).
+- **Form layout (0.9+)** — **`streamtree.forms_layout.model_field_grid`** and **`build_model_from_bindings`** for Pydantic models in row/column grids, including **bool** fields (see **`docs/PHASE2_FORMS.md`**, **`examples/phase2_layout_demo.py`**).
 - **Data toolkit (0.8+)** — **`pip install "streamtree[tables]"`**: **`DataGrid`** (streamlit-aggrid); **`pip install "streamtree[charts]"`**: **`Chart`** (Plotly via **`st.plotly_chart`**); **`streamtree.loading.match_task`** for declarative loading / ready / error subtrees from **`TaskHandle`**; **`routing.sync_query_value`** / **`set_query_value`** for URL-backed filter strings. See [docs/PERFORMANCE.md](docs/PERFORMANCE.md).
 - **Quality** — Pydantic v2 in the default install, typing-first APIs, and `render_to_tree` for structural tests.
 
@@ -100,6 +100,7 @@ streamlit run examples/auth_demo.py
 streamlit run examples/datagrid_demo.py
 streamlit run examples/chart_demo.py
 streamlit run examples/async_loader_demo.py
+streamlit run examples/phase2_composite_demo.py
 # With Typer installed (``pip install "streamtree[cli]"``):
 streamtree run examples/counter.py
 ```
@@ -205,7 +206,7 @@ Use **`streamtree.helpers.pages.discover_pages(__file__)`** to list scripts unde
 | [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md) | Optional extras, **default-install** helpers (`runner`, `pages`), and CI typing notes |
 | [Performance](https://github.com/streamtree-dev/streamtree/blob/main/docs/PERFORMANCE.md) | Memoization, background work, URL filter params, optional data extras |
 | [Phase 2 portals / prefetch](https://github.com/streamtree-dev/streamtree/blob/main/docs/PHASE2_PORTALS_AND_PREFETCH.md) | Portals, prefetch, form-layout semantics (Phase 2 contract) |
-| [CHANGELOG](https://github.com/streamtree-dev/streamtree/blob/main/CHANGELOG.md) | Release history (e.g. **0.9.0** Phase 2 portals / layout; **0.8.0** data toolkit) |
+| [CHANGELOG](https://github.com/streamtree-dev/streamtree/blob/main/CHANGELOG.md) | Release history (e.g. **0.9.0** Phase 2 completion; **0.8.0** data toolkit) |
 
 ## Contributing
 
@@ -232,7 +233,7 @@ Before tagging **`v0.9.0`** (or any **`v*.*.*`** release), confirm **`uv build`*
 
 ## Imperative handles (limits)
 
-Streamlit does not expose stable cross-rerun APIs for arbitrary widget **focus**, **scroll position**, or DOM-level control. Portable patterns: drive UI via **`st.session_state`**, **query params** (**`streamtree.routing.sync_route`**, **`sync_query_value`**), **`st.rerun`**, and element **`key=`** discipline. **`Portal` / `PortalMount`** move subtrees between shell regions within the same script rerun; they do not escape Streamlit’s single-page execution model. See **`docs/PHASE2_PORTALS_AND_PREFETCH.md`**.
+Streamlit does not expose stable cross-rerun APIs for arbitrary widget **focus**, **scroll position**, or DOM-level control. Portable patterns: drive UI via **`st.session_state`**, **query params** (**`streamtree.routing.sync_route`**, **`sync_query_value`**, **`set_query_value`**, **`update_query_params`**, **`clear_query_param`**, **`clear_route`**), **`st.rerun`**, and element **`key=`** discipline. **`Portal` / `PortalMount`** move subtrees between shell regions within the same script rerun; they do not escape Streamlit’s single-page execution model. See **`docs/PHASE2_PORTALS_AND_PREFETCH.md`**.
 
 ## License
 

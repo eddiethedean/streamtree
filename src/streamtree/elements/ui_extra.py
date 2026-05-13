@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
@@ -131,13 +131,76 @@ class StyleMetricCards(Element):
     box_shadow: bool = field(default=True, kw_only=True)
 
 
+@dataclass(frozen=True)
+class Stoggle(Element):
+    """Expandable summary/content via ``streamlit_extras.stoggle.stoggle``."""
+
+    summary: str = ""
+    content: str = ""
+
+    def __init__(self, summary: str, content: str, *, key: str | None = None) -> None:
+        object.__setattr__(self, "key", key)
+        object.__setattr__(self, "summary", summary)
+        object.__setattr__(self, "content", content)
+
+
+@dataclass(frozen=True)
+class TaggerRow(Element):
+    """Tag row via ``streamlit_extras.tags.tagger_component``."""
+
+    content: str = ""
+    tags: tuple[str, ...] = field(default_factory=tuple)
+    color_name: str | tuple[str, ...] | None = field(default=None, kw_only=True)
+    text_color_name: str | tuple[str, ...] | None = field(default=None, kw_only=True)
+
+    def __init__(
+        self,
+        content: str,
+        tags: Sequence[str],
+        *,
+        color_name: str | tuple[str, ...] | None = None,
+        text_color_name: str | tuple[str, ...] | None = None,
+        key: str | None = None,
+    ) -> None:
+        object.__setattr__(self, "key", key)
+        object.__setattr__(self, "content", content)
+        object.__setattr__(self, "tags", tuple(tags))
+        object.__setattr__(self, "color_name", color_name)
+        object.__setattr__(self, "text_color_name", text_color_name)
+
+
+@dataclass(frozen=True)
+class MentionChip(Element):
+    """External link chip via ``streamlit_extras.mention.mention``."""
+
+    label: str = ""
+    url: str = ""
+    icon: str = field(default="🔗", kw_only=True)
+
+    def __init__(
+        self,
+        label: str,
+        url: str,
+        *,
+        icon: str = "🔗",
+        key: str | None = None,
+    ) -> None:
+        object.__setattr__(self, "key", key)
+        object.__setattr__(self, "label", label)
+        object.__setattr__(self, "url", url)
+        object.__setattr__(self, "icon", icon)
+
+
 __all__ = [
     "BottomDock",
     "ColoredHeader",
     "ColoredHeaderColor",
     "FloatingActionButton",
+    "MentionChip",
     "SocialBadge",
     "SocialBadgeKind",
+    "Stoggle",
     "StyleMetricCards",
+    "TaggerRow",
     "VerticalSpaceLines",
 ]

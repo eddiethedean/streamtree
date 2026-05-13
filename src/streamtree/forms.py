@@ -74,6 +74,30 @@ def _is_optional_numeric_union(ann: Any) -> bool:
     return False
 
 
+def _is_bool_field_annotation(ann: Any) -> bool:
+    ann = _unwrap_annotation(ann)
+    if ann is bool:
+        return True
+    origin = get_origin(ann)
+    if origin is UnionType or origin is Union:
+        args = [a for a in get_args(ann) if a is not type(None)]
+        return len(args) == 1 and args[0] is bool
+    return False
+
+
+def _initial_bool_for_field(finfo: FieldInfo) -> bool:
+    raw: Any
+    if finfo.default_factory is not None:
+        raw = cast(Callable[[], Any], finfo.default_factory)()
+    elif finfo.default is not PydanticUndefined:
+        raw = finfo.default
+    else:
+        return False
+    if raw is None:
+        return False
+    return bool(raw)
+
+
 def _initial_numeric_for_field(
     finfo: FieldInfo, base: type[int] | type[float], optional: bool
 ) -> int | float | None:
@@ -112,6 +136,15 @@ def numeric_field_names(model_cls: type[BaseModel]) -> tuple[str, ...]:
     """Field names whose annotation is ``int`` / ``float`` or optional variants."""
     return tuple(
         n for n, finfo in model_cls.model_fields.items() if _numeric_base(finfo.annotation)
+    )
+
+
+def bool_field_names(model_cls: type[BaseModel]) -> tuple[str, ...]:
+    """Field names whose annotation is ``bool`` or ``bool | None``."""
+    return tuple(
+        n
+        for n, finfo in model_cls.model_fields.items()
+        if _is_bool_field_annotation(finfo.annotation)
     )
 
 
@@ -177,6 +210,22 @@ def bind_numeric_fields(
     return out
 
 
+def bind_bool_fields(
+    model_cls: type[BaseModel],
+    *,
+    key_prefix: str = "model_form",
+) -> dict[str, StateVar[bool]]:
+    """Create ``StateVar[bool]`` for each ``bool`` / ``bool | None`` field."""
+    if not key_prefix.strip():
+        raise ValueError("key_prefix must be a non-empty string")
+    p = key_prefix.strip()
+    out: dict[str, StateVar[bool]] = {}
+    for n in bool_field_names(model_cls):
+        finfo = model_cls.model_fields[n]
+        out[n] = state(_initial_bool_for_field(finfo), key=f"{p}.{n}")
+    return out
+
+
 def str_text_inputs(
     model_cls: type[BaseModel],
     *,
@@ -229,8 +278,10 @@ def number_inputs(
 
 __all__ = [
     "NumericStateVar",
+    "bind_bool_fields",
     "bind_numeric_fields",
     "bind_str_fields",
+    "bool_field_names",
     "format_validation_errors",
     "model_validate_json",
     "number_inputs",

@@ -31,8 +31,11 @@ from streamtree.elements.ui_extra import (
     BottomDock,
     ColoredHeader,
     FloatingActionButton,
+    MentionChip,
     SocialBadge,
     StyleMetricCards,
+    Stoggle,
+    TaggerRow,
     VerticalSpaceLines,
 )
 from streamtree.elements.widgets import (
@@ -343,6 +346,15 @@ def _node(el: Element, *, expand_components: bool) -> dict[str, Any]:
 
     if isinstance(el, VerticalSpaceLines):
         return {"kind": "VerticalSpaceLines", "key": el.key, "num_lines": el.num_lines}
+
+    if isinstance(el, Stoggle):
+        return {"kind": "Stoggle", "key": el.key, "summary": el.summary}
+
+    if isinstance(el, TaggerRow):
+        return {"kind": "TaggerRow", "key": el.key, "tags": list(el.tags)}
+
+    if isinstance(el, MentionChip):
+        return {"kind": "MentionChip", "key": el.key, "label": el.label, "url": el.url}
 
     raise TypeError(f"Unsupported element type: {type(el)!r}")
 

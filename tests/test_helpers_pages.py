@@ -10,9 +10,12 @@ import pytest
 from streamtree.helpers.pages import (
     PageEntry,
     discover_pages,
+    group_page_entries_by_order_prefix,
     iter_page_entries,
     list_page_entries,
+    multipage_sidebar_nav,
     page_links,
+    page_links_sidebar_sections,
     pages_dir_next_to,
     prefetch_page_sources,
 )
@@ -276,3 +279,66 @@ def test_prefetch_page_sources_oserror(tmp_path: Path) -> None:
         out = prefetch_page_sources(entries)
     assert len(out) == 1
     assert "simulated read failure" in (out[0][1] or "")
+
+
+def test_group_page_entries_by_order_prefix(tmp_path: Path) -> None:
+    pages = tmp_path / "pages"
+    pages.mkdir()
+    (pages / "1_A.py").write_text("#", encoding="utf-8")
+    (pages / "1_B.py").write_text("#", encoding="utf-8")
+    (pages / "2_C.py").write_text("#", encoding="utf-8")
+    (pages / "Plain.py").write_text("#", encoding="utf-8")
+    entries = list_page_entries(pages)
+    groups = group_page_entries_by_order_prefix(entries)
+    keys = [g[0] for g in groups]
+    assert "1" in keys and "2" in keys
+    assert None in keys
+    by_key = {k: v for k, v in groups}
+    assert len(by_key["1"]) == 2
+    assert len(by_key["2"]) == 1
+    assert len(by_key[None]) == 1
+
+
+def test_page_links_sidebar_sections_has_subheaders(tmp_path: Path) -> None:
+    pages = tmp_path / "pages"
+    pages.mkdir()
+    (pages / "1_One.py").write_text("#", encoding="utf-8")
+    (pages / "Zed.py").write_text("#", encoding="utf-8")
+    entries = list_page_entries(pages)
+    flat = page_links_sidebar_sections(entries)
+    from streamtree.elements.widgets import PageLink, Subheader
+
+    assert any(isinstance(x, Subheader) for x in flat)
+    assert sum(1 for x in flat if isinstance(x, PageLink)) == 2
+
+
+def test_multipage_sidebar_nav_empty(tmp_path: Path) -> None:
+    main = tmp_path / "app.py"
+    main.write_text("#", encoding="utf-8")
+    nav = multipage_sidebar_nav(main)
+    assert len(nav.children) == 0
+
+
+def test_multipage_sidebar_nav_flat_without_sections(tmp_path: Path) -> None:
+    pages = tmp_path / "pages"
+    pages.mkdir()
+    (pages / "1_A.py").write_text("#", encoding="utf-8")
+    main = tmp_path / "app.py"
+    main.write_text("#", encoding="utf-8")
+    nav = multipage_sidebar_nav(main, section_numbered=False)
+    assert len(nav.children) == 1
+    from streamtree.elements.widgets import PageLink
+
+    assert isinstance(nav.children[0], PageLink)
+
+
+def test_multipage_sidebar_nav_grouped_default(tmp_path: Path) -> None:
+    pages = tmp_path / "pages"
+    pages.mkdir()
+    (pages / "1_A.py").write_text("#", encoding="utf-8")
+    main = tmp_path / "app.py"
+    main.write_text("#", encoding="utf-8")
+    nav = multipage_sidebar_nav(main)
+    from streamtree.elements.widgets import Subheader
+
+    assert any(isinstance(c, Subheader) for c in nav.children)

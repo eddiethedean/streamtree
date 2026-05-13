@@ -35,8 +35,11 @@ from streamtree.elements.ui_extra import (
     BottomDock,
     ColoredHeader,
     FloatingActionButton,
+    MentionChip,
     SocialBadge,
     StyleMetricCards,
+    Stoggle,
+    TaggerRow,
     VerticalSpaceLines,
 )
 from streamtree.elements.widgets import (
@@ -652,6 +655,42 @@ def render_element(el: Element, *, slot: str = "0") -> None:
             icon=el.icon,
             disabled=el.disabled,
         )
+        return
+
+    if isinstance(el, Stoggle):
+        try:
+            from streamlit_extras.stoggle import stoggle
+        except ImportError as exc:
+            raise ImportError(
+                'Stoggle requires streamlit-extras. Install with: pip install "streamtree[ui]"'
+            ) from exc
+        stoggle(el.summary, el.content)
+        return
+
+    if isinstance(el, TaggerRow):
+        try:
+            from streamlit_extras.tags import tagger_component
+        except ImportError as exc:
+            raise ImportError(
+                'TaggerRow requires streamlit-extras. Install with: pip install "streamtree[ui]"'
+            ) from exc
+        cn = el.color_name
+        if isinstance(cn, tuple):
+            cn = list(cn)
+        tcn = el.text_color_name
+        if isinstance(tcn, tuple):
+            tcn = list(tcn)
+        tagger_component(el.content, list(el.tags), color_name=cn, text_color_name=tcn)
+        return
+
+    if isinstance(el, MentionChip):
+        try:
+            from streamlit_extras.mention import mention
+        except ImportError as exc:
+            raise ImportError(
+                'MentionChip requires streamlit-extras. Install with: pip install "streamtree[ui]"'
+            ) from exc
+        mention(el.label, el.url, icon=el.icon, write=True)
         return
 
     raise TypeError(f"Unsupported element type: {type(el)!r}")

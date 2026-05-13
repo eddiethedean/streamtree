@@ -24,6 +24,7 @@ from streamtree.elements import (
     HStack,
     Image,
     Markdown,
+    MentionChip,
     NumberInput,
     Page,
     PageLink,
@@ -36,9 +37,11 @@ from streamtree.elements import (
     SocialBadge,
     Spacer,
     SplitView,
+    Stoggle,
     StyleMetricCards,
     Subheader,
     Tabs,
+    TaggerRow,
     Text,
     TextInput,
     ThemeRoot,
@@ -100,8 +103,11 @@ def test_render_to_tree_exercises_all_node_types() -> None:
                 Portal(slot="z", child=Text("portal child")),
                 BottomDock(Text("dock")),
                 FloatingActionButton("fab", key="faball"),
+                Stoggle("sum", "content"),
+                TaggerRow("c", ("t",)),
+                MentionChip("L", "https://example.invalid"),
             ),
         )
     )
     assert tree["kind"] == "Page"
-    assert len(tree["children"][0]["children"]) >= 24
+    assert len(tree["children"][0]["children"]) >= 27

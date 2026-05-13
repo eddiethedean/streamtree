@@ -22,7 +22,7 @@ _Last updated: 2026-05-13._
 |-------|--------|--------|
 | Phase 0 — Foundation | **Complete** | Package layout, Streamlit renderer, design docs in `docs/`. |
 | Phase 1 — MVP | In progress | **0.1.0** core tree + state; **0.2.0** Pydantic + stub extras; deeper memoization / `streamlit-extras` curation still open. |
-| Phase 2 — Application | In progress | **Shipped through 0.9.0:** same as **0.8.0** plus **portals** / **`PortalMount`**, **`SplitView`**, **`helpers.prefetch_page_sources`**, **`forms_layout`**, **`BottomDock`** / **`FloatingActionButton`** (`[ui]`). **Docs:** [PHASE2_PORTALS_AND_PREFETCH.md](./PHASE2_PORTALS_AND_PREFETCH.md). **Still open:** deeper navigation, richer imperative handles where Streamlit allows — see [PHASE2_TAIL.md](./PHASE2_TAIL.md). |
+| Phase 2 — Application | **Complete** (0.9.0) | **Shipped through 0.9.0:** navigation sections (**`page_links_sidebar_sections`**, **`multipage_sidebar_nav`**), routing clears/batch (**`clear_route`**, **`update_query_params`**, …), **bool** + layout forms (**`docs/PHASE2_FORMS.md`**), **`[ui]`** (**Stoggle**, **TaggerRow**, **MentionChip**), **`dismiss_tasks`**, composite **example** **`phase2_composite_demo.py`**, Phase 2 doc reconciliation. Stretch themes (templates, alternate auth protocols) → backlog / Phase 3. |
 | Phase 3 — Data toolkit | In progress | **0.8.0:** **`[tables]`** / **`DataGrid`**, **`[charts]`** / **`Chart`**, **`sync_query_value`**, **`match_task`**, **`docs/PERFORMANCE.md`**. **Next:** richer CRUD patterns, chart breadth (Altair / echarts), deferred regions, performance hardening. |
 | Phase 4 — Tooling | In progress | **`streamtree.testing.render_to_tree`** (JSON tree snapshots) shipped; CI runs **pytest** (100% coverage), **ruff**, **ty** on **`src`**. **`[cli]`** ships **`run`** / **`doctor`** / **`init`** (incl. **`--with-pages`**, **0.8.0**). **Still open:** richer dev introspection, **`tree` / `preview`**-style CLI, RTD — see [Phase 4](#phase-4--testing-and-tooling). |
 | Docs — Read the Docs | Planned | [Manual, guides, API](#documentation-platform-read-the-docs); **stable** / **latest**; CI doc builds. |
@@ -31,9 +31,12 @@ _Last updated: 2026-05-13._
 
 - **Portals:** **`Portal`** / **`PortalMount`**, **`gather_portals`**, **`portal_render_context`** (renderer integration); design in [PHASE2_PORTALS_AND_PREFETCH.md](./PHASE2_PORTALS_AND_PREFETCH.md).
 - **Layout:** **`SplitView`** (pseudo-sidebar via columns).
-- **Multipage:** **`iter_page_entries`**, **`prefetch_page_sources`** (stdlib file read + optional **`compile`** check); documented in [PERFORMANCE.md](./PERFORMANCE.md).
-- **Forms:** **`streamtree.forms_layout`** — **`build_model_from_bindings`**, **`model_field_grid`** (row/column widget layout).
-- **`[ui]`:** **`BottomDock`**, **`FloatingActionButton`** (`streamlit-extras`).
+- **Multipage:** **`iter_page_entries`**, **`prefetch_page_sources`** (stdlib file read + optional **`compile`** check); **`group_page_entries_by_order_prefix`**, **`page_links_sidebar_sections`**, **`multipage_sidebar_nav`**; documented in [PERFORMANCE.md](./PERFORMANCE.md).
+- **Forms:** **`streamtree.forms_layout`** — **`build_model_from_bindings`**, **`model_field_grid`** (row/column layout, including **bool** fields); **`bool_field_names`**, **`bind_bool_fields`**; doc **`docs/PHASE2_FORMS.md`**.
+- **Routing:** **`clear_query_param`**, **`clear_route`**, **`update_query_params`**.
+- **`[ui]`:** **`BottomDock`**, **`FloatingActionButton`**, **`Stoggle`**, **`TaggerRow`**, **`MentionChip`** (`streamlit-extras`).
+- **Async:** **`dismiss_tasks`** batch terminal cleanup.
+- **Docs / examples:** **`docs/PHASE2_TAIL.md`** reconciliation; **`examples/phase2_composite_demo.py`**; README multipage vs **`Routes`** guidance; roadmap Phase 2 closure.
 
 ### 0.8.0 (shipped)
 
@@ -98,13 +101,13 @@ _Last updated: 2026-05-13._
 
 ## Phase 2 backlog & near-term themes
 
-### Backlog (post-0.6.0)
+### Backlog (post-0.6.0; Phase 2 application track closed at 0.9.0)
 
-- Richer **App** / **navigation** (beyond **`page_links`**, **`init --with-pages`**, and **`Routes`** + **`PageLink`** today).
-- **Auth** hardening and alternative providers (beyond **`streamlit-authenticator`**).
-- **Portals**, **imperative handles**, **route prefetch**, richer **async orchestration** beyond progress (e.g. composition, cancellation UX) on `streamtree.asyncio`.
-- **More** **`streamlit-extras`** curation behind stable StreamTree names (see [`PHASE2_TAIL.md`](./PHASE2_TAIL.md)).
-- **Form builder** beyond string + scalar numeric fields (layout, batch submit).
+- **Stretch:** opinionated **`App`** + **`Routes`** **templates** (beyond helpers and docs).
+- **Auth:** alternative **providers** / OIDC stacks remain **bring-your-own**; **`[auth]`** stays **`streamlit-authenticator`** + **`AuthGate`** unless a future pinned abstraction ships.
+- **Async:** new **worker backends** or pools (Phase 3 **`[async]`** story), beyond **`dismiss_tasks`** batching.
+- **More** **`streamlit-extras`** curation behind stable StreamTree names (ongoing).
+- **Richer theme / memoization** — largely Phase **1** / **3** (see release index).
 
 ### Optional dedicated helpers
 
@@ -225,24 +228,26 @@ The bullets below are **delivered** today; per-version pins and changelog prose 
 - **Overlays:** **`Dialog`**, **`Popover`** (Streamlit-native; version floor **1.33**).
 - **Optional UI extras:** **`[ui]`** — **`ColoredHeader`**, **`VerticalSpaceLines`** (**0.6.0**); **`SocialBadge`**, **`StyleMetricCards`** (**0.8.0**); **`BottomDock`**, **`FloatingActionButton`** (**0.9.0**).
 - **Portals & layout targets (0.9.0):** **`Portal`** / **`PortalMount`**, **`SplitView`**, prefetch helpers — see [PHASE2_PORTALS_AND_PREFETCH.md](./PHASE2_PORTALS_AND_PREFETCH.md).
-- **Layout-aware forms (0.9.0):** **`streamtree.forms_layout`** — **`build_model_from_bindings`**, **`model_field_grid`**.
+- **Layout-aware forms (0.9.0):** **`streamtree.forms_layout`** — **`build_model_from_bindings`**, **`model_field_grid`** (str / numeric / **bool**); see [PHASE2_FORMS.md](./PHASE2_FORMS.md).
+- **Navigation / imperative edge (0.9.0):** sectioned **`pages/`** sidebar helpers; **`routing`** clear/batch query helpers (see README “Imperative handles”).
+- **`[ui]` breadth (0.9.0):** **`Stoggle`**, **`TaggerRow`**, **`MentionChip`**.
+- **Async polish (0.9.0):** **`dismiss_tasks`** batch terminal cleanup.
 
 ### Release notes
 
-Shipped scope for **0.2.0** through **0.9.0** is in the [Release index](#release-index) and subsections above. **Open** work is in the [backlog](#phase-2-backlog--near-term-themes) and [PHASE2_TAIL.md](./PHASE2_TAIL.md).
+Shipped scope for **0.2.0** through **0.9.0** is in the [Release index](#release-index) and subsections above. **Stretch** work is in the [backlog](#phase-2-backlog--near-term-themes) and [PHASE2_TAIL.md](./PHASE2_TAIL.md).
 
 ### Optional dependency alignment
 
-- **`[auth]`:** e.g. `streamlit-authenticator` behind `AuthProvider` / protected routes; document limits.
+- **`[auth]`:** **`streamlit-authenticator`** behind **`AuthGate`** / **`build_authenticator`**; document limits; third-party identity stacks stay app-wrapped until a future pinned protocol ships.
 - **`[ui]`:** shadcn-style / `extra-streamlit-components` only behind StreamTree components.
 - **`[async]` (when shipped):** optional backend (e.g. asynclit) **only** via **`streamtree.asyncio`** public API.
 
 ### Deliverables (remaining / stretch)
 
-Everything listed under **Shipped on the Phase 2 track** above is **closed** for those themes; items below are still **open**.
+Phase 2 **application** deliverables from the original charter are **closed** as of **0.9.0** (see [PHASE2_TAIL.md](./PHASE2_TAIL.md) closure checklist). Ongoing **product** work continues under Phase **3** (data), **4** (tooling), and the **stretch** bullets in the backlog above.
 
-- Deeper navigation framework, auth, richer theme/forms/async as backlog clears.
-- Example apps for error boundaries + context + parallel loads + async UI branches.
+- Example apps for **deeper data** workflows and **Phase 3** loaders (beyond the **`phase2_composite_demo`** slice).
 
 ---
 

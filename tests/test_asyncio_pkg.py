@@ -13,6 +13,7 @@ from streamtree.asyncio import (
     TaskHandle,
     complete_cancelled,
     dismiss_task,
+    dismiss_tasks,
     is_task_cancel_requested,
     set_task_progress,
     submit,
@@ -557,3 +558,19 @@ def test_dismiss_task_removes_foreign_mapping() -> None:
     with patch("streamtree.asyncio.st", st):
         assert dismiss_task(key="foreign") is True
         assert "streamtree.asyncio.task.foreign" not in st.session_state
+
+
+def test_dismiss_tasks_counts_terminal() -> None:
+    st = SimpleNamespace(session_state={})
+    with patch("streamtree.asyncio.st", st):
+        a, b = submit_many((("batch_a", lambda: 1), ("batch_b", lambda: 2)))
+        deadline = time.monotonic() + 3.0
+        while time.monotonic() < deadline and (a.status() != "done" or b.status() != "done"):
+            time.sleep(0.01)
+        assert dismiss_tasks(keys=["batch_a", "batch_b"]) == 2
+
+
+def test_dismiss_tasks_rejects_blank_key() -> None:
+    st = SimpleNamespace(session_state={})
+    with patch("streamtree.asyncio.st", st), pytest.raises(ValueError, match="non-empty"):
+        dismiss_tasks(keys=["ok", "  "])

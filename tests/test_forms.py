@@ -6,7 +6,7 @@ import json
 from typing import Annotated
 
 import pytest
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, Field, ValidationError
 
 from streamtree import forms as forms_mod
 from streamtree.forms import format_validation_errors, model_validate_json, str_field_names
@@ -90,3 +90,57 @@ def test_format_validation_errors_multiple_fields() -> None:
         assert "name" in text
         assert "age" in text
         assert text.count("\n") >= 1
+
+
+def test_bool_field_names() -> None:
+    from streamtree.forms import bind_bool_fields, bool_field_names
+
+    class Bools(BaseModel):
+        flag: bool
+        name: str
+
+    assert bool_field_names(Bools) == ("flag",)
+    bb = bind_bool_fields(Bools, key_prefix="bl")
+    bb["flag"].set(True)
+    assert bb["flag"]() is True
+
+
+def test_bool_field_names_optional_union() -> None:
+    from streamtree.forms import bool_field_names
+
+    class OptN(BaseModel):
+        flag: bool | None = None
+
+    assert bool_field_names(OptN) == ("flag",)
+
+
+def test_bind_bool_optional_none_defaults_false() -> None:
+    from streamtree.forms import bind_bool_fields
+
+    class Opt(BaseModel):
+        flag: bool | None = None
+
+    bb = bind_bool_fields(Opt, key_prefix="on")
+    assert bb["flag"]() is False
+
+
+def test_bind_bool_fields_default_factory_and_blank_prefix() -> None:
+    from streamtree.forms import bind_bool_fields
+
+    class Fact(BaseModel):
+        flag: bool = Field(default_factory=lambda: True)
+
+    bb = bind_bool_fields(Fact, key_prefix="df")
+    assert bb["flag"]() is True
+
+    with pytest.raises(ValueError, match="key_prefix"):
+        bind_bool_fields(Fact, key_prefix="  ")
+
+
+def test_bool_field_names_excludes_bool_str_union() -> None:
+    from streamtree.forms import bool_field_names
+
+    class Odd(BaseModel):
+        x: bool | str
+
+    assert bool_field_names(Odd) == ()

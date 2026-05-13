@@ -18,7 +18,9 @@ from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
-from streamtree.elements.widgets import PageLink
+from streamtree.core.element import Element
+from streamtree.elements.layout import VStack
+from streamtree.elements.widgets import PageLink, Subheader
 
 # Leading digits + underscore(s), rest is title segments separated by underscores.
 _ORDERED_STEM = re.compile(r"^(\d+)_(.+)$")
@@ -136,6 +138,111 @@ def page_links(
     )
 
 
+def group_page_entries_by_order_prefix(
+    entries: Sequence[PageEntry],
+) -> tuple[tuple[str | None, tuple[PageEntry, ...]], ...]:
+    """Group ``PageEntry`` rows by the leading order integer in ``N_Title`` stems.
+
+    Stems matching ``digits_`` + underscore (see :func:`list_page_entries`) share one
+    bucket per leading integer string (``\"1\"`` for ``1_A`` and ``1_B``). Unnumbered
+    pages (order sentinel ``1_000_000``) are grouped under ``None`` — use
+    :func:`page_links_sidebar_sections` for a default **More pages** heading.
+
+    Preserves **within-group** order as in ``entries`` (typically sidebar order).
+    """
+    from collections import defaultdict
+
+    buckets: defaultdict[str, list[PageEntry]] = defaultdict(list)
+    other: list[PageEntry] = []
+    for e in entries:
+        m = _ORDERED_STEM.match(e.stem)
+        if m:
+            prefix: str = m.group(1)
+            buckets[prefix].append(e)
+        else:
+            other.append(e)
+    out: list[tuple[str | None, tuple[PageEntry, ...]]] = []
+    for key in sorted(buckets.keys(), key=lambda k: int(k)):
+        out.append((key, tuple(buckets[key])))
+    if other:
+        out.append((None, tuple(other)))
+    return tuple(out)
+
+
+def page_links_sidebar_sections(
+    entries: Sequence[PageEntry],
+    *,
+    unnumbered_heading: str = "More pages",
+    numbered_section_heading_fmt: str = "Pages (order {order})",
+    icon: str | None = None,
+    help_text: str | None = None,
+    disabled: bool = False,
+    use_container_width: bool | None = None,
+) -> tuple[Element, ...]:
+    """Flat ``Subheader`` + :class:`PageLink` rows for sidebar nav with numbered sections.
+
+    Numbered Streamlit pages (``1_About.py``) are grouped under a subheader per leading
+    order digit sequence. Unnumbered stems use ``unnumbered_heading``.
+    """
+    parts: list[Element] = []
+    for key, group in group_page_entries_by_order_prefix(entries):
+        title = (
+            numbered_section_heading_fmt.format(order=key)
+            if key is not None
+            else unnumbered_heading
+        )
+        parts.append(Subheader(title))
+        parts.extend(
+            page_links(
+                group,
+                icon=icon,
+                help_text=help_text,
+                disabled=disabled,
+                use_container_width=use_container_width,
+            )
+        )
+    return tuple(parts)
+
+
+def multipage_sidebar_nav(
+    main_script: str | Path,
+    *,
+    section_numbered: bool = True,
+    icon: str | None = None,
+    help_text: str | None = None,
+    disabled: bool = False,
+    use_container_width: bool | None = None,
+) -> VStack:
+    """Build a ``VStack`` sidebar from ``pages/`` next to ``main_script`` (may be empty).
+
+    When ``section_numbered`` is True, numbered filenames are grouped with subheaders
+    (see :func:`page_links_sidebar_sections`). When False, uses a flat :func:`page_links`
+    list (same order as Streamlit's sidebar).
+    """
+    rows = discover_pages(main_script)
+    if not rows:
+        return VStack()
+    if section_numbered:
+        return VStack(
+            *page_links_sidebar_sections(
+                rows,
+                icon=icon,
+                help_text=help_text,
+                disabled=disabled,
+                use_container_width=use_container_width,
+            )
+        )
+    return VStack(
+        *page_links(
+            rows,
+            icon=icon,
+            help_text=help_text,
+            disabled=disabled,
+            use_container_width=use_container_width,
+        )
+    )
+
+
 def iter_page_entries(pages_dir: str | Path) -> Iterator[PageEntry]:
     """Yield discoverable page scripts under ``pages_dir`` in sidebar order (lazy).
 
@@ -179,9 +286,12 @@ def prefetch_page_sources(
 __all__ = [
     "PageEntry",
     "discover_pages",
+    "group_page_entries_by_order_prefix",
     "iter_page_entries",
     "list_page_entries",
+    "multipage_sidebar_nav",
     "page_links",
+    "page_links_sidebar_sections",
     "pages_dir_next_to",
     "prefetch_page_sources",
 ]

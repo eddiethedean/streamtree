@@ -25,21 +25,25 @@ elements (see `examples/async_loader_demo.py`).
 
 After a terminal **done** / **error** / **cancelled** run, **`streamtree.asyncio.dismiss_task`**
 drops the session slot for a ``key`` so the next **`submit`** can reuse that key safely
-(do not call while the task is still **running**).
+(do not call while the task is still **running**). **0.9.0+** **`dismiss_tasks`** applies
+the same rules across several keys and returns how many slots were cleared.
 
 ## URL filter state
 
 **`streamtree.routing.sync_query_value`** / **`set_query_value`** mirror arbitrary
 query params into session (similar to **`sync_route`** but with empty-string defaults
-allowed). Pair with **`state()`** for values you do not want in the URL.
+allowed). Pair with **`state()`** for values you do not want in the URL. **0.9.0+**
+adds **`update_query_params`** (multi-key), **`clear_query_param`**, and **`clear_route`**
+for imperative URL hygiene (still rerun-driven; see README “Imperative handles”).
 
-## Multipage prefetch (0.9+)
+## Multipage prefetch (0.9.0+)
 
 Use **`streamtree.helpers.iter_page_entries`** for lazy iteration and
 **`streamtree.helpers.prefetch_page_sources`** to **`compile()`** page script text
 without importing modules (catches syntax errors early). This does **not** run
 another page’s Streamlit script ahead of time; UI still advances on reruns. See
-**`docs/PHASE2_PORTALS_AND_PREFETCH.md`**.
+**`docs/PHASE2_PORTALS_AND_PREFETCH.md`**. For **sectioned sidebar** links built from the
+same discovery data, use **`page_links_sidebar_sections`** / **`multipage_sidebar_nav`** (0.9.0+).
 
 ## Optional data extras
 
