@@ -5,6 +5,7 @@ from __future__ import annotations
 from streamtree.elements import (
     AuthGate,
     BottomDock,
+    DeferredFragment,
     Dialog,
     ErrorBoundary,
     Page,
@@ -94,3 +95,50 @@ def test_gather_portals_walks_dialog_popover_theme_root() -> None:
     g = gather_portals(tree)
     assert g["dlg"] == (Text("modal"),)
     assert g["pop"] == (Text("panel"),)
+
+
+def test_gather_portals_walks_deferred_fragment() -> None:
+    tree = Page(
+        VStack(
+            DeferredFragment(
+                Portal(slot="df", child=Text("deferred")),
+                PortalMount(slot="df"),
+            ),
+        )
+    )
+    g = gather_portals(tree)
+    assert g["df"] == (Text("deferred"),)
+
+
+def test_gather_portals_nested_deferred_fragments() -> None:
+    tree = Page(
+        DeferredFragment(
+            DeferredFragment(Portal(slot="n", child=Text("deep"))),
+        )
+    )
+    g = gather_portals(tree)
+    assert g["n"] == (Text("deep"),)
+
+
+def test_gather_portals_deferred_then_sibling_same_slot_order() -> None:
+    """DFS order: inner ``DeferredFragment`` portal before sibling ``Portal``."""
+    tree = Page(
+        VStack(
+            DeferredFragment(Portal(slot="q", child=Text("first"))),
+            Portal(slot="q", child=Text("second")),
+        )
+    )
+    g = gather_portals(tree)
+    assert g["q"] == (Text("first"), Text("second"))
+
+
+def test_portal_render_context_deferred_fragment_delivers_to_mount() -> None:
+    tree = Page(
+        VStack(
+            DeferredFragment(Portal(slot="slot", child=Text("payload"))),
+            PortalMount(slot="slot"),
+        )
+    )
+    with portal_render_context(tree):
+        assert take_portal_children("slot") == (Text("payload"),)
+        assert take_portal_children("slot") == ()

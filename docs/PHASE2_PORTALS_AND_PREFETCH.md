@@ -12,6 +12,8 @@ This note locks semantics for **portals / layout targets**, **route prefetch**, 
 2. **`PortalMount(slot)`** — At its position in the tree, renders **all** children collected for `slot` (in order), then clears that slot’s queue for the remainder of this rerun so content is not duplicated if multiple mounts existed (first mount wins; document **one mount per slot**).
 3. **`ComponentCall` nodes** — The gather pass does **not** execute `@component` bodies. Portals declared **inside** a component are only visible **after** expansion at render time; registering portals from deep components requires the component to return them in its public tree (same rerun). This matches Streamlit’s “tree is built each rerun” model.
 
+4. **`DeferredFragment`** — The pre-walk recurses into **`DeferredFragment` children** the same way as **`Fragment`**, so portals nested under deferred regions are still registered before any `st.*` calls (only the **render** of those children is deferred via `st.fragment` when available).
+
 **Alternative (shell-only) slots:** `App` already maps **`sidebar`** + **`body`** via [app.py](https://github.com/streamtree-dev/streamtree/blob/main/src/streamtree/app.py). **`SplitView`** (narrow + main columns) addresses “second sidebar” UX without a second `st.sidebar`.
 
 ## Route prefetch

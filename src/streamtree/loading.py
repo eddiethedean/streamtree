@@ -6,6 +6,7 @@ import logging
 from collections.abc import Callable, Mapping, Sequence
 from typing import Any, Protocol, TypeVar, runtime_checkable
 
+from streamtree.asyncio import TaskHandle
 from streamtree.core.element import Element
 
 _LOGGER = logging.getLogger(__name__)
@@ -87,10 +88,12 @@ def match_task_many(
     return ready(tuple(h.result() for h in handles))
 
 
-def submit_many_ordered(jobs: Mapping[str, Callable[[], Any]]) -> tuple[Any, ...]:
+def submit_many_ordered(jobs: Mapping[str, Callable[[], Any]]) -> tuple[TaskHandle[Any], ...]:
     """Start tasks via :func:`streamtree.asyncio.submit_many` in **sorted key order**.
 
-    Use with :func:`match_task_many`: the ``ready`` tuple matches this same order.
+    Returns :class:`~streamtree.asyncio.TaskHandle` instances in **sorted key order**
+    (same order as ``sorted(jobs.keys())``). Pass that sequence to :func:`match_task_many`
+    so its ``ready`` callback receives ``result()`` values in that same order.
     """
     from streamtree.asyncio import submit_many
 

@@ -936,6 +936,28 @@ def test_render_portal_and_mount_mocked() -> None:
     assert st.write.called
 
 
+def test_render_portal_inside_deferred_fragment_delivers_at_mount_mocked() -> None:
+    """Portals under ``DeferredFragment`` must still be gathered and mounted."""
+    st = _make_st()
+    with _patched_st(st):
+        with render_context("portdf"):
+            tree = Page(
+                VStack(
+                    DeferredFragment(
+                        Portal(slot="inner", child=Text("from deferred portal")),
+                    ),
+                    PortalMount(slot="inner"),
+                )
+            )
+            from streamtree.portals import portal_render_context
+
+            with portal_render_context(tree):
+                rs.render_element(tree)
+    assert st.write.called
+    written = [c.args[0] for c in st.write.call_args_list if c.args]
+    assert any("from deferred portal" == b for b in written)
+
+
 def test_render_bottom_dock_mocked() -> None:
     st = _make_st()
     bottom_cm = MagicMock()

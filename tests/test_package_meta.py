@@ -2,11 +2,58 @@
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+import pytest
 import streamtree
 
 
-def test_version_matches_release_series() -> None:
-    assert streamtree.__version__ == "0.10.0"
+def _line_scan_project_version(text: str) -> str:
+    """Parse ``[project].version`` without tomllib (Python 3.10 CI path)."""
+    in_project = False
+    for raw in text.splitlines():
+        line = raw.split("#", 1)[0].strip()
+        if line == "[project]":
+            in_project = True
+            continue
+        if in_project and line.startswith("[") and line.endswith("]"):
+            break
+        if in_project and line.startswith("version"):
+            _, _, rhs = line.partition("=")
+            return rhs.strip().strip('"').strip("'")
+    raise AssertionError("pyproject.toml missing [project].version")
+
+
+def _pyproject_project_version() -> str:
+    root = Path(__file__).resolve().parents[1]
+    text = (root / "pyproject.toml").read_text(encoding="utf-8")
+    if sys.version_info >= (3, 11):
+        import tomllib
+
+        return tomllib.loads(text)["project"]["version"]
+    return _line_scan_project_version(text)
+
+
+def test_version_matches_pyproject() -> None:
+    assert streamtree.__version__ == _pyproject_project_version()
+
+
+def test_version_matches_importlib_distribution() -> None:
+    """``__init__`` reads ``importlib.metadata.version``; guard against drift."""
+    from importlib.metadata import version
+
+    assert streamtree.__version__ == version("streamtree")
+
+
+@pytest.mark.skipif(sys.version_info < (3, 11), reason="tomllib is stdlib baseline for comparison")
+def test_pyproject_line_scan_matches_tomllib() -> None:
+    """Keep the 3.10 line parser aligned with real TOML parsing."""
+    import tomllib
+
+    root = Path(__file__).resolve().parents[1]
+    text = (root / "pyproject.toml").read_text(encoding="utf-8")
+    assert _line_scan_project_version(text) == tomllib.loads(text)["project"]["version"]
 
 
 def test_public_exports_are_importable() -> None:

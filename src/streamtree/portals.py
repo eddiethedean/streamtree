@@ -12,6 +12,7 @@ from streamtree.elements.auth_gate import AuthGate
 from streamtree.elements.layout import (
     Card,
     Columns,
+    DeferredFragment,
     Dialog,
     ErrorBoundary,
     Expander,
@@ -75,6 +76,9 @@ def gather_portals(root: Element) -> dict[str, tuple[Element, ...]]:
 
 def _structural_children(node: Element) -> Iterator[Element]:
     if isinstance(node, Fragment):
+        yield from node.children
+        return
+    if isinstance(node, DeferredFragment):
         yield from node.children
         return
     if isinstance(node, (VStack, HStack, Page, Card, Grid, Columns, Sidebar, Form, Expander)):

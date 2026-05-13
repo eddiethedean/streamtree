@@ -237,11 +237,11 @@ Equivalent with **pip**: `pip install -e ".[dev]"`, then `ruff`, `ruff format` /
 
 ## Releases
 
-Before tagging **`v0.10.0`** (or any **`v*.*.*`** release), confirm **`uv build`** succeeds, **`uv run pytest`** passes with coverage, and **`pyproject.toml`**, **`streamtree.__version__`**, **`tests/test_package_meta.py`**, and **`CHANGELOG.md`** all agree on the version.
+Before tagging **`v0.10.0`** (or any **`v*.*.*`** release), confirm **`uv build`** succeeds, **`uv run pytest`** passes with coverage, and **`pyproject.toml`** **`[project].version`**, **`CHANGELOG.md`**, and **`streamtree.__version__`** (installed package metadata, asserted against **`pyproject.toml`** in **`tests/test_package_meta.py`**) all agree on the version.
 
 **Automated:** Add a **`PYPI_API_TOKEN`** secret to the repository. When tests pass on a **`v*.*.*`** tag, the [release workflow](https://github.com/eddiethedean/streamtree/blob/main/.github/workflows/release.yml) runs lint, type check, pytest (including coverage), builds with **`uv build`**, publishes to **PyPI**, and publishes the same **`dist/`** artifacts to **GitHub Packages** for this repository (using the workflow **`GITHUB_TOKEN`** with **`packages: write`**). Open the repository **Packages** page to browse published versions.
 
-**Manual:** `uv build` (or `python -m build`), then upload `dist/` with **twine** or **`uv publish`** to PyPI and/or GitHub Packages. Keep `pyproject.toml`, `streamtree.__version__`, `tests/test_package_meta.py`, and `CHANGELOG.md` in sync when cutting a release.
+**Manual:** `uv build` (or `python -m build`), then upload `dist/` with **twine** or **`uv publish`** to PyPI and/or GitHub Packages. Bump **`[project].version`** in **`pyproject.toml`** and **`CHANGELOG.md`**; **`streamtree.__version__`** follows installed metadata from that version after rebuild or reinstall.
 
 ## Imperative handles (limits)
 

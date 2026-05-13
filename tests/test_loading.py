@@ -192,3 +192,32 @@ def test_submit_many_ordered_sorts_keys(
     monkeypatch.setattr("streamtree.asyncio.submit_many", fake_submit_many)
     submit_many_ordered({"b": lambda: 1, "a": lambda: 2})
     assert captured == [["a", "b"]]
+
+
+def test_submit_many_ordered_returns_submit_many_tuple_in_sorted_key_order(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Return value is whatever ``submit_many`` returns; keys are sorted lexically."""
+    sentinels: list[object] = []
+
+    def fake_submit_many(jobs: Any) -> tuple[Any, ...]:
+        assert [k for k, _ in jobs] == ["a", "b", "c"]
+        assert [fn() for _, fn in jobs] == [1, 2, 3]
+        sentinels[:] = [object() for _ in jobs]
+        return tuple(sentinels)
+
+    monkeypatch.setattr("streamtree.asyncio.submit_many", fake_submit_many)
+    out = submit_many_ordered({"c": lambda: 3, "a": lambda: 1, "b": lambda: 2})
+    assert out == tuple(sentinels)
+    assert len(out) == 3
+
+
+def test_submit_many_ordered_empty_mapping(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_submit_many(jobs: Any) -> tuple[Any, ...]:
+        assert jobs == []
+        return ()
+
+    monkeypatch.setattr("streamtree.asyncio.submit_many", fake_submit_many)
+    assert submit_many_ordered({}) == ()

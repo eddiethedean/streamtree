@@ -1,5 +1,11 @@
 """StreamTree: declarative, typed composition for Streamlit."""
 
+from __future__ import annotations
+
+from importlib.metadata import version as _package_version
+
+__version__ = _package_version("streamtree")
+
 from . import (
     app_context,
     asyncio,
@@ -29,8 +35,6 @@ from .core import (
     render_app,
 )
 from .theme import Theme, ThemeRoot, theme, theme_css
-
-__version__ = "0.10.0"
 
 __all__ = [
     "App",
