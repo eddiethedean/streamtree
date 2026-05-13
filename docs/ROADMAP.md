@@ -24,7 +24,7 @@ _Last updated: 2026-05-13 (0.11.0 Phase 4 tooling slice)._
 | Phase 1 — MVP | In progress | **0.1.0** core tree + state; **0.2.0** Pydantic + stub extras; deeper memoization / `streamlit-extras` curation still open. |
 | Phase 2 — Application | **Complete** (0.9.0) | **Shipped through 0.9.0:** navigation sections (**`page_links_sidebar_sections`**, **`multipage_sidebar_nav`**), routing clears/batch (**`clear_route`**, **`update_query_params`**, …), **bool** + layout forms (**`docs/PHASE2_FORMS.md`**), **`[ui]`** (**Stoggle**, **TaggerRow**, **MentionChip**), **`dismiss_tasks`**, composite **example** **`phase2_composite_demo.py`**, Phase 2 doc reconciliation. **0.10.0+** adds **`streamtree init --template`** scaffolds (Phase 3). Stretch: heavier opinionated **`App`** + **`Routes`** product templates; alternate auth protocols → backlog. |
 | Phase 3 — Data toolkit | **Complete** (0.10.0) | **Shipped through 0.10.0:** CRUD helpers, subtree memo, deferred fragments, perf/debug counters, ordered **`submit_many`** helper, exploration + enterprise protocol modules, **`streamtree init --template`**, docs and demos. Stretch (deeper admin frameworks, heavier analytics) → Phase **4** / app-specific layers. |
-| Phase 4 — Tooling | **Complete** (0.11.0) | **`streamtree tree`** / **`preview`** / **`serve`**, **`doctor --verbose`**, **`testing.viz`**, **`testing.introspection`**, **`testing.apptest`**, **`asyncio.summarize_async_tasks`**, **`debug_render_path`**; **MkDocs** + **mkdocstrings** API pages; **`.readthedocs.yml`**. **Docs — RTD:** site config in-repo; **PyPI `Documentation`** URL points at **RTD `stable`**. Stretch (Storybook-style visual regression) remains backlog. |
+| Phase 4 — Tooling | **Complete** (0.11.0) | **`streamtree tree`** / **`preview`** / **`serve`**, **`doctor --verbose`**, **`testing.viz`**, **`testing.introspection`**, **`testing.apptest`**, **`asyncio.summarize_async_tasks`**, **`debug_render_path`**; **MkDocs** + **mkdocstrings** API pages; **`.readthedocs.yml`**. **Docs — RTD:** site config in-repo; **PyPI `Documentation`** URL points at **RTD `stable`**. Stretch (Storybook-style visual regression) remains backlog. **Backlog:** imperative **Streamlit codegen** (virtual **`Element`** tree → readable **`st.*`** / context-manager Python) for docs, migration, and debugging — see [Phase 4](#phase-4--testing-and-tooling). |
 | Docs — Read the Docs | In progress | **`.readthedocs.yml`** + **PyPI `Documentation`** URL (**`stable`**); manual, guides, and API reference expand over releases ([Documentation platform](#documentation-platform-read-the-docs)). |
 
 ### 0.11.0 (shipped)
@@ -305,6 +305,7 @@ Phase 2 **application** deliverables from the original charter are **closed** as
 - **Shipped:** **`streamtree.testing.render_to_tree`** for JSON snapshot workflows in tests (see README testing row); **0.10.0+** **`streamtree.testing.summarize_tree_kinds`** for **`kind`** counts on tree dicts.
 - **Shipped (CI):** **`lint-test`** runs **ruff** (format + lint), **ty**, and **pytest** with coverage on **ubuntu-latest**, **windows-latest**, and **macos-latest**, each with Python **3.10–3.13**; **`cli-smoke`** runs **`streamtree doctor`** on the same three OSes. **Pull-request CI** runs **MkDocs** (**`build --strict`**) and **`uv build`** on **Ubuntu** only; **release** workflow repeats the cross-platform matrix (with **MkDocs** gated to **Ubuntu** + **3.12**) before **`uv build`** + PyPI publish.
 - **Shipped (0.11.0):** **`streamtree tree`** (JSON / text / Mermaid, **`--summarize`**, **`--expand-components`**); **`streamtree preview`** / **`serve`** (**`run`** aliases); **`doctor --verbose`**; **`streamtree.testing.viz`**, **`streamtree.testing.introspection`**, **`streamtree.testing.apptest`**, **`streamtree.asyncio.summarize_async_tasks`**, **`debug_render_path`**; **MkDocs** + **mkdocstrings** API pages; **`.readthedocs.yml`** for RTD builds.
+- **Backlog — Streamlit codegen:** emit **imperative Streamlit Python** from a frozen **`Element`** tree (parallel to **`render_to_tree`**, not a second renderer). Intended for **RTD side-by-side** “Streamlit equivalent” panels, **migration** off StreamTree, and **debug** diffs. Scope is **best-effort**: map built-in **`streamtree.*`** widgets/layouts to **`st.*`** / **`with st.*`**; **`@component`** call sites may expand to inlined subtrees when **`expand_components=True`**-style data is available, otherwise stubs or comments. Extras (**`DataGrid`**, **`EChartsChart`**, …) need explicit tables or “opaque custom block” escapes. Likely homes: **`streamtree.testing`** or **`streamtree tree --format streamlit`** (CLI + library API).
 - **Stretch / backlog:** Storybook-style visual regression; heavier “preview server” beyond Streamlit forwarding.
 
 ### Optional dependency alignment
@@ -315,7 +316,7 @@ Phase 2 **application** deliverables from the original charter are **closed** as
 ### Deliverables
 
 - **Shipped / in repo today:** cross-platform **CI** coverage (see **Features** above); **`render_to_tree`** and **`summarize_tree_kinds`** workflows; **0.11.0** CLI + testing helpers + RTD config + API reference skeleton.
-- **Ongoing:** RTD project wiring + deeper manual / guides; async testing recipes beyond **`run_app_function`**; optional visual regression tooling.
+- **Ongoing:** RTD project wiring + deeper manual / guides; async testing recipes beyond **`run_app_function`**; optional visual regression tooling; **Streamlit codegen** from element trees (Phase 4 **Features** backlog above).
 - **`streamtree` entry point** — **RTD ↔ CLI** copy alignment ([Documentation platform](#documentation-platform-read-the-docs)).
 
 ---
@@ -333,6 +334,8 @@ Phase 2 **application** deliverables from the original charter are **closed** as
 **How-to guides:** first full app; routing; forms; async; **lifecycle** tutorials once `streamtree run` / `init` exist ([End-to-end](#end-to-end-app-experience-optional-streamlit-cli)).
 
 **API reference:** autodoc (Sphinx or MkDocs/mkdocstrings—decision in-repo); intersphinx to Streamlit / Pydantic / stdlib; stable per-symbol URLs.
+
+**Streamlit equivalent (future):** optional generated **`st.*`** blocks next to StreamTree snippets once **imperative Streamlit codegen** lands (Phase 4 backlog — [Testing and tooling](#phase-4--testing-and-tooling)).
 
 **Operations:** stable vs **latest** policy tied to tags/PyPI; **PR doc builds** with fail-on-broken-links where feasible; contributor preview + prose styleguide.
 
