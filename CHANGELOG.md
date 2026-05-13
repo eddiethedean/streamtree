@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`docs/recipes/`:** Cookbook pages (first app, state, forms, routing, async, multipage, shell/theme, layouts, data extras, CRUD, auth, CLI, portals, organization, observability, Streamlit interop).
 - **MkDocs Material:** **`mkdocs-material`** theme, tabbed nav (**Home**, **Examples**, **Recipes**, **Guides**, **API reference**), extended Markdown (**admonitions**, **details**, **tabbed**, **highlight**, **emoji**, **tables**), **`docs/getting-started.md`**, redesigned **`docs/index.md`**, **`docs/stylesheets/extra.css`**, **`site_url`** / **`edit_uri`**; **Guides** split into **Design & roadmap** vs **Operations**; nested **API reference**; **ROADMAP** internal anchors updated for Material heading slugs.
 - **README:** shortened for PyPI / GitHub; **Read the Docs** as the primary learning surface with a compact doc map and RTD links.
+- **Docs URLs:** **PyPI** **Documentation**, **MkDocs** **`site_url`**, and **README** RTD links use **`/en/latest/`** (shields **docs** badge uses **`readthedocs/streamtree/latest`**) because **`stable`** is not yet serving; roadmap notes **`stable`** when versioned RTD builds are active.
 
 ## [0.10.0] — 2026-05-13
 

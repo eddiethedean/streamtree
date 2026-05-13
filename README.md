@@ -2,14 +2,14 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/streamtree)](https://pypi.org/project/streamtree/)
 [![Python versions](https://img.shields.io/pypi/pyversions/streamtree)](https://pypi.org/project/streamtree/)
-[![Docs](https://readthedocs.org/projects/streamtree/badge/?version=stable)](https://streamtree.readthedocs.io/en/stable/)
+[![Docs](https://img.shields.io/readthedocs/streamtree/latest?style=flat&logo=readthedocs&label=docs)](https://streamtree.readthedocs.io/en/latest/)
 [![License](https://img.shields.io/pypi/l/streamtree)](https://github.com/streamtree-dev/streamtree/blob/main/LICENSE)
 [![CI](https://github.com/eddiethedean/streamtree/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/eddiethedean/streamtree/actions/workflows/ci.yml?query=branch%3Amain)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://docs.astral.sh/ruff/)
 
 **Declarative, typed composition for [Streamlit](https://streamlit.io/).** Build UI as Python data (`@component` functions return element trees); the renderer maps them to `st.*` on each rerun. No separate frontend build.
 
-**Documentation (primary):** **[streamtree.readthedocs.io](https://streamtree.readthedocs.io/en/stable/)** — getting started, recipes, full example source, guides, API reference, and changelog.
+**Documentation (primary):** **[streamtree.readthedocs.io](https://streamtree.readthedocs.io/en/latest/)** — getting started, recipes, full example source, guides, API reference, and changelog.
 
 ## At a glance
 
@@ -68,18 +68,18 @@ streamlit run examples/counter.py
 # with [cli]:  streamtree run examples/counter.py
 ```
 
-More patterns (interop with raw `st.*`, `App` / theme, async, routing, multipage, CRUD) are in the **[recipes](https://streamtree.readthedocs.io/en/stable/recipes/)** and **[examples](https://streamtree.readthedocs.io/en/stable/EXAMPLES/)** sections on Read the Docs.
+More patterns (interop with raw `st.*`, `App` / theme, async, routing, multipage, CRUD) are in the **[recipes](https://streamtree.readthedocs.io/en/latest/recipes/)** and **[examples](https://streamtree.readthedocs.io/en/latest/EXAMPLES/)** sections on Read the Docs.
 
 ## Documentation map
 
 | Start here | Read the Docs |
 |------------|----------------|
-| Install & mental model | [Getting started](https://streamtree.readthedocs.io/en/stable/getting-started/) |
-| How-to cookbook | [Recipes](https://streamtree.readthedocs.io/en/stable/recipes/) |
-| Every `examples/*.py` inlined | [Examples (full source)](https://streamtree.readthedocs.io/en/stable/EXAMPLES/) |
-| Testing & `AppTest` | [Testing & debugging](https://streamtree.readthedocs.io/en/stable/TESTING_AND_DEBUG/) |
-| Plan, roadmap, deps, performance, phases | [Guides](https://streamtree.readthedocs.io/en/stable/PLAN/) (use the site nav: *Design & roadmap* / *Operations*) |
-| Release history | [Changelog](https://streamtree.readthedocs.io/en/stable/CHANGELOG/) |
+| Install & mental model | [Getting started](https://streamtree.readthedocs.io/en/latest/getting-started/) |
+| How-to cookbook | [Recipes](https://streamtree.readthedocs.io/en/latest/recipes/) |
+| Every `examples/*.py` inlined | [Examples (full source)](https://streamtree.readthedocs.io/en/latest/EXAMPLES/) |
+| Testing & `AppTest` | [Testing & debugging](https://streamtree.readthedocs.io/en/latest/TESTING_AND_DEBUG/) |
+| Plan, roadmap, deps, performance, phases | [Guides](https://streamtree.readthedocs.io/en/latest/PLAN/) (use the site nav: *Design & roadmap* / *Operations*) |
+| Release history | [Changelog](https://streamtree.readthedocs.io/en/latest/CHANGELOG/) |
 
 Design files remain in `docs/` in the repo; the site above is the supported reading path for **stable** releases.
 
@@ -103,7 +103,7 @@ Before tagging **`v*.*.*`**: align **`pyproject.toml`** version, **`CHANGELOG.md
 
 ## Limits (Streamlit)
 
-No stable cross-rerun APIs for arbitrary widget focus or DOM control. Prefer **`session_state`**, **query params** (`streamtree.routing`, …), **`st.rerun`**, and **`key=`** discipline. **`Portal` / `PortalMount`** move subtrees within a script; they do not replace Streamlit’s execution model. See **[Portals & prefetch](https://streamtree.readthedocs.io/en/stable/PHASE2_PORTALS_AND_PREFETCH/)** on RTD.
+No stable cross-rerun APIs for arbitrary widget focus or DOM control. Prefer **`session_state`**, **query params** (`streamtree.routing`, …), **`st.rerun`**, and **`key=`** discipline. **`Portal` / `PortalMount`** move subtrees within a script; they do not replace Streamlit’s execution model. See **[Portals & prefetch](https://streamtree.readthedocs.io/en/latest/PHASE2_PORTALS_AND_PREFETCH/)** on RTD.
 
 ## License
 

@@ -1,7 +1,7 @@
 # Static doc site (MkDocs). Run: uv run python -m mkdocs build --strict
 site_name: StreamTree
 site_description: Declarative, typed composition for Streamlit.
-site_url: https://streamtree.readthedocs.io/en/stable/
+site_url: https://streamtree.readthedocs.io/en/latest/
 repo_url: https://github.com/streamtree-dev/streamtree
 repo_name: streamtree-dev/streamtree
 edit_uri: edit/main/docs/
