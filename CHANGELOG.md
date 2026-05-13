@@ -5,6 +5,20 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.0] — 2026-05-13
+
+### Added
+
+- **CLI (`[cli]`):** **`streamtree tree`** (`module:attr`, **`--format`**, **`--summarize`**, **`--expand-components`**); **`streamtree preview`** and **`streamtree serve`** as aliases of **`run`**; **`streamtree doctor --verbose`**.
+- **`streamtree.helpers.tree_target.load_element_from_target`** for resolving **`module:attr`** trees.
+- **`streamtree.testing.viz`:** **`format_tree_text`**, **`tree_dict_to_mermaid`** for human-readable tree views.
+- **`streamtree.testing.introspection`:** **`iter_streamtree_session_keys`**, **`summarize_streamtree_session_state`**.
+- **`streamtree.testing.apptest.run_app_function`** wrapper around **`AppTest.from_function(...).run`**.
+- **`streamtree.asyncio.summarize_async_tasks`** for read-only summaries of managed task slots.
+- **`streamtree.debug_render_path`** (re-exported from **`streamtree.core.context`**).
+- **Docs:** **`docs/TESTING_AND_DEBUG.md`**; MkDocs **API reference** pages (**mkdocstrings**); **`.readthedocs.yml`** for Read the Docs builds.
+- **`examples`:** package **`__init__.py`** and **`examples.counter.streamtree_tree_root`** for **`streamtree tree`** demos.
+
 ## [0.10.0] — 2026-05-13
 
 ### Added

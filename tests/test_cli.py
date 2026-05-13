@@ -11,6 +11,8 @@ from typer.testing import CliRunner
 
 import streamtree.cli as cli
 
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+
 
 def test_cli_doctor_prints_versions() -> None:
     runner = CliRunner()
@@ -131,3 +133,110 @@ def test_cli_init_invalid_target(tmp_path: Path) -> None:
     f.write_text("x", encoding="utf-8")
     result = runner.invoke(cli._cli_app(), ["init", str(f)])
     assert result.exit_code == 1
+
+
+def test_cli_tree_summarize_examples_counter(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.syspath_prepend(str(_REPO_ROOT))
+    runner = CliRunner()
+    result = runner.invoke(
+        cli._cli_app(),
+        ["tree", "examples.counter:streamtree_tree_root", "--summarize"],
+    )
+    assert result.exit_code == 0
+    assert "Page" in result.stdout
+    assert "ComponentCall" in result.stdout
+
+
+def test_cli_tree_json_default_format(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.syspath_prepend(str(_REPO_ROOT))
+    runner = CliRunner()
+    result = runner.invoke(cli._cli_app(), ["tree", "examples.counter:streamtree_tree_root"])
+    assert result.exit_code == 0
+    assert '"kind": "Page"' in result.stdout
+
+
+def test_cli_tree_text_format(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.syspath_prepend(str(_REPO_ROOT))
+    runner = CliRunner()
+    result = runner.invoke(
+        cli._cli_app(),
+        ["tree", "examples.counter:streamtree_tree_root", "--format", "text"],
+    )
+    assert result.exit_code == 0
+    assert "Page" in result.stdout
+    assert "ComponentCall" in result.stdout
+
+
+def test_cli_tree_mermaid_format(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.syspath_prepend(str(_REPO_ROOT))
+    runner = CliRunner()
+    result = runner.invoke(
+        cli._cli_app(),
+        ["tree", "examples.counter:streamtree_tree_root", "-f", "mermaid"],
+    )
+    assert result.exit_code == 0
+    assert "flowchart TD" in result.stdout
+
+
+def test_cli_tree_bad_target_spec() -> None:
+    runner = CliRunner()
+    result = runner.invoke(cli._cli_app(), ["tree", "no-colon-here"])
+    assert result.exit_code == 1
+
+
+def test_cli_tree_bad_format_flag(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.syspath_prepend(str(_REPO_ROOT))
+    runner = CliRunner()
+    result = runner.invoke(
+        cli._cli_app(),
+        ["tree", "examples.counter:streamtree_tree_root", "-f", "nope"],
+    )
+    assert result.exit_code == 1
+
+
+def test_cli_tree_expand_requires_streamlit_runtime(monkeypatch: pytest.MonkeyPatch) -> None:
+    runner = CliRunner()
+    monkeypatch.setattr("streamlit.runtime.exists", lambda: False)
+    result = runner.invoke(
+        cli._cli_app(),
+        ["tree", "examples.counter:streamtree_tree_root", "--expand-components"],
+    )
+    assert result.exit_code == 1
+    assert "Streamlit" in result.stderr or "streamlit" in result.stderr.lower()
+
+
+def test_cli_tree_expand_passes_flag_when_runtime(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.syspath_prepend(str(_REPO_ROOT))
+    runner = CliRunner()
+    monkeypatch.setattr("streamlit.runtime.exists", lambda: True)
+    with patch("streamtree.testing.render_to_tree") as rt_mock:
+        rt_mock.return_value = {"kind": "Stub"}
+        app = cli._cli_app()
+        result = runner.invoke(
+            app,
+            ["tree", "examples.counter:streamtree_tree_root", "--expand-components"],
+        )
+    assert result.exit_code == 0
+    assert rt_mock.call_args is not None
+    assert rt_mock.call_args.kwargs.get("expand_components") is True
+
+
+def test_cli_preview_and_serve_alias_run() -> None:
+    runner = CliRunner()
+    for cmd in ("preview", "serve"):
+        with patch("streamtree.helpers.runner.subprocess.run") as run:
+            run.return_value = SimpleNamespace(returncode=0)
+            result = runner.invoke(cli._cli_app(), [cmd, "app.py"])
+            assert result.exit_code == 0
+            run.assert_called_once()
+
+
+def test_cli_doctor_verbose(monkeypatch: pytest.MonkeyPatch) -> None:
+    runner = CliRunner()
+    monkeypatch.setattr("streamlit.runtime.exists", lambda: True)
+    result = runner.invoke(cli._cli_app(), ["doctor", "--verbose"])
+    assert result.exit_code == 0
+    assert "runtime active" in result.stdout
+    assert "debug_render_path" in result.stdout

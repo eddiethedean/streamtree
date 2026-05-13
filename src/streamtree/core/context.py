@@ -40,6 +40,12 @@ def current_context() -> RenderContext:
     return c
 
 
+def debug_render_path() -> str | None:
+    """Return the active render path, or ``None`` when no :func:`render_context` is active."""
+    c = _ctx.get()
+    return None if c is None else c.path()
+
+
 @contextmanager
 def render_context(root_segment: str = "app") -> Iterator[RenderContext]:
     parent = _ctx.get()

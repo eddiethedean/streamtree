@@ -337,6 +337,43 @@ def dismiss_tasks(*, keys: Sequence[str]) -> int:
     return n
 
 
+def summarize_async_tasks() -> list[dict[str, Any]]:
+    """Return a JSON-serializable summary row per managed async task slot in session state.
+
+    Rows include the logical ``key`` (without the ``streamtree.asyncio.task.`` prefix),
+    ``status``, ``has_error``, ``has_result``, ``cancel_requested``, and a string ``progress``
+    preview (``repr`` truncated). Non-task values stored under the task key prefix are skipped.
+    """
+    prefix = "streamtree.asyncio.task."
+    rows: list[dict[str, Any]] = []
+    for raw_sk in sorted(st.session_state.keys()):
+        sk = str(raw_sk)
+        if not sk.startswith(prefix):
+            continue
+        raw = st.session_state.get(raw_sk)
+        if not _is_managed_task_box(raw):
+            continue
+        box = cast(dict[str, Any], raw)
+        user_key = sk[len(prefix) :]
+
+        def read_row() -> dict[str, Any]:
+            prog = box.get("progress")
+            prog_s = repr(prog)
+            if len(prog_s) > 120:
+                prog_s = prog_s[:117] + "..."
+            return {
+                "key": user_key,
+                "status": str(box.get("status", "")),
+                "has_error": box.get("error") is not None,
+                "has_result": box.get("result") is not None,
+                "cancel_requested": bool(box.get("cancel_requested")),
+                "progress": prog_s,
+            }
+
+        rows.append(_with_box_lock(box, read_row))
+    return rows
+
+
 __all__ = [
     "TaskHandle",
     "complete_cancelled",
@@ -346,4 +383,5 @@ __all__ = [
     "set_task_progress",
     "submit",
     "submit_many",
+    "summarize_async_tasks",
 ]

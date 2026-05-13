@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "streamtree"
-version = "0.10.0"
+version = "0.11.0"
 description = "StreamTree: declarative, typed composition for Streamlit."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -63,6 +63,8 @@ all = [
 ]
 dev = [
   "mkdocs>=1.6.0",
+  "mkdocstrings[python]>=0.26.0",
+  "mkdocs-autorefs>=1.0.0",
   "pytest>=7.4.0",
   "pytest-cov>=4.1.0",
   "pytest-xdist>=3.5.0",
@@ -81,7 +83,7 @@ dev = [
 
 [project.urls]
 Homepage = "https://github.com/streamtree-dev/streamtree"
-Documentation = "https://github.com/streamtree-dev/streamtree#readme"
+Documentation = "https://streamtree.readthedocs.io/en/stable/"
 Repository = "https://github.com/streamtree-dev/streamtree"
 Issues = "https://github.com/streamtree-dev/streamtree/issues"
 Changelog = "https://github.com/streamtree-dev/streamtree/blob/main/CHANGELOG.md"

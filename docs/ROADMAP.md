@@ -16,7 +16,7 @@ This document tracks **product direction and phased delivery**. It aligns with [
 
 ## Release index
 
-_Last updated: 2026-05-13._
+_Last updated: 2026-05-13 (0.11.0 Phase 4 tooling slice)._
 
 | Track | Status | Notes |
 |-------|--------|--------|
@@ -24,8 +24,14 @@ _Last updated: 2026-05-13._
 | Phase 1 — MVP | In progress | **0.1.0** core tree + state; **0.2.0** Pydantic + stub extras; deeper memoization / `streamlit-extras` curation still open. |
 | Phase 2 — Application | **Complete** (0.9.0) | **Shipped through 0.9.0:** navigation sections (**`page_links_sidebar_sections`**, **`multipage_sidebar_nav`**), routing clears/batch (**`clear_route`**, **`update_query_params`**, …), **bool** + layout forms (**`docs/PHASE2_FORMS.md`**), **`[ui]`** (**Stoggle**, **TaggerRow**, **MentionChip**), **`dismiss_tasks`**, composite **example** **`phase2_composite_demo.py`**, Phase 2 doc reconciliation. **0.10.0+** adds **`streamtree init --template`** scaffolds (Phase 3). Stretch: heavier opinionated **`App`** + **`Routes`** product templates; alternate auth protocols → backlog. |
 | Phase 3 — Data toolkit | **Complete** (0.10.0) | **Shipped through 0.10.0:** CRUD helpers, subtree memo, deferred fragments, perf/debug counters, ordered **`submit_many`** helper, exploration + enterprise protocol modules, **`streamtree init --template`**, docs and demos. Stretch (deeper admin frameworks, heavier analytics) → Phase **4** / app-specific layers. |
-| Phase 4 — Tooling | In progress | **`streamtree.testing.render_to_tree`** + **0.10.0+** **`summarize_tree_kinds`** (JSON tree snapshots / counts) shipped; CI runs **pytest** (100% coverage on **`src/streamtree`** via **`pyproject.toml`** defaults), **ruff**, **ty** on **`src`** across **Linux, Windows, and macOS** (matrix with Python **3.10–3.13**); **`cli-smoke`** (**`streamtree doctor`**) on the same three OSes; **MkDocs strict** + **`uv build`** on **Ubuntu** in PR CI. **`[cli]`** ships **`run`** / **`doctor`** / **`init`** (incl. **`--with-pages`**, **0.8.0**; **0.10.0+** **`--template`** / **`-t`**). **Still open:** richer dev introspection, **`tree` / `preview`**-style CLI, RTD — see [Phase 4](#phase-4--testing-and-tooling). |
-| Docs — Read the Docs | Planned | [Manual, guides, API](#documentation-platform-read-the-docs); **stable** / **latest**; CI doc builds. |
+| Phase 4 — Tooling | **Complete** (0.11.0) | **`streamtree tree`** / **`preview`** / **`serve`**, **`doctor --verbose`**, **`testing.viz`**, **`testing.introspection`**, **`testing.apptest`**, **`asyncio.summarize_async_tasks`**, **`debug_render_path`**; **MkDocs** + **mkdocstrings** API pages; **`.readthedocs.yml`**. **Docs — RTD:** site config in-repo; **PyPI `Documentation`** URL points at **RTD `stable`**. Stretch (Storybook-style visual regression) remains backlog. |
+| Docs — Read the Docs | In progress | **`.readthedocs.yml`** + **PyPI `Documentation`** URL (**`stable`**); manual, guides, and API reference expand over releases ([Documentation platform](#documentation-platform-read-the-docs)). |
+
+### 0.11.0 (shipped)
+
+- **CLI:** **`streamtree tree`** (`module:attr`, **`--format`**, **`--summarize`**, **`--expand-components`**); **`preview`** / **`serve`** aliases of **`run`**; **`doctor --verbose`**.
+- **Testing / dev:** **`streamtree.testing.viz`**, **`streamtree.testing.introspection`**, **`streamtree.testing.apptest`**, **`streamtree.asyncio.summarize_async_tasks`**, **`debug_render_path`**; **`examples.counter:streamtree_tree_root`** for **`tree`** demos.
+- **Docs:** **`docs/TESTING_AND_DEBUG.md`**; MkDocs **mkdocstrings** API reference; **`.readthedocs.yml`**.
 
 ### 0.10.0 (shipped)
 
@@ -298,20 +304,19 @@ Phase 2 **application** deliverables from the original charter are **closed** as
 
 - **Shipped:** **`streamtree.testing.render_to_tree`** for JSON snapshot workflows in tests (see README testing row); **0.10.0+** **`streamtree.testing.summarize_tree_kinds`** for **`kind`** counts on tree dicts.
 - **Shipped (CI):** **`lint-test`** runs **ruff** (format + lint), **ty**, and **pytest** with coverage on **ubuntu-latest**, **windows-latest**, and **macos-latest**, each with Python **3.10–3.13**; **`cli-smoke`** runs **`streamtree doctor`** on the same three OSes. **Pull-request CI** runs **MkDocs** (**`build --strict`**) and **`uv build`** on **Ubuntu** only; **release** workflow repeats the cross-platform matrix (with **MkDocs** gated to **Ubuntu** + **3.12**) before **`uv build`** + PyPI publish.
-- **Planned:** component tree visualization; dev introspection; in-flight async inspection in dev.
-- **`[cli]` Typer entrypoint:** **Shipped** — **`run`**, **`doctor`**, **`init`** (with **`--with-pages`**, **0.8.0**; **0.10.0+** **`--template`** / **`-t`**). **Planned** — e.g. **`tree`**, **`preview`**, optional **`serve`** alias if we outgrow forwarding to **`streamlit run`**.
-- Storybook-style previews, visual regression, state inspection helpers.
+- **Shipped (0.11.0):** **`streamtree tree`** (JSON / text / Mermaid, **`--summarize`**, **`--expand-components`**); **`streamtree preview`** / **`serve`** (**`run`** aliases); **`doctor --verbose`**; **`streamtree.testing.viz`**, **`streamtree.testing.introspection`**, **`streamtree.testing.apptest`**, **`streamtree.asyncio.summarize_async_tasks`**, **`debug_render_path`**; **MkDocs** + **mkdocstrings** API pages; **`.readthedocs.yml`** for RTD builds.
+- **Stretch / backlog:** Storybook-style visual regression; heavier “preview server” beyond Streamlit forwarding.
 
 ### Optional dependency alignment
 
-- **`[dev]`:** pytest, ruff, **ty** (CI typecheck), **mypy** (optional local contributor toolchain).
+- **`[dev]`:** pytest, ruff, **ty** (CI typecheck), **mypy** (optional local contributor toolchain); **mkdocstrings** + **mkdocs-autorefs** for API reference builds.
 - **`[cli]`:** typer + minimal deps; **`streamlit run`** remains documented fallback.
 
 ### Deliverables
 
-- **Shipped / in repo today:** cross-platform **CI** coverage (see **Features** above); **`render_to_tree`** and **`summarize_tree_kinds`** workflows.
-- **Planned:** preview server + richer introspection surfaces; async testing kit (e.g. AppTest patterns).
-- **`streamtree` entry point** — extend with non-interactive flags (**`tree`**, etc.); **RTD ↔ CLI** copy alignment ([Documentation platform](#documentation-platform-read-the-docs)).
+- **Shipped / in repo today:** cross-platform **CI** coverage (see **Features** above); **`render_to_tree`** and **`summarize_tree_kinds`** workflows; **0.11.0** CLI + testing helpers + RTD config + API reference skeleton.
+- **Ongoing:** RTD project wiring + deeper manual / guides; async testing recipes beyond **`run_app_function`**; optional visual regression tooling.
+- **`streamtree` entry point** — **RTD ↔ CLI** copy alignment ([Documentation platform](#documentation-platform-read-the-docs)).
 
 ---
 

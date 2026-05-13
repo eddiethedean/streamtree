@@ -37,3 +37,18 @@ def test_path_when_parent_path_empty() -> None:
     with render_context(""):
         with push_segment("z") as inner:
             assert inner.path() == "z"
+
+
+def test_debug_render_path_outside_is_none() -> None:
+    from streamtree.core.context import debug_render_path
+
+    assert debug_render_path() is None
+
+
+def test_debug_render_path_inside_context() -> None:
+    from streamtree.core.context import debug_render_path
+
+    with render_context("app"):
+        assert debug_render_path() == "app"
+        with push_segment("Child"):
+            assert debug_render_path() == "app.Child"

@@ -18,5 +18,10 @@ def Counter():
     )
 
 
+def streamtree_tree_root():
+    """Stable entry for ``streamtree tree examples.counter:streamtree_tree_root``."""
+    return Page(Counter(), key="page")
+
+
 if __name__ == "__main__":
     render(Page(Counter(), key="page"))

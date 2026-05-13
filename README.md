@@ -26,7 +26,7 @@ StreamTree is an **architecture layer** for Streamlit, not a React-style web fra
 - **Background work (0.3+)** — `streamtree.asyncio.submit` / **`submit_many`** and `TaskHandle` for stdlib-thread jobs you poll across reruns; **`set_task_progress` / `TaskHandle.progress()`** (0.5+); **0.7+** cooperative cancel via **`TaskHandle.cancel()`**, **`is_task_cancel_requested`**, and **`complete_cancelled`**; **0.8.0+** **`dismiss_task`** clears terminal slots before reusing a ``key``; **0.9.0+** **`dismiss_tasks`** for batch clears (see module docstring in `streamtree.asyncio`).
 - **Multipage helpers (0.5+)** — **`streamtree.helpers.pages`** (`discover_pages`, **`page_links`**, **`group_page_entries_by_order_prefix`**, **`page_links_sidebar_sections`**, **`multipage_sidebar_nav`**) for Streamlit’s `pages/` layout; ships in the default install (the **`[pages]`** extra remains reserved for future pinned deps). **`iter_page_entries`** / **`prefetch_page_sources`** (0.9.0+) optionally **`compile()`** page sources for early syntax checks without importing modules. **`streamtree init --with-pages`** (0.8.0+) scaffolds a sidebar wired to **`discover_pages`** + **`page_links`**.
 - **Forms (0.3+)** — Pydantic-oriented helpers: `bind_str_fields` / `str_text_inputs`, **`bind_numeric_fields` / `number_inputs`** (0.4+), and **`bind_bool_fields` / `bool_field_names`** (0.9.0+) for `int` / `float` / `bool` fields (optional unions use model defaults where applicable).
-- **CLI (0.4+)** — Optional **`streamtree[cli]`**: **`streamtree run`** delegates to Streamlit; **`streamtree doctor`** prints versions; **`streamtree init`** (0.6+) scaffolds **`app.py`** and optional **`pages/`**; **0.10.0+** **`--template` / `-t`** chooses **`default`**, **`crud`**, **`explore`**, or **`enterprise`** shells (see [examples/streamtree_run_demo.md](examples/streamtree_run_demo.md)).
+- **CLI (0.4+)** — Optional **`streamtree[cli]`**: **`streamtree run`**, **`streamtree preview`**, and **`streamtree serve`** delegate to Streamlit; **`streamtree doctor`** prints versions (**`--verbose` / `-v`** for introspection pointers, **0.11.0+**); **`streamtree tree`** dumps **`render_to_tree`** output (**`--format`**, **`--summarize`**, **`--expand-components`**, **0.11.0+**); **`streamtree init`** (0.6+) scaffolds **`app.py`** and optional **`pages/`**; **0.10.0+** **`--template` / `-t`** chooses **`default`**, **`crud`**, **`explore`**, or **`enterprise`** shells (see [examples/streamtree_run_demo.md](examples/streamtree_run_demo.md)).
 - **State** — `state`, `toggle_state`, `form_state`, `memo`, `cache`, **0.10.0+** **`memo_subtree`** (path-scoped memo for heavy subtrees).
 - **Routing and context** — Query-param routing (`streamtree.routing`, including **0.9.0+** **`clear_query_param`**, **`clear_route`**, **`update_query_params`**), `ErrorBoundary`, `streamtree.forms` utilities, and `app_context.provider` / `lookup` for shared values. **Native `pages/` scripts** are separate entrypoints; **`Routes`** switches subtrees **inside one script** via query params—pick one primary navigation model per app (see **`docs/ROADMAP.md`**).
 - **Optional auth (0.6+)** — **`pip install "streamtree[auth]"`**: **`AuthGate`** + **`streamtree.auth.build_authenticator`** for **`streamlit-authenticator`** (see [examples/auth_demo.py](examples/auth_demo.py); treat config as trusted secrets). Alternative identity providers stay **app-specific** unless/until a pinned abstraction ships; see **`docs/DEPENDENCY_STRATEGY.md`** (Auth extra).
@@ -37,7 +37,7 @@ StreamTree is an **architecture layer** for Streamlit, not a React-style web fra
 - **Data toolkit (0.8+)** — **`[tables]`** / **`DataGrid`**, **`[charts]`** / **`Chart`**, **`AltairChart`**, **`EChartsChart`**; **`streamtree.loading.match_task`** and **0.10.0+** **`match_task_many`** / **`submit_many_ordered`**; **`routing.sync_query_value`** / **`set_query_value`**; **0.10.0+** **`streamtree.crud`**, **`helpers.explore`**, **`enterprise`**, **`perf`**, **`DeferredFragment`**, **`memo_subtree`**. See [docs/PERFORMANCE.md](docs/PERFORMANCE.md) and [docs/PHASE3_CRUD.md](docs/PHASE3_CRUD.md).
 - **Quality** — Pydantic v2 in the default install, typing-first APIs, **`render_to_tree`**, and **0.10.0+** **`summarize_tree_kinds`** for structural tests.
 
-Optional extras: **`[tables]`** pins **`streamlit-aggrid`** (+ **pandas**); **`[charts]`** pins **`plotly`**, **`altair`**, and **`streamlit-echarts`** (**0.10.0+**). **`[ui]`** and **`[auth]`** pin **`streamlit-extras`** and **`streamlit-authenticator`** (0.6+). **`[cli]`** adds **Typer** and the **`streamtree`** console script (`run`, `doctor`, `init` with **`--with-pages`** and **0.10.0+** **`--template`** / **`-t`**). **`[asyncio]`** / **`[async]`**, **`[pages]`**, and **`[runner]`** remain metadata-oriented. See [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md). The `streamtree.asyncio` module and **`streamtree.helpers`** (**`pages`**, **`runner`**, **`scaffold`**, **`explore`**) ship in the default install; **`import streamtree`** exposes **`streamtree.helpers`** on the root package.
+Optional extras: **`[tables]`** pins **`streamlit-aggrid`** (+ **pandas**); **`[charts]`** pins **`plotly`**, **`altair`**, and **`streamlit-echarts`** (**0.10.0+**). **`[ui]`** and **`[auth]`** pin **`streamlit-extras`** and **`streamlit-authenticator`** (0.6+). **`[cli]`** adds **Typer** and the **`streamtree`** console script (`run`, `preview`, `serve`, `doctor`, `tree`, `init` with **`--with-pages`** and **0.10.0+** **`--template`** / **`-t`**). **`[asyncio]`** / **`[async]`**, **`[pages]`**, and **`[runner]`** remain metadata-oriented. See [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md). The `streamtree.asyncio` module and **`streamtree.helpers`** (**`pages`**, **`runner`**, **`scaffold`**, **`explore`**) ship in the default install; **`import streamtree`** exposes **`streamtree.helpers`** on the root package.
 
 ## Requirements
 
@@ -46,7 +46,7 @@ Python **3.10+**, with **Streamlit ≥ 1.33** (for **`st.dialog`** / **`st.popov
 ## Installation
 
 ```bash
-pip install streamtree==0.10.0
+pip install streamtree==0.11.0
 pip install "streamtree[cli]"   # Typer + ``streamtree run`` / ``doctor`` / ``init``
 pip install "streamtree[auth]"  # streamlit-authenticator
 pip install "streamtree[ui]"    # streamlit-extras wrappers
@@ -111,6 +111,7 @@ streamlit run examples/phase2_layout_demo.py
 streamlit run examples/phase2_composite_demo.py
 # With Typer installed (``pip install "streamtree[cli]"``):
 streamtree run examples/counter.py
+streamtree tree examples.counter:streamtree_tree_root --summarize
 ```
 
 ## Using Streamlit inside components

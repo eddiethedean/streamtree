@@ -8,12 +8,23 @@ site_dir: site
 
 strict: true
 
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            show_source: false
+
 theme:
   name: readthedocs
 
 nav:
   - Home: index.md
   - Changelog: CHANGELOG.md
+  - Testing & debugging: TESTING_AND_DEBUG.md
   - Guides:
       - Plan: PLAN.md
       - Roadmap: ROADMAP.md
@@ -23,3 +34,10 @@ nav:
       - Phase 2 tail: PHASE2_TAIL.md
       - Phase 2 portals & prefetch: PHASE2_PORTALS_AND_PREFETCH.md
       - Phase 2 form layout: PHASE2_FORMS.md
+  - API reference:
+      - Testing: reference/testing_api.md
+      - Introspection: reference/introspection_api.md
+      - Async tasks: reference/asyncio_api.md
+      - Core context: reference/core_api.md
+      - AppTest: reference/apptest_api.md
+      - CLI helpers: reference/cli_helpers.md
