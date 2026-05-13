@@ -1,4 +1,4 @@
-"""Optional charts (Plotly, Altair) behind ``pip install \"streamtree[charts]\"``."""
+"""Optional charts (Plotly, Altair, ECharts) behind ``pip install \"streamtree[charts]\"``."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from typing import Any
 import streamlit as st
 
 from streamtree.core.element import Element
+from streamtree.echarts_chart import EChartsChart, render_echarts_chart
 
 
 @dataclass(frozen=True)
@@ -80,4 +81,11 @@ def render_altair_chart(el: AltairChart, *, widget_key: str) -> None:
     )
 
 
-__all__ = ["AltairChart", "Chart", "render_altair_chart", "render_chart"]
+__all__ = [
+    "AltairChart",
+    "Chart",
+    "EChartsChart",
+    "render_altair_chart",
+    "render_chart",
+    "render_echarts_chart",
+]

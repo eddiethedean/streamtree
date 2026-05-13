@@ -62,6 +62,7 @@ def test_tables_and_charts_submodules_exposed() -> None:
     assert hasattr(streamtree, "charts")
     assert hasattr(streamtree.charts, "Chart")
     assert hasattr(streamtree.charts, "AltairChart")
+    assert hasattr(streamtree.charts, "EChartsChart")
 
 
 def test_routing_query_helpers() -> None:

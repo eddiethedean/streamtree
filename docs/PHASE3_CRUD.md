@@ -15,7 +15,7 @@ This note complements [`PERFORMANCE.md`](./PERFORMANCE.md) with **repeatable sha
 
 ## Recommended flow
 
-1. **List** — Hold rows in **`state(..., key=...)`** (or load via `submit` and `match_task`). For rich grids, bind **`DataGrid`** selection to session state keys `streamlit-aggrid` exposes, then mirror into a **`StateVar`** in your `@component` on the next rerun.
+1. **List** — Hold rows in **`state(..., key=...)`** (or load via `submit` and `match_task`). For rich grids, bind **`DataGrid`** selection to session state keys `streamlit-aggrid` exposes (or use **`DataGrid.on_result`** to observe the **`AgGrid`** return value in the same run), then mirror into a **`StateVar`** in your `@component` on the next rerun.
 2. **Selection** — Keep **`selected_id`** (or similar) in **`state`**. Row actions use **`Button.on_click`** or grid callbacks to update selection and seed edit fields.
 3. **Edit** — Use **`Form`** + **`TextInput(value=state_var)`** so submit batches match Streamlit’s form semantics.
 4. **Save** — Start **`submit(save_fn, key="...")`** from the render path when the user intent is clear (for example after a “Save” click sets a **`save_version`** counter you read on the next rerun). Use **`match_task`** (or **`match_task_many`** if several keys must finish together) to swap loading / success / error UI.
@@ -27,4 +27,4 @@ This note complements [`PERFORMANCE.md`](./PERFORMANCE.md) with **repeatable sha
 
 ## Charts and reporting
 
-Optional **`[charts]`** provides **`Chart`** (Plotly) and **`AltairChart`** (Altair). Prefer small, composable chart elements next to tables rather than oversized single-page dashboards unless you add **`fragment()`** or portal-based shells for layout control.
+Optional **`[charts]`** provides **`Chart`** (Plotly), **`AltairChart`** (Altair), and **`EChartsChart`** (Apache ECharts / **`streamlit-echarts`**). Prefer small, composable chart elements next to tables rather than oversized single-page dashboards unless you add **`fragment()`** or portal-based shells for layout control. **`DataGrid.on_result`** (same-run hook after **`AgGrid`**) can mirror grid return values into **`state()`** on the next interaction-driven rerun.

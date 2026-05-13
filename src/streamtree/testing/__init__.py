@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from streamtree.charts import AltairChart, Chart
+from streamtree.charts import AltairChart, Chart, EChartsChart
 from streamtree.core.element import ComponentCall, Element, Fragment
 from streamtree.elements.auth_gate import AuthGate
 from streamtree.elements.layout import (
@@ -295,6 +295,8 @@ def _node(el: Element, *, expand_components: bool) -> dict[str, Any]:
         return {"kind": "DataGrid", "key": el.key}
     if isinstance(el, AltairChart):
         return {"kind": "AltairChart", "key": el.key}
+    if isinstance(el, EChartsChart):
+        return {"kind": "EChartsChart", "key": el.key}
     if isinstance(el, Chart):
         return {"kind": "Chart", "key": el.key}
     if isinstance(el, Image):

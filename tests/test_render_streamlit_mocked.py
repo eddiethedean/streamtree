@@ -26,6 +26,7 @@ from streamtree.elements import (
     DataGrid,
     Dialog,
     Divider,
+    EChartsChart,
     ErrorBoundary,
     Expander,
     FloatingActionButton,
@@ -876,6 +877,19 @@ def test_render_datagrid_and_chart_delegate_to_helpers() -> None:
                     rs.render_element(tree)
         rd.assert_called_once()
         rc.assert_called_once()
+
+
+def test_render_echarts_chart_delegates_to_helper() -> None:
+    st = _make_st()
+    with _patched_st(st):
+        with patch("streamtree.charts.render_echarts_chart") as re:
+            with render_context("p3e"):
+                tree = Page(VStack(EChartsChart({"series": []}, key="e1")))
+                from streamtree.portals import portal_render_context
+
+                with portal_render_context(tree):
+                    rs.render_element(tree)
+        re.assert_called_once()
 
 
 def test_render_altair_chart_delegates_to_helper() -> None:

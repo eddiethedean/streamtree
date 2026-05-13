@@ -334,7 +334,7 @@ tables = [
 
 ---
 
-# Charts Extra (Plotly + Altair shipped in 0.10.0; echarts remains roadmap)
+# Charts Extra (Plotly + Altair + ECharts shipped in 0.10.0)
 
 ```bash
 pip install streamtree[charts]
@@ -360,7 +360,9 @@ Useful for:
 
 **`Chart`** (optional **`[charts]`**) accepts a Plotly figure and renders via **`st.plotly_chart`**; see **`streamtree.charts`** and **`examples/chart_demo.py`**.
 
-**`AltairChart`** (optional **`[charts]`**, **0.10.0+**) accepts an Altair chart object and renders via **`st.altair_chart`**; see **`streamtree.charts`** and **`examples/altair_chart_demo.py`**. The **`[charts]`** extra pins **altair** alongside **plotly**.
+**`AltairChart`** (optional **`[charts]`**, **0.10.0+**) accepts an Altair chart object and renders via **`st.altair_chart`**; see **`streamtree.charts`** and **`examples/altair_chart_demo.py`**.
+
+**`EChartsChart`** (optional **`[charts]`**, **0.10.0+**) accepts an ECharts **options** dict and renders via **`streamlit_echarts.st_echarts`**; see **`examples/echarts_demo.py`**. The **`[charts]`** extra pins **streamlit-echarts** alongside **plotly** and **altair**.
 
 ### Recommendation
 
@@ -370,55 +372,21 @@ Optional dependencies under `charts`:
 charts = [
     "plotly>=5.18.0",
     "altair>=5.0.0",
+    "streamlit-echarts>=0.4.0",
 ]
 ```
 
 ---
 
-## streamlit-echarts
+## streamlit-echarts (shipped)
 
-### Why
-
-Apache ECharts is a powerful charting system, and streamlit-echarts makes it available in Streamlit.
-
-### Usefulness
-
-Useful for:
-- advanced dashboards
-- complex interactive charts
-- maps
-- gauges
-- tree charts
-- rich visualizations
-
-### StreamTree Integration Ideas
-
-```python
-EChart(options)
-```
-
-or curated components like:
-
-```python
-Gauge(value=72)
-Treemap(data)
-```
-
-### Recommendation
-
-Optional dependency under `charts`.
-
-```toml
-charts = [
-    "streamlit-echarts",
-]
-```
+**0.10.0:** **`EChartsChart`** wraps **`streamlit_echarts.st_echarts`** with an ECharts **options** dict; the **`[charts]`** extra pins **streamlit-echarts** with **plotly** and **altair** (see **`pyproject.toml`**). Forward-looking ideas (gauge/treemap-specific wrappers) may ship as additional elements later.
 
 ---
 
 ## altair (shipped)
 
-**0.10.0:** **`AltairChart`** wraps **`st.altair_chart`**; the **`[charts]`** extra pins **altair** with **plotly** (see **`pyproject.toml`**).
+**0.10.0:** **`AltairChart`** wraps **`st.altair_chart`**; the **`[charts]`** extra pins **altair** with **plotly** and **streamlit-echarts** (see **`pyproject.toml`**).
 
 ---
 
@@ -675,7 +643,7 @@ dependencies = [
 
 [project.optional-dependencies]
 tables = ["streamlit-aggrid>=0.3.0", "pandas>=2.0.0"]
-charts = ["plotly>=5.18.0", "altair>=5.0.0"]
+charts = ["plotly>=5.18.0", "altair>=5.0.0", "streamlit-echarts>=0.4.0"]
 ui = ["streamlit-extras>=0.4.3"]
 auth = ["streamlit-authenticator>=0.3.3"]
 cli = ["typer>=0.12.3"]
@@ -688,6 +656,7 @@ all = [
     "pandas>=2.0.0",
     "plotly>=5.18.0",
     "altair>=5.0.0",
+    "streamlit-echarts>=0.4.0",
     "streamlit-extras>=0.4.3",
     "streamlit-authenticator>=0.3.3",
     "typer>=0.12.3",
@@ -706,10 +675,11 @@ dev = [
     "pandas>=2.0.0",
     "plotly>=5.18.0",
     "altair>=5.0.0",
+    "streamlit-echarts>=0.4.0",
 ]
 ```
 
-Illustrative expansions (charts breadth, alternate UI kits, async vendor loops) appear in the sections below; they are **not** all pinned in the default manifest.
+Illustrative expansions (alternate UI kits, async vendor loops) appear in the sections below; they are **not** all pinned in the default manifest.
 
 ---
 
@@ -756,13 +726,14 @@ Users should be able to stay inside the StreamTree mental model.
 1. **streamlit-aggrid** — **`[tables]`**
 2. **plotly** — **`[charts]`**
 3. **altair** — **`[charts]`**
-4. **streamlit-extras** — **`[ui]`**
-5. **streamlit-authenticator** — **`[auth]`**
-6. **typer** — **`[cli]`**
+4. **streamlit-echarts** — **`[charts]`**
+5. **streamlit-extras** — **`[ui]`**
+6. **streamlit-authenticator** — **`[auth]`**
+7. **typer** — **`[cli]`**
 
 ## Exploratory / design-note dependencies
 
-Not pinned in the default manifest; sections below discuss if/when to adopt **streamlit-echarts**, **streamlit-shadcn-ui**, **extra-streamlit-components**, **asynclit**, etc.
+Not pinned in the default manifest; sections below discuss if/when to adopt **streamlit-shadcn-ui**, **extra-streamlit-components**, **asynclit**, etc.
 
 ---
 
@@ -771,7 +742,7 @@ Not pinned in the default manifest; sections below discuss if/when to adopt **st
 The **authoritative** dependency list is **`pyproject.toml`**. As of **0.10.0**:
 
 - **Core:** `streamlit`, `pydantic`, `typing-extensions`.
-- **Extras:** `tables` (streamlit-aggrid + pandas), `charts` (plotly + altair), `ui` (streamlit-extras), `auth` (streamlit-authenticator), `cli` (typer); **`[all]`** bundles those five.
+- **Extras:** `tables` (streamlit-aggrid + pandas), `charts` (plotly + altair + streamlit-echarts), `ui` (streamlit-extras), `auth` (streamlit-authenticator), `cli` (typer); **`[all]`** bundles those five.
 - **`[asyncio]`** / **`[async]`**, **`[pages]`**, **`[runner]`** remain empty metadata slots unless future pins are added.
 
 ```toml
@@ -784,7 +755,7 @@ dependencies = [
 
 [project.optional-dependencies]
 tables = ["streamlit-aggrid>=0.3.0", "pandas>=2.0.0"]
-charts = ["plotly>=5.18.0", "altair>=5.0.0"]
+charts = ["plotly>=5.18.0", "altair>=5.0.0", "streamlit-echarts>=0.4.0"]
 ui = ["streamlit-extras>=0.4.3"]
 auth = ["streamlit-authenticator>=0.3.3"]
 cli = ["typer>=0.12.3"]
@@ -793,6 +764,7 @@ all = [
     "pandas>=2.0.0",
     "plotly>=5.18.0",
     "altair>=5.0.0",
+    "streamlit-echarts>=0.4.0",
     "streamlit-extras>=0.4.3",
     "streamlit-authenticator>=0.3.3",
     "typer>=0.12.3",

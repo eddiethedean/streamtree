@@ -34,10 +34,10 @@ StreamTree is an **architecture layer** for Streamlit, not a React-style web fra
 - **Overlays (0.6+)** — **`Dialog`** / **`Popover`** elements mapped to **`st.dialog`** / **`st.popover`**. On older Streamlit builds without **`st.dialog`**, **`Dialog`** shows a warning and renders its children **inline** on the page (not a modal); **`Popover`** falls back to **`st.expander`**.
 - **Portals and split shell (0.9.0+)** — **`Portal` / `PortalMount`** (named slots; see **`docs/PHASE2_PORTALS_AND_PREFETCH.md`**), **`SplitView`** (narrow + main columns as a pseudo-sidebar), and **`streamtree.portals`** helpers for gather/render wiring.
 - **Form layout (0.9.0+)** — **`streamtree.forms_layout.model_field_grid`** and **`build_model_from_bindings`** for Pydantic models in row/column grids, including **bool** fields (see **`docs/PHASE2_FORMS.md`**, **`examples/phase2_layout_demo.py`**).
-- **Data toolkit (0.8+)** — **`pip install "streamtree[tables]"`**: **`DataGrid`** (streamlit-aggrid); **`pip install "streamtree[charts]"`**: **`Chart`** (Plotly via **`st.plotly_chart`**) and **`AltairChart`** (Altair via **`st.altair_chart`**, **0.10.0+**); **`streamtree.loading.match_task`** and **0.10.0+** **`match_task_many`** for declarative loading / ready / error subtrees from **`TaskHandle`** (including parallel **all-done** waits); **`routing.sync_query_value`** / **`set_query_value`** for URL-backed filter strings. See [docs/PERFORMANCE.md](docs/PERFORMANCE.md) and [docs/PHASE3_CRUD.md](docs/PHASE3_CRUD.md).
+- **Data toolkit (0.8+)** — **`pip install "streamtree[tables]"`**: **`DataGrid`** (streamlit-aggrid); **`pip install "streamtree[charts]"`**: **`Chart`** (Plotly via **`st.plotly_chart`**), **`AltairChart`** (Altair via **`st.altair_chart`**, **0.10.0+**), **`EChartsChart`** (Apache ECharts via **`streamlit-echarts`**, **0.10.0+**); **`streamtree.loading.match_task`** and **0.10.0+** **`match_task_many`** for declarative loading / ready / error subtrees from **`TaskHandle`** (including parallel **all-done** waits); **`routing.sync_query_value`** / **`set_query_value`** for URL-backed filter strings. See [docs/PERFORMANCE.md](docs/PERFORMANCE.md) and [docs/PHASE3_CRUD.md](docs/PHASE3_CRUD.md).
 - **Quality** — Pydantic v2 in the default install, typing-first APIs, and `render_to_tree` for structural tests.
 
-Optional extras: **`[tables]`** pins **`streamlit-aggrid`** (+ **pandas**); **`[charts]`** pins **`plotly`** and **`altair`** (**0.10.0+**). **`[ui]`** and **`[auth]`** pin **`streamlit-extras`** and **`streamlit-authenticator`** (0.6+). **`[cli]`** adds **Typer** and the **`streamtree`** console script (`run`, `doctor`, `init`). **`[asyncio]`** / **`[async]`**, **`[pages]`**, and **`[runner]`** remain metadata-oriented. See [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md). The `streamtree.asyncio` module and **`streamtree.helpers`** ( **`pages`**, **`runner`**, **`scaffold`** ) ship in the default install; **`import streamtree`** exposes **`streamtree.helpers`** on the root package.
+Optional extras: **`[tables]`** pins **`streamlit-aggrid`** (+ **pandas**); **`[charts]`** pins **`plotly`**, **`altair`**, and **`streamlit-echarts`** (**0.10.0+**). **`[ui]`** and **`[auth]`** pin **`streamlit-extras`** and **`streamlit-authenticator`** (0.6+). **`[cli]`** adds **Typer** and the **`streamtree`** console script (`run`, `doctor`, `init`). **`[asyncio]`** / **`[async]`**, **`[pages]`**, and **`[runner]`** remain metadata-oriented. See [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md). The `streamtree.asyncio` module and **`streamtree.helpers`** ( **`pages`**, **`runner`**, **`scaffold`** ) ship in the default install; **`import streamtree`** exposes **`streamtree.helpers`** on the root package.
 
 ## Requirements
 
@@ -51,7 +51,7 @@ pip install "streamtree[cli]"   # Typer + ``streamtree run`` / ``doctor`` / ``in
 pip install "streamtree[auth]"  # streamlit-authenticator
 pip install "streamtree[ui]"    # streamlit-extras wrappers
 pip install "streamtree[tables]"  # streamlit-aggrid + ``DataGrid``
-pip install "streamtree[charts]"  # plotly + ``Chart``
+pip install "streamtree[charts]"  # plotly + altair + streamlit-echarts + ``Chart`` / ``AltairChart`` / ``EChartsChart``
 ```
 
 From a clone, with dev dependencies:
@@ -98,8 +98,10 @@ streamlit run examples/pages_helpers_demo.py
 streamlit run examples/overlay_demo.py
 streamlit run examples/auth_demo.py
 streamlit run examples/datagrid_demo.py
+streamlit run examples/datagrid_selection_demo.py
 streamlit run examples/chart_demo.py
 streamlit run examples/altair_chart_demo.py
+streamlit run examples/echarts_demo.py
 streamlit run examples/async_loader_demo.py
 streamlit run examples/crud_pattern_demo.py
 streamlit run examples/phase2_layout_demo.py

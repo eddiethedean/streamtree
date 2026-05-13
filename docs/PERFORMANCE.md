@@ -51,7 +51,7 @@ same discovery data, use **`page_links_sidebar_sections`** / **`multipage_sideba
 ## Optional data extras
 
 - **`pip install "streamtree[tables]"`** — **`DataGrid`** (streamlit-aggrid).
-- **`pip install "streamtree[charts]"`** — **`Chart`** (Plotly) and **`AltairChart`** (Altair via `st.altair_chart`).
+- **`pip install "streamtree[charts]"`** — **`Chart`** (Plotly), **`AltairChart`** (Altair via `st.altair_chart`), **`EChartsChart`** (Apache ECharts via `streamlit-echarts`).
 
 Keep expensive third-party imports inside render paths or optional modules so
 `pip install streamtree` stays lean.

@@ -7,8 +7,44 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from streamtree.charts import AltairChart, Chart, render_altair_chart, render_chart
+from streamtree.charts import (
+    AltairChart,
+    Chart,
+    EChartsChart,
+    render_altair_chart,
+    render_chart,
+    render_echarts_chart,
+)
 from streamtree.tables import DataGrid, render_datagrid
+
+
+@patch("st_aggrid.AgGrid")
+def test_render_datagrid_on_result_called_with_aggrid_return(mock_aggrid: MagicMock) -> None:
+    sentinel = object()
+    mock_aggrid.return_value = sentinel
+    called: list[object] = []
+
+    def cb(r: object) -> None:
+        called.append(r)
+
+    render_datagrid(
+        DataGrid([{"a": 1}], on_result=cb, key="gk"),
+        widget_key="widget-key",
+    )
+    assert called == [sentinel]
+
+
+@patch("st_aggrid.AgGrid")
+def test_render_datagrid_skips_on_result_when_aggrid_raises(mock_aggrid: MagicMock) -> None:
+    mock_aggrid.side_effect = RuntimeError("grid failed")
+    called: list[object] = []
+
+    def cb(r: object) -> None:
+        called.append(r)
+
+    with pytest.raises(RuntimeError, match="grid failed"):
+        render_datagrid(DataGrid([{"a": 1}], on_result=cb), widget_key="w")
+    assert called == []
 
 
 @patch("st_aggrid.AgGrid")
@@ -68,6 +104,52 @@ def test_render_datagrid_missing_aggrid_raises() -> None:
     with patch.object(builtins, "__import__", side_effect=_fake):
         with pytest.raises(ImportError, match=r"streamtree\[tables\]"):
             render_datagrid(DataGrid([{"x": 1}]), widget_key="k")
+
+
+@patch("streamtree.echarts_chart._st_echarts_call")
+def test_render_echarts_chart_delegates(mock_st_echarts: MagicMock) -> None:
+    options = {"series": [{"type": "bar", "data": [1, 2]}]}
+    render_echarts_chart(EChartsChart(options, height=240, key="ek"), widget_key="wk")
+    mock_st_echarts.assert_called_once_with(
+        options=dict(options),
+        height="240px",
+        key="wk",
+    )
+
+
+@patch("streamtree.echarts_chart._st_echarts_call")
+def test_render_echarts_chart_height_str_passthrough(mock_st_echarts: MagicMock) -> None:
+    options = {"series": []}
+    render_echarts_chart(EChartsChart(options, height="400px"), widget_key="k2")
+    mock_st_echarts.assert_called_once_with(
+        options=dict(options),
+        height="400px",
+        key="k2",
+    )
+
+
+@patch("streamtree.echarts_chart._st_echarts_call")
+def test_render_echarts_chart_default_height_when_none(mock_st_echarts: MagicMock) -> None:
+    options = {"series": []}
+    render_echarts_chart(EChartsChart(options), widget_key="k3")
+    mock_st_echarts.assert_called_once_with(
+        options=dict(options),
+        height="300px",
+        key="k3",
+    )
+
+
+def test_render_echarts_chart_missing_dep_raises() -> None:
+    real_import = builtins.__import__
+
+    def _fake(name: str, *a: object, **kw: object):
+        if name == "streamlit_echarts" or name.startswith("streamlit_echarts."):
+            raise ImportError("blocked")
+        return real_import(name, *a, **kw)
+
+    with patch.object(builtins, "__import__", side_effect=_fake):
+        with pytest.raises(ImportError, match=r"streamtree\[charts\]"):
+            render_echarts_chart(EChartsChart({}), widget_key="k")
 
 
 @patch("streamtree.charts.st")

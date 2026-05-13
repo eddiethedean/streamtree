@@ -23,13 +23,14 @@ _Last updated: 2026-05-13._
 | Phase 0 — Foundation | **Complete** | Package layout, Streamlit renderer, design docs in `docs/`. |
 | Phase 1 — MVP | In progress | **0.1.0** core tree + state; **0.2.0** Pydantic + stub extras; deeper memoization / `streamlit-extras` curation still open. |
 | Phase 2 — Application | **Complete** (0.9.0) | **Shipped through 0.9.0:** navigation sections (**`page_links_sidebar_sections`**, **`multipage_sidebar_nav`**), routing clears/batch (**`clear_route`**, **`update_query_params`**, …), **bool** + layout forms (**`docs/PHASE2_FORMS.md`**), **`[ui]`** (**Stoggle**, **TaggerRow**, **MentionChip**), **`dismiss_tasks`**, composite **example** **`phase2_composite_demo.py`**, Phase 2 doc reconciliation. Stretch themes (templates, alternate auth protocols) → backlog / Phase 3. |
-| Phase 3 — Data toolkit | In progress | **0.8.0:** **`[tables]`** / **`DataGrid`**, **`[charts]`** / **`Chart`**, **`sync_query_value`**, **`match_task`**, **`docs/PERFORMANCE.md`**. **0.10.0:** **`AltairChart`**, **`match_task_many`**, **`docs/PHASE3_CRUD.md`**, CRUD / Altair examples. **Next:** richer CRUD automation, chart breadth (echarts), deferred regions, performance hardening, subtree memoization. |
+| Phase 3 — Data toolkit | In progress | **0.8.0:** **`[tables]`** / **`DataGrid`**, **`[charts]`** / **`Chart`**, **`sync_query_value`**, **`match_task`**, **`docs/PERFORMANCE.md`**. **0.10.0:** **`AltairChart`**, **`EChartsChart`** (**`streamlit-echarts`**), **`DataGrid.on_result`**, **`match_task_many`**, **`docs/PHASE3_CRUD.md`**, CRUD / chart examples. **Next:** richer CRUD automation, deferred regions, performance hardening, subtree memoization. |
 | Phase 4 — Tooling | In progress | **`streamtree.testing.render_to_tree`** (JSON tree snapshots) shipped; CI runs **pytest** (100% coverage), **ruff**, **ty** on **`src`**. **`[cli]`** ships **`run`** / **`doctor`** / **`init`** (incl. **`--with-pages`**, **0.8.0**). **Still open:** richer dev introspection, **`tree` / `preview`**-style CLI, RTD — see [Phase 4](#phase-4--testing-and-tooling). |
 | Docs — Read the Docs | Planned | [Manual, guides, API](#documentation-platform-read-the-docs); **stable** / **latest**; CI doc builds. |
 
 ### 0.10.0 (shipped)
 
-- **Charts:** **`AltairChart`** (Altair / **`st.altair_chart`**); **`[charts]`** pins **altair** with **plotly**; **`examples/altair_chart_demo.py`**.
+- **Charts:** **`AltairChart`** (Altair / **`st.altair_chart`**); **`EChartsChart`** (Apache ECharts via **`streamlit-echarts`**); **`[charts]`** pins **altair**, **plotly**, and **streamlit-echarts**; **`examples/altair_chart_demo.py`**, **`examples/echarts_demo.py`**.
+- **Tables:** **`DataGrid.on_result`** hook after **`AgGrid`** for selection-driven logic without forking the renderer; **`examples/datagrid_selection_demo.py`**.
 - **Loading:** **`streamtree.loading.match_task_many`** for **all-done** / **any-error** / **any-cancelled** semantics across several **`TaskHandle`**-like polls.
 - **Docs / examples:** **`docs/PHASE3_CRUD.md`**; **`examples/crud_pattern_demo.py`** (in-memory CRUD + **`match_task_many`**); **`docs/PERFORMANCE.md`** updates.
 
@@ -266,7 +267,7 @@ Phase 2 **application** deliverables from the original charter are **closed** as
 ### Features
 
 - **Shipped (0.8.0):** optional **`[tables]`** / **`DataGrid`**, **`[charts]`** / **`Chart`** (Plotly MVP); **`routing.sync_query_value`** / **`set_query_value`**; **`streamtree.loading.match_task`** for declarative **loading / ready / error** subtrees from **`TaskHandle`**.
-- **Shipped (0.10.0):** **`AltairChart`** (Altair); **`match_task_many`**; **`docs/PHASE3_CRUD.md`**; examples **`altair_chart_demo`**, **`crud_pattern_demo`**.
+- **Shipped (0.10.0):** **`AltairChart`** (Altair); **`EChartsChart`** (**`streamlit-echarts`**); **`DataGrid.on_result`**; **`match_task_many`**; **`docs/PHASE3_CRUD.md`**; examples **`altair_chart_demo`**, **`echarts_demo`**, **`datagrid_selection_demo`**, **`crud_pattern_demo`**.
 - **Next:** richer CRUD automation, chart breadth (echarts), subtree memoization for heavy branches; **deferred regions**; async loaders composed with **`submit_many`** and related **`streamtree.asyncio`** patterns.
 
 ### Optional dependency alignment
