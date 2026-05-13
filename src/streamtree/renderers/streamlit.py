@@ -354,7 +354,13 @@ def render_element(el: Element, *, slot: str = "0") -> None:
             render_element(el.child, slot=f"{slot}.eb_c")
         except Exception as exc:
             if el.on_error is not None:
-                el.on_error(exc)
+                try:
+                    el.on_error(exc)
+                except Exception as cb_exc:
+                    logging.getLogger("streamtree.render").error(
+                        "ErrorBoundary on_error callback raised",
+                        exc_info=cb_exc,
+                    )
             logging.getLogger("streamtree.render").exception("ErrorBoundary")
             render_element(el.fallback, slot=f"{slot}.eb_f")
         return

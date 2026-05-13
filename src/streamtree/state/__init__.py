@@ -87,11 +87,24 @@ def toggle_state(*, key: str | None = None, initial: bool = False) -> ToggleStat
 
 
 def session_state(key: str, *, default: Any | None = None) -> Callable[[], Any]:
-    """Adopt an existing ``st.session_state`` key as a read-only callable."""
+    """Adopt an existing ``st.session_state`` key as a read-only callable.
+
+    If ``default`` is ``None``, the key must already exist when ``read()`` runs
+    (for example after another widget or initializer wrote it); otherwise
+    :func:`read` raises :exc:`ValueError` with a short hint instead of a bare
+    :exc:`KeyError`.
+    """
 
     def read() -> Any:
-        if key not in st.session_state and default is not None:
-            st.session_state[key] = default
+        if key not in st.session_state:
+            if default is not None:
+                st.session_state[key] = default
+            else:
+                msg = (
+                    f"st.session_state[{key!r}] is unset; pass default= to session_state() "
+                    "when the key may be missing on first read"
+                )
+                raise ValueError(msg)
         return st.session_state[key]
 
     return read

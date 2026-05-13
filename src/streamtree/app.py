@@ -19,6 +19,11 @@ class App:
 
     Compose the main area with ``Page``, ``Routes``, etc. When ``sidebar`` is set,
     it is rendered in ``st.sidebar`` before the main ``body`` (via ``Page`` ordering).
+
+    Page configuration (title, layout, icon, …) is applied at most **once per browser
+    session** by :func:`apply_page_config`; changing ``App`` fields on later reruns
+    does not re-run ``st.set_page_config`` until session state is cleared (Streamlit
+    allows only one early ``set_page_config`` call per session).
     """
 
     body: Element
@@ -31,7 +36,12 @@ class App:
 
 
 def apply_page_config(app: App) -> None:
-    """Call ``st.set_page_config`` at most once per session (Streamlit allows one early call)."""
+    """Call ``st.set_page_config`` at most once per session (Streamlit allows one early call).
+
+    After the first successful call, a flag in ``st.session_state`` prevents repeats
+    for that session so reruns do not raise Streamlit API errors. To change layout or
+    title mid-session, clear the relevant session state or restart the app.
+    """
     if st.session_state.get(_SESSION_PAGE_CONFIG):
         return
     kwargs: dict[str, Any] = {

@@ -181,7 +181,12 @@ DialogOpen = bool | StateVar[bool] | ToggleState
 
 @dataclass(frozen=True)
 class Dialog(Element):
-    """Modal dialog when ``open`` is true (Streamlit ``st.dialog``; Streamlit **≥ 1.33**)."""
+    """Modal dialog when ``open`` is true (Streamlit ``st.dialog``; Streamlit **≥ 1.33**).
+
+    On Streamlit versions **without** ``st.dialog``, the renderer shows a warning and
+    draws the dialog **children inline** on the main page (not a modal). Prefer upgrading
+    Streamlit for true dialog behavior; :class:`Popover` falls back to an expander instead.
+    """
 
     title: str = ""
     open: DialogOpen = False
@@ -223,7 +228,12 @@ class Popover(Element):
 
 @dataclass(frozen=True)
 class ErrorBoundary(Element):
-    """Render ``child``; on exception render ``fallback`` instead."""
+    """Render ``child``; on exception render ``fallback`` instead.
+
+    If ``on_error`` is set, it is invoked with the caught exception before ``fallback``
+    is rendered. Callbacks **must not raise**; if they do, the error is logged and
+    ``fallback`` is still shown.
+    """
 
     child: Element = field(kw_only=True)
     fallback: Element = field(kw_only=True)

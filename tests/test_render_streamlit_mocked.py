@@ -536,6 +536,28 @@ def test_render_error_boundary_on_error_callback() -> None:
     assert isinstance(seen[0], ValueError)
 
 
+def test_render_error_boundary_on_error_raises_still_shows_fallback() -> None:
+    def boom() -> Element:
+        raise RuntimeError("child boom")
+
+    st = _make_st()
+
+    def on_error(_exc: Exception) -> None:
+        raise RuntimeError("callback boom")
+
+    with _patched_st(st):
+        with render_context("r"):
+            rs.render_element(
+                ErrorBoundary(
+                    child=ComponentCall(fn=boom, args=(), kwargs={}),
+                    fallback=Text("still here"),
+                    on_error=on_error,
+                ),
+                slot="0",
+            )
+    st.write.assert_any_call("still here")
+
+
 def test_render_routes_selects_active_child() -> None:
     st = _make_st()
     with _patched_st(st), patch("streamtree.renderers.streamlit.sync_route", return_value="two"):

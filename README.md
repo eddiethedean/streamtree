@@ -31,7 +31,7 @@ StreamTree is an **architecture layer** for Streamlit, not a React-style web fra
 - **Routing and context** — Query-param routing (`streamtree.routing`), `ErrorBoundary`, `streamtree.forms` utilities, and `app_context.provider` / `lookup` for shared values.
 - **Optional auth (0.6+)** — **`pip install "streamtree[auth]"`**: **`AuthGate`** + **`streamtree.auth.build_authenticator`** for **`streamlit-authenticator`** (see [examples/auth_demo.py](examples/auth_demo.py); treat config as trusted secrets).
 - **Optional UI extras (0.6+)** — **`pip install "streamtree[ui]"`**: **`ColoredHeader`**, **`VerticalSpaceLines`** (curated **`streamlit-extras`** wrappers).
-- **Overlays (0.6+)** — **`Dialog`** / **`Popover`** elements mapped to **`st.dialog`** / **`st.popover`** (with fallbacks on older runtimes).
+- **Overlays (0.6+)** — **`Dialog`** / **`Popover`** elements mapped to **`st.dialog`** / **`st.popover`**. On older Streamlit builds without **`st.dialog`**, **`Dialog`** shows a warning and renders its children **inline** on the page (not a modal); **`Popover`** falls back to **`st.expander`**.
 - **Interop** — Inside `@component`, your function body runs during render; you may call `st.*` (columns, metrics, charts, third-party components) and still return an element tree, or `fragment()` when the subtree is fully imperative.
 - **Quality** — Pydantic v2 in the default install, typing-first APIs, and `render_to_tree` for structural tests.
 

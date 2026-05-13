@@ -75,7 +75,8 @@ def test_cli_init_writes_app(tmp_path: Path) -> None:
     assert "Wrote" in result.stdout
     app_py = tmp_path / "app.py"
     assert app_py.is_file()
-    assert 'page_title="Demo"' in app_py.read_text(encoding="utf-8")
+    text = app_py.read_text(encoding="utf-8")
+    assert "page_title=" in text and repr("Demo") in text
 
 
 def test_cli_init_default_cwd(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

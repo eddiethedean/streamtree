@@ -19,7 +19,7 @@ from __future__ import annotations
 import threading
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, TypeVar, cast
 
 import streamlit as st
 
@@ -31,6 +31,14 @@ def _task_session_key(user_key: str) -> str:
     if not user_key.strip():
         raise ValueError("async task key must be a non-empty string")
     return f"streamtree.asyncio.task.{user_key.strip()}"
+
+
+def _is_managed_task_box(box: object) -> bool:
+    """True only for dicts installed by :func:`submit` (submitted flag + real lock)."""
+    if not isinstance(box, dict):
+        return False
+    d = cast(dict[str, Any], box)
+    return d.get("_submitted") is True and isinstance(d.get("_lock"), _LockType)
 
 
 def _with_box_lock(box: dict[str, Any], fn: Callable[[], T]) -> T:
@@ -45,12 +53,14 @@ def set_task_progress(*, key: str, value: Any) -> None:
     """Set the ``progress`` field for the task identified by ``key`` (same as :func:`submit`).
 
     Intended for use **inside** the worker function or helpers it calls. Updates are
-    serialized with the same per-task lock as status/result/error.
+    serialized with the same per-task lock as status/result/error. No-ops if there is
+    no active task box at ``key`` (or the value at ``key`` is not a managed task dict).
     """
     sk = _task_session_key(key)
-    box = st.session_state.get(sk)
-    if not isinstance(box, dict):
+    raw = st.session_state.get(sk)
+    if not _is_managed_task_box(raw):
         return
+    box = cast(dict[str, Any], raw)
 
     def write() -> None:
         box["progress"] = value
@@ -65,9 +75,10 @@ class TaskHandle(Generic[T]):
     _session_key: str
 
     def status(self) -> str:
-        box = st.session_state.get(self._session_key)
-        if not isinstance(box, dict):
+        raw = st.session_state.get(self._session_key)
+        if not _is_managed_task_box(raw):
             return "missing"
+        box = cast(dict[str, Any], raw)
 
         def read() -> str:
             return str(box.get("status", "missing"))
@@ -75,9 +86,10 @@ class TaskHandle(Generic[T]):
         return _with_box_lock(box, read)
 
     def result(self) -> T | None:
-        box = st.session_state.get(self._session_key)
-        if not isinstance(box, dict):
+        raw = st.session_state.get(self._session_key)
+        if not _is_managed_task_box(raw):
             return None
+        box = cast(dict[str, Any], raw)
 
         def read() -> T | None:
             return box.get("result")  # type: ignore[return-value]
@@ -85,9 +97,10 @@ class TaskHandle(Generic[T]):
         return _with_box_lock(box, read)
 
     def error(self) -> str | None:
-        box = st.session_state.get(self._session_key)
-        if not isinstance(box, dict):
+        raw = st.session_state.get(self._session_key)
+        if not _is_managed_task_box(raw):
             return None
+        box = cast(dict[str, Any], raw)
 
         def read() -> str | None:
             err = box.get("error")
@@ -97,9 +110,10 @@ class TaskHandle(Generic[T]):
 
     def progress(self) -> Any | None:
         """Last progress value set via :func:`set_task_progress`, or ``None``."""
-        box = st.session_state.get(self._session_key)
-        if not isinstance(box, dict):
+        raw = st.session_state.get(self._session_key)
+        if not _is_managed_task_box(raw):
             return None
+        box = cast(dict[str, Any], raw)
 
         def read() -> Any | None:
             return box.get("progress")
@@ -108,9 +122,10 @@ class TaskHandle(Generic[T]):
 
     def cancel(self) -> None:
         """Request cancellation before work starts; running threads are not force-killed."""
-        box = st.session_state.get(self._session_key)
-        if not isinstance(box, dict):
+        raw = st.session_state.get(self._session_key)
+        if not _is_managed_task_box(raw):
             return
+        box = cast(dict[str, Any], raw)
 
         def write() -> None:
             if box.get("status") == "pending":
@@ -131,7 +146,7 @@ def submit(fn: Callable[..., T], /, *args: Any, key: str, **kwargs: Any) -> Task
     """
     sk = _task_session_key(key)
     existing = st.session_state.get(sk)
-    if isinstance(existing, dict) and existing.get("_submitted"):
+    if _is_managed_task_box(existing):
         return TaskHandle(_session_key=sk)
     if isinstance(existing, dict):
         # Corrupted or foreign mapping at our key: drop before installing a real task box.

@@ -181,7 +181,9 @@ def test_cancel_is_noop_when_not_pending() -> None:
         "status": "running",
         "result": None,
         "error": None,
+        "progress": None,
         "_submitted": True,
+        "_lock": threading.Lock(),
     }
     h = TaskHandle(_session_key=sk)
     with patch("streamtree.asyncio.st", st):
@@ -196,7 +198,9 @@ def test_task_handle_status_coerces_non_str() -> None:
         "status": 42,
         "result": None,
         "error": None,
+        "progress": None,
         "_submitted": True,
+        "_lock": threading.Lock(),
     }
     h = TaskHandle(_session_key=sk)
     with patch("streamtree.asyncio.st", st):
@@ -210,7 +214,9 @@ def test_task_handle_error_coerces_non_str() -> None:
         "status": "error",
         "result": None,
         "error": 404,
+        "progress": None,
         "_submitted": True,
+        "_lock": threading.Lock(),
     }
     h = TaskHandle(_session_key=sk)
     with patch("streamtree.asyncio.st", st):
@@ -308,7 +314,7 @@ def test_task_handle_progress_missing_progress_key() -> None:
         assert h.progress() is None
 
 
-def test_task_handle_progress_non_lock_falls_back_to_unlocked_read() -> None:
+def test_task_handle_progress_ignores_box_without_real_lock() -> None:
     st = SimpleNamespace(session_state={})
     sk = "streamtree.asyncio.task.bad_lock"
     st.session_state[sk] = {
@@ -321,7 +327,7 @@ def test_task_handle_progress_non_lock_falls_back_to_unlocked_read() -> None:
     }
     h = TaskHandle(_session_key=sk)
     with patch("streamtree.asyncio.st", st):
-        assert h.progress() == {"pct": 50}
+        assert h.progress() is None
 
 
 def test_set_task_progress_from_main_thread_updates_worker_box() -> None:
@@ -345,3 +351,41 @@ def test_set_task_progress_from_main_thread_updates_worker_box() -> None:
                 break
             time.sleep(0.01)
         assert h.result() == 99
+
+
+def test_with_box_lock_runs_fn_when_lock_missing() -> None:
+    import streamtree.asyncio as aio_mod
+
+    assert aio_mod._with_box_lock({"_lock": "not-a-lock"}, lambda: 42) == 42
+    st = SimpleNamespace(session_state={})
+    sk = "streamtree.asyncio.task.foreign"
+    st.session_state[sk] = {"note": "not a task box"}
+    with patch("streamtree.asyncio.st", st):
+        set_task_progress(key="foreign", value="x")
+    assert st.session_state[sk] == {"note": "not a task box"}
+
+
+def test_submit_replaces_submitted_flag_without_lock() -> None:
+    """``_submitted`` alone is not trusted; missing real lock is replaced like a foreign dict."""
+    st = SimpleNamespace(session_state={})
+    sk = "streamtree.asyncio.task.nolock"
+    st.session_state[sk] = {"_submitted": True, "status": "pending"}
+    ran: list[int] = []
+
+    def work() -> int:
+        ran.append(1)
+        return 5
+
+    with patch("streamtree.asyncio.st", st):
+        h = submit(work, key="nolock")
+        deadline = time.monotonic() + 2.0
+        while time.monotonic() < deadline:
+            if h.status() == "done":
+                break
+            time.sleep(0.01)
+        assert h.result() == 5
+        assert ran == [1]
+        box = st.session_state[sk]
+        assert box.get("_submitted") is True
+        lk = box["_lock"]
+        assert hasattr(lk, "acquire") and hasattr(lk, "release")

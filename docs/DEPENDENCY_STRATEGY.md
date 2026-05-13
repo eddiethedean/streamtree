@@ -35,6 +35,8 @@ pip install streamtree[dev]
 pip install streamtree[all]
 ```
 
+The **`[all]`** extra is currently an **empty placeholder** in `pyproject.toml` (no additional packages are installed). Prefer listing the extras you need explicitly (`[cli]`, `[auth]`, `[ui]`, …) until a curated meta-extra is defined.
+
 ---
 
 # Recommended Hard Dependencies

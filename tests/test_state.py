@@ -81,6 +81,13 @@ def test_session_state_reader(mock_st: MagicMock) -> None:
         assert read() == 1
 
 
+def test_session_state_reader_missing_no_default(mock_st: MagicMock) -> None:
+    with patch("streamtree.state.st", mock_st):
+        read = session_state("missing_key")
+        with pytest.raises(ValueError, match="unset"):
+            read()
+
+
 def test_session_state_reader_existing_key(mock_st: MagicMock) -> None:
     with patch("streamtree.state.st", mock_st):
         mock_st.session_state["ext2"] = 42
