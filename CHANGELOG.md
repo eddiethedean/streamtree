@@ -36,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`streamtree.routing.sync_query_value`** / **`set_query_value`**: URL ↔ session helpers for arbitrary string query params (including empty defaults), complementing **`sync_route`** / **`set_route`**.
 - **`streamtree.loading.match_task`**: map **`TaskHandle.status`** to **`loading` / `ready` / `error` (and optional `cancelled`)** element subtrees.
 - **Examples:** **`examples/datagrid_demo.py`**, **`examples/chart_demo.py`**, **`examples/async_loader_demo.py`**.
-- **Docs:** [`docs/PERFORMANCE.md`](docs/PERFORMANCE.md) playbook for memoization, async work, URL filters, and optional data extras.
+- **Docs:** [`docs/PERFORMANCE.md`](https://github.com/streamtree-dev/streamtree/blob/main/docs/PERFORMANCE.md) playbook for memoization, async work, URL filters, and optional data extras.
 
 ### Changed
 
@@ -62,7 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 
-- **`streamtree.asyncio`:** module docstring sections **Stale runs and keys** and **Cooperative cancellation**; [README.md](../README.md) background-work bullet; [PHASE2_TAIL.md](docs/PHASE2_TAIL.md) / [ROADMAP.md](docs/ROADMAP.md) release notes.
+- **`streamtree.asyncio`:** module docstring sections **Stale runs and keys** and **Cooperative cancellation**; [README.md](https://github.com/streamtree-dev/streamtree/blob/main/README.md) background-work bullet; [PHASE2_TAIL.md](https://github.com/streamtree-dev/streamtree/blob/main/docs/PHASE2_TAIL.md) / [ROADMAP.md](https://github.com/streamtree-dev/streamtree/blob/main/docs/ROADMAP.md) release notes.
 - **`examples/async_bg.py`:** demonstrates **`submit_many`**.
 
 ## [0.6.0] — 2026-05-12
@@ -74,7 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Overlays:** **`Dialog`** and **`Popover`** layout elements (``st.dialog`` / ``st.popover`` with fallbacks); **`streamlit>=1.33.0`** core floor.
 - **UI extras (`[ui]`):** **`ColoredHeader`** and **`VerticalSpaceLines`** wrapping **`streamlit-extras`** (lazy import + install hint).
 - **Examples:** **`examples/overlay_demo.py`**, **`examples/auth_demo.py`**.
-- **Docs:** [`docs/PHASE2_TAIL.md`](docs/PHASE2_TAIL.md) for post-0.6.0 Phase 2 grooming.
+- **Docs:** [`docs/PHASE2_TAIL.md`](https://github.com/streamtree-dev/streamtree/blob/main/docs/PHASE2_TAIL.md) for post-0.6.0 Phase 2 grooming.
 
 ### Changed
 
@@ -87,7 +87,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 
 - README: **0.6.0** pin, Streamlit **1.33+**, **`streamtree init`**, auth / overlay / **`[ui]`** capabilities; releases tag **`v0.6.0`**; overlay bullet clarifies **`Dialog`** legacy (inline) vs **`Popover`** (expander) fallbacks.
-- [ROADMAP.md](docs/ROADMAP.md), [PLAN.md](docs/PLAN.md), [DEPENDENCY_STRATEGY.md](docs/DEPENDENCY_STRATEGY.md): **0.6.0** shipped scope and optional-extra notes (including empty **`[all]`** placeholder).
+- [ROADMAP.md](https://github.com/streamtree-dev/streamtree/blob/main/docs/ROADMAP.md), [PLAN.md](https://github.com/streamtree-dev/streamtree/blob/main/docs/PLAN.md), [DEPENDENCY_STRATEGY.md](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md): **0.6.0** shipped scope and optional-extra notes (including empty **`[all]`** placeholder).
 - **`Dialog`**, **`App` / `apply_page_config`:** docstrings for legacy dialog behavior and one-shot **`st.set_page_config`** per session.
 
 ## [0.5.0] — 2026-05-12
@@ -102,9 +102,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 
 - README: **0.5.0** install pin, capabilities for multipage helpers + async progress, example command; releases tag example **`v0.5.0`**.
-- [ROADMAP.md](docs/ROADMAP.md): release index **0.5.0**; Phase 2 “Next” backlog adjusted.
-- [PLAN.md](docs/PLAN.md): packaging timeline **0.5.0** bullet.
-- [DEPENDENCY_STRATEGY.md](docs/DEPENDENCY_STRATEGY.md): asyncio progress note; **`helpers.pages`** + **`[pages]`** stub subsection.
+- [ROADMAP.md](https://github.com/streamtree-dev/streamtree/blob/main/docs/ROADMAP.md): release index **0.5.0**; Phase 2 “Next” backlog adjusted.
+- [PLAN.md](https://github.com/streamtree-dev/streamtree/blob/main/docs/PLAN.md): packaging timeline **0.5.0** bullet.
+- [DEPENDENCY_STRATEGY.md](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md): asyncio progress note; **`helpers.pages`** + **`[pages]`** stub subsection.
 
 ## [0.4.1] — 2026-05-12
 
@@ -131,8 +131,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 
 - README: **`streamtree[cli]`**, **`streamtree run`**, Streamlit **1.30+** requirement, **`v0.4.0`** release tag example.
-- [DEPENDENCY_STRATEGY.md](docs/DEPENDENCY_STRATEGY.md): CLI / **`[pages]`** / **`[runner]`** notes.
-- [ROADMAP.md](docs/ROADMAP.md): **0.4.0** release index; Phase 2 “Next” adjusted.
+- [DEPENDENCY_STRATEGY.md](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md): CLI / **`[pages]`** / **`[runner]`** notes.
+- [ROADMAP.md](https://github.com/streamtree-dev/streamtree/blob/main/docs/ROADMAP.md): **0.4.0** release index; Phase 2 “Next” adjusted.
 
 ### Fixed
 

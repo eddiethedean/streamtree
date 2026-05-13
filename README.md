@@ -32,8 +32,8 @@ StreamTree is an **architecture layer** for Streamlit, not a React-style web fra
 - **Optional auth (0.6+)** — **`pip install "streamtree[auth]"`**: **`AuthGate`** + **`streamtree.auth.build_authenticator`** for **`streamlit-authenticator`** (see [examples/auth_demo.py](examples/auth_demo.py); treat config as trusted secrets). Alternative identity providers stay **app-specific** unless/until a pinned abstraction ships; see **`docs/DEPENDENCY_STRATEGY.md`** (Auth extra).
 - **Optional UI extras (0.6+)** — **`pip install "streamtree[ui]"`**: **`ColoredHeader`**, **`VerticalSpaceLines`**, **`SocialBadge`**, **`StyleMetricCards`**, **`BottomDock`**, **`FloatingActionButton`**, **`Stoggle`**, **`TaggerRow`**, **`MentionChip`** (curated **`streamlit-extras`** wrappers).
 - **Overlays (0.6+)** — **`Dialog`** / **`Popover`** elements mapped to **`st.dialog`** / **`st.popover`**. On older Streamlit builds without **`st.dialog`**, **`Dialog`** shows a warning and renders its children **inline** on the page (not a modal); **`Popover`** falls back to **`st.expander`**.
-- **Portals and split shell (0.9+)** — **`Portal` / `PortalMount`** (named slots; see **`docs/PHASE2_PORTALS_AND_PREFETCH.md`**), **`SplitView`** (narrow + main columns as a pseudo-sidebar), and **`streamtree.portals`** helpers for gather/render wiring.
-- **Form layout (0.9+)** — **`streamtree.forms_layout.model_field_grid`** and **`build_model_from_bindings`** for Pydantic models in row/column grids, including **bool** fields (see **`docs/PHASE2_FORMS.md`**, **`examples/phase2_layout_demo.py`**).
+- **Portals and split shell (0.9.0+)** — **`Portal` / `PortalMount`** (named slots; see **`docs/PHASE2_PORTALS_AND_PREFETCH.md`**), **`SplitView`** (narrow + main columns as a pseudo-sidebar), and **`streamtree.portals`** helpers for gather/render wiring.
+- **Form layout (0.9.0+)** — **`streamtree.forms_layout.model_field_grid`** and **`build_model_from_bindings`** for Pydantic models in row/column grids, including **bool** fields (see **`docs/PHASE2_FORMS.md`**, **`examples/phase2_layout_demo.py`**).
 - **Data toolkit (0.8+)** — **`pip install "streamtree[tables]"`**: **`DataGrid`** (streamlit-aggrid); **`pip install "streamtree[charts]"`**: **`Chart`** (Plotly via **`st.plotly_chart`**); **`streamtree.loading.match_task`** for declarative loading / ready / error subtrees from **`TaskHandle`**; **`routing.sync_query_value`** / **`set_query_value`** for URL-backed filter strings. See [docs/PERFORMANCE.md](docs/PERFORMANCE.md).
 - **Quality** — Pydantic v2 in the default install, typing-first APIs, and `render_to_tree` for structural tests.
 
@@ -100,6 +100,7 @@ streamlit run examples/auth_demo.py
 streamlit run examples/datagrid_demo.py
 streamlit run examples/chart_demo.py
 streamlit run examples/async_loader_demo.py
+streamlit run examples/phase2_layout_demo.py
 streamlit run examples/phase2_composite_demo.py
 # With Typer installed (``pip install "streamtree[cli]"``):
 streamtree run examples/counter.py
@@ -200,12 +201,13 @@ Use **`streamtree.helpers.pages.discover_pages(__file__)`** to list scripts unde
 
 | Resource | Description |
 |----------|-------------|
-| [Plan](https://github.com/streamtree-dev/streamtree/blob/main/docs/PLAN.md) | Vision, architecture, optional extras, release notes through **0.9.0** |
+| [Plan](https://github.com/streamtree-dev/streamtree/blob/main/docs/PLAN.md) | Vision, architecture, and dependency philosophy |
 | [Roadmap](https://github.com/streamtree-dev/streamtree/blob/main/docs/ROADMAP.md) | Phased delivery and release index |
 | [Phase 2 tail](https://github.com/streamtree-dev/streamtree/blob/main/docs/PHASE2_TAIL.md) | Grooming after **0.6.0** (navigation, asyncio, forms) |
 | [Dependency strategy](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md) | Optional extras, **default-install** helpers (`runner`, `pages`), and CI typing notes |
 | [Performance](https://github.com/streamtree-dev/streamtree/blob/main/docs/PERFORMANCE.md) | Memoization, background work, URL filter params, optional data extras |
 | [Phase 2 portals / prefetch](https://github.com/streamtree-dev/streamtree/blob/main/docs/PHASE2_PORTALS_AND_PREFETCH.md) | Portals, prefetch, form-layout semantics (Phase 2 contract) |
+| [Phase 2 form layout](https://github.com/streamtree-dev/streamtree/blob/main/docs/PHASE2_FORMS.md) | **`forms_layout`**, **`build_model_from_bindings`**, and bool-aware grids |
 | [CHANGELOG](https://github.com/streamtree-dev/streamtree/blob/main/CHANGELOG.md) | Release history (e.g. **0.9.0** Phase 2 completion; **0.8.0** data toolkit) |
 
 ## Contributing
@@ -219,6 +221,7 @@ uv run ruff format --check .   # same check CI runs (no file writes)
 uv run ruff check src tests
 uv run ty check src
 uv run pytest
+uv run python -m mkdocs build --strict   # static docs site (see mkdocs.yml)
 ```
 
 Equivalent with **pip**: `pip install -e ".[dev]"`, then `ruff`, `ruff format` / `ruff format --check`, `ty check src`, and `pytest` as above.

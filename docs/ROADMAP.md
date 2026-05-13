@@ -215,7 +215,7 @@ StreamTree is **not** React and will **not** ship a browser VDOM. The list below
 
 ### Shipped on the Phase 2 track (0.2.0–0.9.0)
 
-The bullets below are **delivered** today; per-version pins and changelog prose live in the [Release index](#release-index) and [CHANGELOG.md](../CHANGELOG.md).
+The bullets below are **delivered** today; per-version pins and changelog prose live in the [Release index](#release-index) and [CHANGELOG.md](CHANGELOG.md).
 
 - **Routing & resilience:** `sync_route` / `set_route`, `Routes`, `ErrorBoundary`, `app_context`.
 - **Forms:** Pydantic-first string + scalar numeric bindings and inputs.

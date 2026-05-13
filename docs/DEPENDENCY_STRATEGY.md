@@ -35,7 +35,7 @@ pip install streamtree[dev]
 pip install streamtree[all]
 ```
 
-The **`[all]`** extra is currently an **empty placeholder** in `pyproject.toml` (no additional packages are installed). Prefer listing the extras you need explicitly (`[cli]`, `[auth]`, `[ui]`, …) until a curated meta-extra is defined.
+The **`[all]`** meta-extra in `pyproject.toml` bundles the pinned **tables**, **charts**, **ui**, **auth**, and **cli** (Typer) dependencies for a one-shot install. Prefer listing only the extras you need for leaner environments.
 
 ---
 
@@ -105,12 +105,11 @@ Recommended approach:
 
 ### Recommendation
 
-Hard dependency, but curated behind StreamTree abstractions.
+Optional dependency behind the **`[ui]`** extra (and included in **`[dev]`** / **`[all]`** for contributor or combined installs). Ship **curated wrappers** in **`streamtree.elements`** / renderers; keep **`streamlit-extras`** out of the core **`dependencies`** list—see `pyproject.toml`.
 
 ```toml
-dependencies = [
-    "streamlit-extras",
-]
+[project.optional-dependencies]
+ui = ["streamlit-extras>=0.4.3"]
 ```
 
 ---
@@ -267,7 +266,7 @@ pages = []
 
 ### Multipage helpers (`streamtree.helpers.pages`)
 
-**As of 0.5.0:** **`streamtree.helpers.pages`** ships in the **default** wheel (stdlib + pathlib). It exposes **`discover_pages`**, **`list_page_entries`**, **`pages_dir_next_to`**, and **`PageEntry`** so apps can align StreamTree trees with Streamlit’s `pages/` layout (labels, sort keys, and paths for **`PageLink`**). **As of 0.8.0:** **`page_links`** builds **`PageLink`** rows from discovery output, and **`streamtree init --with-pages`** wires **`SidebarNav`** + **`page_links`** in generated **`app.py`**. The **`[pages]`** extra remains **empty** until optional third-party multipage dependencies are pinned—see [ROADMAP.md](./ROADMAP.md).
+**As of 0.5.0:** **`streamtree.helpers.pages`** ships in the **default** wheel (stdlib + pathlib). It exposes **`discover_pages`**, **`list_page_entries`**, **`pages_dir_next_to`**, and **`PageEntry`** so apps can align StreamTree trees with Streamlit’s `pages/` layout (labels, sort keys, and paths for **`PageLink`**). **As of 0.8.0:** **`page_links`** builds **`PageLink`** rows from discovery output, and **`streamtree init --with-pages`** wires **`SidebarNav`** + **`page_links`** in generated **`app.py`**. **As of 0.9.0:** **`iter_page_entries`**, **`prefetch_page_sources`**, **`group_page_entries_by_order_prefix`**, **`page_links_sidebar_sections`**, and **`multipage_sidebar_nav`** support sectioned sidebars and optional source **`compile()`** checks without importing page modules—see **`docs/PERFORMANCE.md`** and **`docs/PHASE2_PORTALS_AND_PREFETCH.md`**. The **`[pages]`** extra remains **empty** until optional third-party multipage dependencies are pinned—see [ROADMAP.md](./ROADMAP.md).
 
 ---
 
@@ -456,6 +455,8 @@ charts = [
 ```bash
 pip install streamtree[ui]
 ```
+
+**Shipped wrappers (0.6+):** **`streamlit-extras`** behind **`[ui]`** — see **`streamtree.elements.ui_extra`** and the README “Optional UI extras” list. Subsections below (**streamlit-shadcn-ui**, **extra-streamlit-components**) are **forward-looking** integration sketches, not the current PyPI pins.
 
 ## streamlit-shadcn-ui
 
@@ -689,60 +690,50 @@ dev = [
 
 # Suggested pyproject.toml Structure
 
+**Canonical source:** the repository’s **`pyproject.toml`** (pins and extras change there first). The skeleton below matches the **0.9.0** dependency tiers; omit version bounds when drafting locally.
+
 ```toml
 [project]
 name = "streamtree"
-description = "Composable, typed Streamlit applications."
 dependencies = [
-    "streamlit",
-    "streamlit-extras",
-    "pydantic",
-    "typing-extensions",
+    "streamlit>=1.33.0",
+    "pydantic>=2.4.0",
+    "typing-extensions>=4.8.0",
 ]
 
 [project.optional-dependencies]
-tables = [
-    "streamlit-aggrid",
-]
-
-charts = [
-    "plotly",
-    "streamlit-echarts",
-    "altair",
-]
-
-ui = [
-    "streamlit-shadcn-ui",
-    "extra-streamlit-components",
-]
-
-auth = [
-    "streamlit-authenticator",
-    "extra-streamlit-components",
-]
-
-async = [
-    "asynclit",
-]
-
-dev = [
-    "pytest",
-    "ruff",
-    "ty",
-    "mypy",
-]
-
+tables = ["streamlit-aggrid>=0.3.0"]
+charts = ["plotly>=5.18.0"]
+ui = ["streamlit-extras>=0.4.3"]
+auth = ["streamlit-authenticator>=0.3.3"]
+cli = ["typer>=0.12.3"]
+asyncio = []
+async = []
+pages = []
+runner = []
 all = [
-    "streamlit-aggrid",
-    "plotly",
-    "streamlit-echarts",
-    "altair",
-    "streamlit-shadcn-ui",
-    "extra-streamlit-components",
-    "streamlit-authenticator",
-    "asynclit",
+    "streamlit-aggrid>=0.3.0",
+    "plotly>=5.18.0",
+    "streamlit-extras>=0.4.3",
+    "streamlit-authenticator>=0.3.3",
+    "typer>=0.12.3",
+]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-xdist>=3.5.0",
+    "mypy>=1.8.0",
+    "ruff>=0.2.0",
+    "ty>=0.0.30",
+    "typer>=0.12.3",
+    "streamlit-authenticator>=0.3.3",
+    "streamlit-extras>=0.4.3",
+    "streamlit-aggrid>=0.3.0",
+    "plotly>=5.18.0",
 ]
 ```
+
+Illustrative expansions (charts breadth, alternate UI kits, async vendor loops) appear in the sections below; they are **not** all pinned in the default manifest.
 
 ---
 
@@ -778,52 +769,56 @@ Users should be able to stay inside the StreamTree mental model.
 
 # Dependency Ranking
 
-## Best Hard Dependencies
+## Best hard dependencies
 
-1. streamlit
-2. pydantic
-3. streamlit-extras
-4. typing-extensions
+1. **streamlit**
+2. **pydantic**
+3. **typing-extensions**
 
-## Best Optional Dependencies
+## Best optional dependencies (pinned in `pyproject.toml` as of 0.9.0)
 
-1. streamlit-aggrid
-2. plotly
-3. streamlit-echarts
-4. streamlit-shadcn-ui
-5. extra-streamlit-components
-6. streamlit-authenticator
-7. altair
-8. asynclit (via **`[async]`** and `streamtree.asyncio`)
+1. **streamlit-aggrid** — **`[tables]`**
+2. **plotly** — **`[charts]`**
+3. **streamlit-extras** — **`[ui]`**
+4. **streamlit-authenticator** — **`[auth]`**
+5. **typer** — **`[cli]`**
+
+## Exploratory / design-note dependencies
+
+Not pinned in the default manifest; sections below discuss if/when to adopt **streamlit-echarts**, **altair**, **streamlit-shadcn-ui**, **extra-streamlit-components**, **asynclit**, etc.
 
 ---
 
-# Final Recommendation
+# Final recommendation
 
-For v0.1, use:
+The **authoritative** dependency list is **`pyproject.toml`**. As of **0.9.0**:
+
+- **Core:** `streamlit`, `pydantic`, `typing-extensions`.
+- **Extras:** `tables` (aggrid), `charts` (plotly), `ui` (streamlit-extras), `auth` (streamlit-authenticator), `cli` (typer); **`[all]`** bundles those five.
+- **`[asyncio]`** / **`[async]`**, **`[pages]`**, **`[runner]`** remain empty metadata slots unless future pins are added.
 
 ```toml
+[project]
 dependencies = [
-    "streamlit",
-    "streamlit-extras",
-    "pydantic",
-    "typing-extensions",
+    "streamlit>=1.33.0",
+    "pydantic>=2.4.0",
+    "typing-extensions>=4.8.0",
+]
+
+[project.optional-dependencies]
+tables = ["streamlit-aggrid>=0.3.0"]
+charts = ["plotly>=5.18.0"]
+ui = ["streamlit-extras>=0.4.3"]
+auth = ["streamlit-authenticator>=0.3.3"]
+cli = ["typer>=0.12.3"]
+all = [
+    "streamlit-aggrid>=0.3.0",
+    "plotly>=5.18.0",
+    "streamlit-extras>=0.4.3",
+    "streamlit-authenticator>=0.3.3",
+    "typer>=0.12.3",
 ]
 ```
-
-Then add optional extras:
-
-```toml
-[project.optional-dependencies]
-tables = ["streamlit-aggrid"]
-charts = ["plotly", "streamlit-echarts", "altair"]
-ui = ["streamlit-shadcn-ui", "extra-streamlit-components"]
-auth = ["streamlit-authenticator", "extra-streamlit-components"]
-async = ["asynclit"]
-dev = ["pytest", "ruff", "ty", "mypy"]
-```
-
-This gives StreamTree a useful base install while keeping heavier capabilities opt-in.
 
 The guiding principle should be:
 

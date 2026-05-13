@@ -73,6 +73,8 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    env:
+      UV_PYTHON: "3.12"
     steps:
       - uses: actions/checkout@v6
 
@@ -80,6 +82,15 @@ jobs:
         uses: astral-sh/setup-uv@v8.1.0
         with:
           enable-cache: true
+
+      - name: Python 3.12
+        run: uv python install 3.12
+
+      - name: Sync dev (MkDocs)
+        run: uv sync --frozen --python 3.12 --extra dev
+
+      - name: MkDocs build (strict)
+        run: uv run python -m mkdocs build --strict
 
       - name: Build sdist and wheel
         run: uv build

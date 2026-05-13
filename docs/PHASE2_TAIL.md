@@ -1,6 +1,6 @@
 # Phase 2 backlog — follow-up work (post-0.6.0)
 
-This note listed **larger Phase 2 themes** beyond the **0.6.0** slice. Most items have **shipped** through **0.9.0**; what remains is **stretch** or belongs to **Phase 3 / 4**. For shipped detail, see [ROADMAP.md](./ROADMAP.md) and [CHANGELOG.md](../CHANGELOG.md).
+This note listed **larger Phase 2 themes** beyond the **0.6.0** slice. Most items have **shipped** through **0.9.0**; what remains is **stretch** or belongs to **Phase 3 / 4**. For shipped detail, see [ROADMAP.md](./ROADMAP.md) and [CHANGELOG.md](CHANGELOG.md).
 
 ## Phase 2 closure checklist (0.9.0)
 

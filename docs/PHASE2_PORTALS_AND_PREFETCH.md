@@ -12,7 +12,7 @@ This note locks semantics for **portals / layout targets**, **route prefetch**, 
 2. **`PortalMount(slot)`** — At its position in the tree, renders **all** children collected for `slot` (in order), then clears that slot’s queue for the remainder of this rerun so content is not duplicated if multiple mounts existed (first mount wins; document **one mount per slot**).
 3. **`ComponentCall` nodes** — The gather pass does **not** execute `@component` bodies. Portals declared **inside** a component are only visible **after** expansion at render time; registering portals from deep components requires the component to return them in its public tree (same rerun). This matches Streamlit’s “tree is built each rerun” model.
 
-**Alternative (shell-only) slots:** `App` already maps **`sidebar`** + **`body`** via [app.py](../src/streamtree/app.py). **`SplitView`** (narrow + main columns) addresses “second sidebar” UX without a second `st.sidebar`.
+**Alternative (shell-only) slots:** `App` already maps **`sidebar`** + **`body`** via [app.py](https://github.com/streamtree-dev/streamtree/blob/main/src/streamtree/app.py). **`SplitView`** (narrow + main columns) addresses “second sidebar” UX without a second `st.sidebar`.
 
 ## Route prefetch
 
@@ -27,7 +27,7 @@ Background **thread** prefetch of file reads may be composed with **`streamtree.
 
 ## Layout-aware form builder
 
-**Scope:** Pydantic models already work with **`bind_str_fields`**, **`bind_numeric_fields`**, **`str_text_inputs`**, **`number_inputs`** ([forms.py](../src/streamtree/forms.py)). The layout builder adds:
+**Scope:** Pydantic models already work with **`bind_str_fields`**, **`bind_numeric_fields`**, **`str_text_inputs`**, **`number_inputs`** ([forms.py](https://github.com/streamtree-dev/streamtree/blob/main/src/streamtree/forms.py)). The layout builder adds:
 
 - **`model_field_grid`** — Arrange named fields into **rows** of **`Columns`** (each row is one `st.columns` strip) so labels/inputs follow a 2D grid instead of a single column.
 - **`build_model_from_bindings`** — Read current `StateVar` values, run **`model_validate`**, surface **`ValidationError`** via existing **`format_validation_errors`**.

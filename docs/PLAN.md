@@ -54,19 +54,19 @@ Per the dependency strategy, the base package should standardize on:
 | **pydantic** | Typed props, forms, validation, config models |
 | **typing-extensions** | Portable modern typing (when Python version warrants it) |
 
-**0.3.0:** `streamtree.asyncio` (stdlib thread MVP), `streamtree.app` / `render_app`, `streamtree.theme`, and expanded `streamtree.forms` string bindings—see [CHANGELOG.md](../CHANGELOG.md). Curated third-party UI helpers (including **streamlit-extras** wrappers added in **0.6+**) stay behind optional extras per [DEPENDENCY_STRATEGY.md](./DEPENDENCY_STRATEGY.md), not in the default install.
+**0.3.0:** `streamtree.asyncio` (stdlib thread MVP), `streamtree.app` / `render_app`, `streamtree.theme`, and expanded `streamtree.forms` string bindings—see [CHANGELOG.md](CHANGELOG.md). Curated third-party UI helpers (including **streamlit-extras** wrappers added in **0.6+**) stay behind optional extras per [DEPENDENCY_STRATEGY.md](./DEPENDENCY_STRATEGY.md), not in the default install.
 
-**0.4.0:** Optional **`[cli]`** (`streamtree run`, `streamtree doctor`), **`streamtree.helpers.runner`**, **`PageLink`** (Streamlit **≥ 1.30**), **`App`** `initial_sidebar_state` / `menu_items`, and numeric form helpers (`bind_numeric_fields`, `number_inputs`)—see [CHANGELOG.md](../CHANGELOG.md).
+**0.4.0:** Optional **`[cli]`** (`streamtree run`, `streamtree doctor`), **`streamtree.helpers.runner`**, **`PageLink`** (Streamlit **≥ 1.30**), **`App`** `initial_sidebar_state` / `menu_items`, and numeric form helpers (`bind_numeric_fields`, `number_inputs`)—see [CHANGELOG.md](CHANGELOG.md).
 
-**0.6.0:** **`streamtree init`** (CLI scaffold), **`AuthGate`** + **`[auth]`** (`streamlit-authenticator`), **`Dialog` / `Popover`**, **`[ui]`** first **`streamlit-extras`** wrappers (`ColoredHeader`, `VerticalSpaceLines`); Streamlit **≥ 1.33** in core deps—see [CHANGELOG.md](../CHANGELOG.md).
+**0.6.0:** **`streamtree init`** (CLI scaffold), **`AuthGate`** + **`[auth]`** (`streamlit-authenticator`), **`Dialog` / `Popover`**, **`[ui]`** first **`streamlit-extras`** wrappers (`ColoredHeader`, `VerticalSpaceLines`); Streamlit **≥ 1.33** in core deps—see [CHANGELOG.md](CHANGELOG.md).
 
-**0.5.0:** **`streamtree.helpers.pages`** (stdlib discovery for Streamlit’s `pages/` directory), plus **`set_task_progress`** / **`TaskHandle.progress()`** on **`streamtree.asyncio`** for rerun-polled worker progress—see [CHANGELOG.md](../CHANGELOG.md).
+**0.5.0:** **`streamtree.helpers.pages`** (stdlib discovery for Streamlit’s `pages/` directory), plus **`set_task_progress`** / **`TaskHandle.progress()`** on **`streamtree.asyncio`** for rerun-polled worker progress—see [CHANGELOG.md](CHANGELOG.md).
 
-**0.7.0:** **`streamtree.asyncio.submit_many`**, cooperative cancellation (**`TaskHandle.cancel()`**, **`is_task_cancel_requested`**, **`complete_cancelled`**), and stale-key documentation—see [CHANGELOG.md](../CHANGELOG.md).
+**0.7.0:** **`streamtree.asyncio.submit_many`**, cooperative cancellation (**`TaskHandle.cancel()`**, **`is_task_cancel_requested`**, **`complete_cancelled`**), and stale-key documentation—see [CHANGELOG.md](CHANGELOG.md).
 
-**0.7.1:** README CI / Actions badge targets aligned with the repository used for workflow status—see [CHANGELOG.md](../CHANGELOG.md).
+**0.7.1:** README CI / Actions badge targets aligned with the repository used for workflow status—see [CHANGELOG.md](CHANGELOG.md).
 
-**0.8.0:** Optional **`[tables]`** (**`DataGrid`**, streamlit-aggrid) and **`[charts]`** (**`Chart`**, Plotly); **`routing.sync_query_value`** / **`set_query_value`**; **`streamtree.loading.match_task`**; **`helpers.page_links`**, **`asyncio.dismiss_task`**, **`[ui]`** additions (**`SocialBadge`**, **`StyleMetricCards`**), **`init --with-pages`** sidebar scaffold; see [CHANGELOG.md](../CHANGELOG.md).
+**0.8.0:** Optional **`[tables]`** (**`DataGrid`**, streamlit-aggrid) and **`[charts]`** (**`Chart`**, Plotly); **`routing.sync_query_value`** / **`set_query_value`**; **`streamtree.loading.match_task`**; **`helpers.page_links`**, **`asyncio.dismiss_task`**, **`[ui]`** additions (**`SocialBadge`**, **`StyleMetricCards`**), **`init --with-pages`** sidebar scaffold; see [CHANGELOG.md](CHANGELOG.md).
 
 ## Optional extras (target)
 
@@ -356,5 +356,6 @@ A successful StreamTree application should:
 
 # Related documents
 
+- [CHANGELOG.md](CHANGELOG.md) — authoritative per-version shipped work
 - [DEPENDENCY_STRATEGY.md](./DEPENDENCY_STRATEGY.md) — hard vs optional dependencies, extras, and wrapper-first API guidance
 - [ROADMAP.md](./ROADMAP.md) — phased delivery, including dependency alignment per phase
