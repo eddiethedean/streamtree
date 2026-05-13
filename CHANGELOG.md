@@ -25,6 +25,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Docs:** **`docs/PHASE3_CRUD.md`** — Phase 3 list/detail/save patterns with **`DataGrid`**, routing, async, **`match_task`** / **`match_task_many`**; **`docs/PERFORMANCE.md`** updates for large trees and hooks.
 - **Example:** **`examples/altair_chart_demo.py`**, **`examples/crud_pattern_demo.py`**, **`examples/crud_automation_demo.py`**, **`examples/echarts_demo.py`**, **`examples/datagrid_selection_demo.py`**, **`examples/deferred_region_demo.py`**, **`examples/async_ordered_loader_demo.py`**.
 
+### Changed
+
+- **`streamtree.__version__`** reads **`importlib.metadata.version("streamtree")`** so it tracks **`pyproject.toml`** for editable installs, wheels, and PyPI (cross-checked in **`tests/test_package_meta.py`**).
+- **CI:** Windows matrix pins **`windows-2025-vs2026`** instead of **`windows-latest`** to avoid image redirect notices.
+- **Release workflow:** tag builds publish to **PyPI** and **GitHub Packages** (see **`.github/workflows/release.yml`**).
+
 ## [0.9.0] — 2026-05-13
 
 ### Added
