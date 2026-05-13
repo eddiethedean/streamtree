@@ -87,7 +87,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 
 - README: **0.6.0** pin, Streamlit **1.33+**, **`streamtree init`**, auth / overlay / **`[ui]`** capabilities; releases tag **`v0.6.0`**; overlay bullet clarifies **`Dialog`** legacy (inline) vs **`Popover`** (expander) fallbacks.
-- [ROADMAP.md](https://github.com/streamtree-dev/streamtree/blob/main/docs/ROADMAP.md), [PLAN.md](https://github.com/streamtree-dev/streamtree/blob/main/docs/PLAN.md), [DEPENDENCY_STRATEGY.md](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md): **0.6.0** shipped scope and optional-extra notes (including empty **`[all]`** placeholder).
+- [ROADMAP.md](https://github.com/streamtree-dev/streamtree/blob/main/docs/ROADMAP.md), [PLAN.md](https://github.com/streamtree-dev/streamtree/blob/main/docs/PLAN.md), [DEPENDENCY_STRATEGY.md](https://github.com/streamtree-dev/streamtree/blob/main/docs/DEPENDENCY_STRATEGY.md): **0.6.0** shipped scope and optional-extra notes ( **`[all]`** was documented as an empty stub until **0.8.0** populated the meta-extra).
 - **`Dialog`**, **`App` / `apply_page_config`:** docstrings for legacy dialog behavior and one-shot **`st.set_page_config`** per session.
 
 ## [0.5.0] — 2026-05-12
