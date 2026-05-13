@@ -76,9 +76,12 @@ jobs:
         run: uv run streamtree doctor
 
   publish:
-    name: Publish to PyPI
+    name: Publish to PyPI and GitHub Packages
     runs-on: ubuntu-latest
     needs: [lint-test, cli-smoke]
+    permissions:
+      contents: read
+      packages: write
     env:
       # Pinned interpreter for build + publish (matches prior release job).
       UV_PYTHON: "3.11"
@@ -103,3 +106,11 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Publish to GitHub Packages
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://upload.pypi.pkg.github.com/${{ github.repository }}/
+          password: ${{ secrets.GITHUB_TOKEN }}
+          # PEP 740 attestations are for PyPI / TestPyPI; GitHub Packages uses legacy upload.
+          attestations: "false"
