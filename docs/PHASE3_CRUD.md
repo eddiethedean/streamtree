@@ -2,6 +2,8 @@
 
 This note complements [`PERFORMANCE.md`](./PERFORMANCE.md) with **repeatable shapes** for list/detail/edit flows on Streamlit’s rerun model. It is **not** a full admin framework: stay with explicit `state`, elements, and optional extras.
 
+**Cookbook:** [List / detail / save (CRUD)](./recipes/crud-list-detail-save.md) embeds the two CRUD demos end-to-end.
+
 ## Building blocks
 
 | Concern | StreamTree pieces |
@@ -26,9 +28,9 @@ This note complements [`PERFORMANCE.md`](./PERFORMANCE.md) with **repeatable sha
 
 ## Example
 
-[`examples/crud_pattern_demo.py`](https://github.com/streamtree-dev/streamtree/blob/main/examples/crud_pattern_demo.py) shows in-memory list/edit/add plus **`match_task_many`** over two parallel **`submit`** handles (stand-ins for reference data). Swap the bodies for real I/O as needed.
+[`examples/crud_pattern_demo.py`](https://github.com/streamtree-dev/streamtree/blob/main/examples/crud_pattern_demo.py) shows in-memory list/edit/add plus **`match_task_many`** over two parallel **`submit`** handles (stand-ins for reference data). Swap the bodies for real I/O as needed. **On this doc site**, the same file is included in full on the **[Examples](EXAMPLES.md)** page.
 
-[`examples/crud_automation_demo.py`](https://github.com/streamtree-dev/streamtree/blob/main/examples/crud_automation_demo.py) wires **`streamtree.crud`** helpers (URL **`id`** + save-intent counter) next to normal **`state`**.
+[`examples/crud_automation_demo.py`](https://github.com/streamtree-dev/streamtree/blob/main/examples/crud_automation_demo.py) wires **`streamtree.crud`** helpers (URL **`id`** + save-intent counter) next to normal **`state`**. Full source: **[Examples](EXAMPLES.md)**.
 
 ## CLI scaffolding (**0.10.0+**)
 

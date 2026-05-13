@@ -8,6 +8,12 @@ site_dir: site
 
 strict: true
 
+markdown_extensions:
+  - pymdownx.superfences
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
+
 plugins:
   - search
   - mkdocstrings:
@@ -23,6 +29,25 @@ theme:
 
 nav:
   - Home: index.md
+  - Examples (full source): EXAMPLES.md
+  - Recipes:
+      - Overview: recipes/README.md
+      - First app & components: recipes/first-app-and-components.md
+      - Streamlit interop: recipes/streamlit-interop.md
+      - State, session & memo: recipes/state-session-and-memo.md
+      - Forms & validation: recipes/forms-and-validation.md
+      - Routing & URLs: recipes/routing-and-urls.md
+      - Async & loading: recipes/async-and-loading.md
+      - Multipage navigation: recipes/multipage-navigation.md
+      - App shell, theme & context: recipes/app-theme-context.md
+      - Layouts & error boundaries: recipes/layout-shells.md
+      - Data grids & charts: recipes/data-grids-and-charts.md
+      - List / detail / save (CRUD): recipes/crud-list-detail-save.md
+      - Authentication gate: recipes/authentication-gate.md
+      - CLI & scaffolding: recipes/cli-and-scaffolding.md
+      - Portals & deferred UI: recipes/portals-and-deferred.md
+      - Organizing large apps: recipes/organizing-large-apps.md
+      - Observability & ops: recipes/observability-and-ops.md
   - Changelog: CHANGELOG.md
   - Testing & debugging: TESTING_AND_DEBUG.md
   - Guides:

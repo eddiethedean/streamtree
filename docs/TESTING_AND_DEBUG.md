@@ -3,6 +3,8 @@
 StreamTree ships two complementary approaches: **static tree snapshots** (no Streamlit
 session) and **runtime introspection** (inside `streamlit run`).
 
+Broader step-by-step patterns (CLI, async, routing, CRUD, etc.) live under **[Recipes](recipes/README.md)**.
+
 ## Static structure: `render_to_tree`
 
 Use `streamtree.testing.render_to_tree` in unit tests to assert layout and widget kinds

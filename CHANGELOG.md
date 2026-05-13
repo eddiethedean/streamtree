@@ -18,6 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`streamtree.debug_render_path`** (re-exported from **`streamtree.core.context`**).
 - **Docs:** **`docs/TESTING_AND_DEBUG.md`**; MkDocs **API reference** pages (**mkdocstrings**); **`.readthedocs.yml`** for Read the Docs builds.
 - **`examples`:** package **`__init__.py`** and **`examples.counter.streamtree_tree_root`** for **`streamtree tree`** demos.
+- **`tests/test_examples_run.py`:** **`AppTest.from_file`** smoke test for every **`examples/*.py`** and **`examples/pages/*.py`** script (asserts no **`at.exception`** entries); **`echarts_demo.py`** is skipped because **`streamlit-echarts`** custom-component registration fails in the AppTest harness.
+
+### Fixed
+
+- **`examples/crud_pattern_demo.py`:** form actions use **`Button(..., submit=True)`** so Streamlit receives **`st.form_submit_button`** instead of **`st.button`** inside **`st.form`**.
+- **`examples/numeric_nav_demo.py`:** **`PageLink`** targets **`pages/1_About_demo.py`** (a valid multipage path relative to the entrypoint; sibling **`counter.py`** is not a discoverable page for **`st.page_link`**).
+
+### Documentation
+
+- **`docs/EXAMPLES.md`:** MkDocs / Read the Docs page with **embedded full source** for every **`examples/*.py`** and **`examples/streamtree_run_demo.md`** (via **`pymdownx.snippets`**).
+- **`docs/recipes/`:** Cookbook pages (first app, state, forms, routing, async, multipage, shell/theme, layouts, data extras, CRUD, auth, CLI, portals, organization, observability, Streamlit interop).
 
 ## [0.10.0] — 2026-05-13
 

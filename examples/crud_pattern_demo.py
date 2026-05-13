@@ -75,8 +75,8 @@ def CrudPatternDemo() -> Element:
         *row_buttons,
         Form(
             TextInput("Name", value=name_edit),
-            Button("Apply edit", on_click=apply_edit),
-            Button("Add row (uses name field)", on_click=add_row),
+            Button("Apply edit", on_click=apply_edit, submit=True),
+            Button("Add row (uses name field)", on_click=add_row, submit=True),
             form_key="crud_form",
         ),
     )

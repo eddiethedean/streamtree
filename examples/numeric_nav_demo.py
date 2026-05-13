@@ -26,7 +26,10 @@ def MiniForm() -> object:
             bindings=bindings,
             field_labels={"quantity": "Quantity", "unit_price": "Unit price"},
         ),
-        PageLink("Open counter example", page="counter.py"),
+        PageLink(
+            "Open About demo page",
+            page="pages/1_About_demo.py",
+        ),
     )
 
 

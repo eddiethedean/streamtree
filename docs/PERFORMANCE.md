@@ -3,6 +3,9 @@
 StreamTree stays on Streamlit’s **sync, rerun-driven** model. This note lists practical
 patterns for heavier work without blocking the script longer than necessary.
 
+For shorter **how-to** pages (memo sketch, async loading, deferred UI, organizing large apps),
+see the **[Recipes](recipes/README.md)** section alongside this guide.
+
 ## Session helpers
 
 - **`memo`** / **`cache`** in `streamtree.state` — reuse derived values across reruns
