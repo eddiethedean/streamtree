@@ -26,6 +26,14 @@ def test_app_py_source_newlines_are_valid_python() -> None:
     compile(src, "<app.py>", "exec")
 
 
+def test_app_py_source_with_pages_compiles() -> None:
+    src = app_py_source(page_title="NavApp", with_pages=True)
+    compile(src, "<app.py>", "exec")
+    assert "discover_pages" in src
+    assert "page_links" in src
+    assert "SidebarNav" in src
+
+
 def test_write_init_project_creates_app(tmp_path: Path) -> None:
     out = write_init_project(tmp_path, page_title="T", with_pages=False, force=False)
     assert len(out) == 1
@@ -39,6 +47,9 @@ def test_write_init_project_with_pages(tmp_path: Path) -> None:
     out = write_init_project(tmp_path, page_title="X", with_pages=True, force=False)
     assert len(out) == 2
     assert (tmp_path / "pages" / "1_About.py").is_file()
+    app_txt = (tmp_path / "app.py").read_text(encoding="utf-8")
+    assert "discover_pages" in app_txt
+    assert "page_links" in app_txt
 
 
 def test_write_init_project_refuses_overwrite(tmp_path: Path) -> None:

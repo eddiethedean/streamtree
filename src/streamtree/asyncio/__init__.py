@@ -39,6 +39,10 @@ Composition with trees
 Use :func:`submit_many` for parallel independent tasks. For declarative loading branches,
 :func:`streamtree.loading.match_task` maps a :class:`TaskHandle` ``status`` to
 ``loading`` / ``ready`` / ``error`` element subtrees (see ``examples/async_loader_demo.py``).
+
+After a terminal **done** / **error** / **cancelled** run, :func:`dismiss_task` removes the
+session entry for a ``key`` so the next :func:`submit` can reuse that key without colliding
+with stale task state.
 """
 
 from __future__ import annotations
@@ -292,9 +296,38 @@ def submit(fn: Callable[..., T], /, *args: Any, key: str, **kwargs: Any) -> Task
     return TaskHandle(_session_key=sk)
 
 
+def dismiss_task(*, key: str) -> bool:
+    """Remove a **terminal** task entry so the next :func:`submit` with the same ``key`` starts fresh.
+
+    Returns ``True`` if session state under ``key`` was cleared. Returns ``False`` if there
+    was no task, the value was not a managed task box, or status was still **pending** /
+    **running** (avoids leaving a background thread writing to discarded state).
+
+    For **running** work, prefer :meth:`TaskHandle.cancel` and cooperative shutdown; call
+    ``dismiss_task`` after the handle reaches **done**, **error**, or **cancelled**.
+    """
+    sk = _task_session_key(key)
+    raw = st.session_state.get(sk)
+    if raw is None:
+        return False
+    if not _is_managed_task_box(raw):
+        del st.session_state[sk]
+        return True
+    box = cast(dict[str, Any], raw)
+
+    def is_terminal() -> bool:
+        return str(box.get("status")) in ("done", "error", "cancelled")
+
+    if not _with_box_lock(box, is_terminal):
+        return False
+    del st.session_state[sk]
+    return True
+
+
 __all__ = [
     "TaskHandle",
     "complete_cancelled",
+    "dismiss_task",
     "is_task_cancel_requested",
     "set_task_progress",
     "submit",

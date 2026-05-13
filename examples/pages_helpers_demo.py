@@ -1,5 +1,8 @@
 """List Streamlit ``pages/*.py`` entries via ``streamtree.helpers.pages`` (0.5.0+).
 
+Use :func:`streamtree.helpers.page_links` (0.8.0+) to turn discovery rows into :class:`PageLink`
+widgets without a generator expression.
+
 Run from the repository root (so ``examples/pages/`` sits next to this file):
 
     streamlit run examples/pages_helpers_demo.py
@@ -8,8 +11,8 @@ Run from the repository root (so ``examples/pages/`` sits next to this file):
 from __future__ import annotations
 
 from streamtree import component, render
-from streamtree.elements import Markdown, Page, PageLink, VStack
-from streamtree.helpers.pages import discover_pages
+from streamtree.elements import Markdown, Page, VStack
+from streamtree.helpers import discover_pages, page_links
 
 
 @component
@@ -21,7 +24,7 @@ def Body():
         )
     return VStack(
         Markdown("**Pages** discovered next to this script:"),
-        *(PageLink(e.label, page=e.page) for e in entries),
+        *page_links(entries),
     )
 
 

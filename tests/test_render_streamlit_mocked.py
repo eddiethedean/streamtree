@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import builtins
 from contextlib import contextmanager, nullcontext
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
@@ -37,7 +38,9 @@ from streamtree.elements import (
     Routes,
     Selectbox,
     Sidebar,
+    SocialBadge,
     Spacer,
+    StyleMetricCards,
     Subheader,
     Tabs,
     Text,
@@ -778,6 +781,51 @@ def test_render_vertical_space_import_error() -> None:
     ):
         with render_context("vs2"), pytest.raises(ImportError, match="streamtree\\[ui\\]"):
             rs.render_element(VerticalSpaceLines(), slot="0")
+
+
+def test_render_social_badge_delegates() -> None:
+    st = _make_st()
+    with _patched_st(st), patch("streamlit_extras.badges.badge") as mock_badge:
+        with render_context("sb"):
+            rs.render_element(SocialBadge(kind="pypi", name="streamtree"), slot="0")
+        mock_badge.assert_called_once_with("pypi", name="streamtree", url=None)
+
+
+def test_render_style_metric_cards_delegates() -> None:
+    st = _make_st()
+    with _patched_st(st), patch("streamlit_extras.metric_cards.style_metric_cards") as smc:
+        with render_context("mc"):
+            rs.render_element(StyleMetricCards(border_left_color="#ff0000"), slot="0")
+        smc.assert_called_once()
+        assert smc.call_args.kwargs["border_left_color"] == "#ff0000"
+
+
+def test_render_social_badge_import_error_message() -> None:
+    st = _make_st()
+    real_import = builtins.__import__
+
+    def _fake(name: str, *a: object, **kw: object):
+        if name == "streamlit_extras.badges":
+            raise ImportError("blocked")
+        return real_import(name, *a, **kw)
+
+    with _patched_st(st), patch.object(builtins, "__import__", side_effect=_fake):
+        with render_context("sbie"), pytest.raises(ImportError, match="streamtree\\[ui\\]"):
+            rs.render_element(SocialBadge(kind="pypi", name="z"), slot="0")
+
+
+def test_render_style_metric_cards_import_error_message() -> None:
+    st = _make_st()
+    real_import = builtins.__import__
+
+    def _fake(name: str, *a: object, **kw: object):
+        if name == "streamlit_extras.metric_cards":
+            raise ImportError("blocked")
+        return real_import(name, *a, **kw)
+
+    with _patched_st(st), patch.object(builtins, "__import__", side_effect=_fake):
+        with render_context("mcie"), pytest.raises(ImportError, match="streamtree\\[ui\\]"):
+            rs.render_element(StyleMetricCards(), slot="0")
 
 
 def test_render_datagrid_and_chart_delegate_to_helpers() -> None:

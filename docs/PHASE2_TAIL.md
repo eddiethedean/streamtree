@@ -1,16 +1,18 @@
 # Phase 2 backlog — follow-up work (post-0.6.0)
 
-This note captures **larger or cross-cutting** Phase 2 themes that are intentionally **not** part of the **0.6.0** slice. Use it to groom releases after [`streamtree init`](https://github.com/streamtree-dev/streamtree/blob/main/src/streamtree/cli.py), **[`auth`]**, **overlays** (`Dialog` / `Popover`), and the first **[`ui`]`** wrappers ship.
+This note captures **larger or cross-cutting** Phase 2 themes that are intentionally **not** part of the **0.6.0** slice. Use it to groom releases after [`streamtree init`](https://github.com/streamtree-dev/streamtree/blob/main/src/streamtree/cli.py), **[`auth`]**, **overlays** (`Dialog` / `Popover`), and the first **[`ui`]** wrappers ship.
 
 ## Richer navigation and app shell
 
-- Route prefetch, second-sidebar patterns, and generators for `pages/` trees.
-- Tighter coupling between **`streamtree.helpers.pages`** discovery and **`Routes`** / **`App`** conventions (templates produced by **`streamtree init`**).
+- **Shipped in 0.8.0:** **`streamtree.helpers.page_links`** builds **`PageLink`** tuples from **`discover_pages`** output; **`streamtree init --with-pages`** scaffolds **`SidebarNav`** + **`App(sidebar=..., body=...)`** wired to **`page_links`**.
+- Route prefetch, second-sidebar patterns, and generators for `pages/` trees (beyond **`page_links`**).
+- Tighter coupling between **`Routes`** / query routing and **`App`** conventions (optional future templates).
 
 ## `streamtree.asyncio` orchestration
 
 - **Shipped in 0.7.0:** `submit_many`, cooperative cancel (`is_task_cancel_requested`, `complete_cancelled`), and stale-key documentation on the asyncio module.
-- Further ideas: richer composition, cancellation UX polish, route prefetch (overlaps some Phase 3 language in the roadmap but remains fair game here).
+- **Shipped in 0.8.0:** **`dismiss_task`** removes a **terminal** task session entry so **`submit`** can reuse the same ``key`` safely.
+- Further ideas: richer composition helpers, cancellation UX polish, route prefetch (overlaps some Phase 3 language in the roadmap but remains fair game here).
 
 ## Form builder
 
@@ -18,7 +20,8 @@ This note captures **larger or cross-cutting** Phase 2 themes that are intention
 
 ## `streamlit-extras` breadth
 
-- Additional curated wrappers behind **`[ui]`** (badges, metric cards, etc.) without expanding the default install.
+- **Shipped in 0.8.0:** **`SocialBadge`** (badges) and **`StyleMetricCards`** (metric styling) behind **`[ui]`**.
+- Additional curated wrappers (badges beyond platform rows, metric cards beyond CSS, etc.) without expanding the default install.
 
 ## References
 

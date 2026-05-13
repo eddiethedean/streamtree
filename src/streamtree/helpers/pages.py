@@ -14,8 +14,11 @@ from __future__ import annotations
 
 import logging
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
+
+from streamtree.elements.widgets import PageLink
 
 # Leading digits + underscore(s), rest is title segments separated by underscores.
 _ORDERED_STEM = re.compile(r"^(\d+)_(.+)$")
@@ -107,4 +110,30 @@ def discover_pages(main_script: str | Path) -> list[PageEntry]:
     return list_page_entries(pd)
 
 
-__all__ = ["PageEntry", "discover_pages", "list_page_entries", "pages_dir_next_to"]
+def page_links(
+    entries: Sequence[PageEntry],
+    *,
+    icon: str | None = None,
+    help_text: str | None = None,
+    disabled: bool = False,
+    use_container_width: bool | None = None,
+) -> tuple[PageLink, ...]:
+    """Build :class:`PageLink` elements from :func:`discover_pages` / :func:`list_page_entries` rows.
+
+    Common ``icon`` / ``help_text`` / ``disabled`` / ``use_container_width`` kwargs are applied
+    to every link; per-page overrides are not supported (build links manually if needed).
+    """
+    return tuple(
+        PageLink(
+            e.label,
+            page=e.page,
+            icon=icon,
+            help=help_text,
+            disabled=disabled,
+            use_container_width=use_container_width,
+        )
+        for e in entries
+    )
+
+
+__all__ = ["PageEntry", "discover_pages", "list_page_entries", "page_links", "pages_dir_next_to"]

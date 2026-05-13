@@ -24,7 +24,12 @@ from streamtree.elements.layout import (
     Tabs,
     VStack,
 )
-from streamtree.elements.ui_extra import ColoredHeader, VerticalSpaceLines
+from streamtree.elements.ui_extra import (
+    ColoredHeader,
+    SocialBadge,
+    StyleMetricCards,
+    VerticalSpaceLines,
+)
 from streamtree.elements.widgets import (
     Button,
     Checkbox,
@@ -282,6 +287,18 @@ def _node(el: Element, *, expand_components: bool) -> dict[str, Any]:
             "description": el.description,
             "color_name": el.color_name,
         }
+
+    if isinstance(el, SocialBadge):
+        return {
+            "kind": "SocialBadge",
+            "key": el.key,
+            "badge_kind": el.kind,
+            "has_name": el.name is not None,
+            "has_url": el.url is not None,
+        }
+
+    if isinstance(el, StyleMetricCards):
+        return {"kind": "StyleMetricCards", "key": el.key}
 
     if isinstance(el, VerticalSpaceLines):
         return {"kind": "VerticalSpaceLines", "key": el.key, "num_lines": el.num_lines}

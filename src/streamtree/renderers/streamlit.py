@@ -28,7 +28,12 @@ from streamtree.elements.layout import (
     Tabs,
     VStack,
 )
-from streamtree.elements.ui_extra import ColoredHeader, VerticalSpaceLines
+from streamtree.elements.ui_extra import (
+    ColoredHeader,
+    SocialBadge,
+    StyleMetricCards,
+    VerticalSpaceLines,
+)
 from streamtree.elements.widgets import (
     Button,
     Checkbox,
@@ -539,6 +544,34 @@ def render_element(el: Element, *, slot: str = "0") -> None:
         auth.login(location=el.login_location, key=el.login_key)
         if st.session_state.get("authentication_status"):
             render_element(el.child, slot=f"{slot}.auth_ok")
+        return
+
+    if isinstance(el, SocialBadge):
+        try:
+            from streamlit_extras.badges import badge
+        except ImportError as exc:
+            raise ImportError(
+                'SocialBadge requires streamlit-extras. Install with: pip install "streamtree[ui]"'
+            ) from exc
+        badge(el.kind, name=el.name, url=el.url)
+        return
+
+    if isinstance(el, StyleMetricCards):
+        try:
+            from streamlit_extras.metric_cards import style_metric_cards
+        except ImportError as exc:
+            raise ImportError(
+                "StyleMetricCards requires streamlit-extras. "
+                'Install with: pip install "streamtree[ui]"'
+            ) from exc
+        style_metric_cards(
+            background_color=el.background_color,
+            border_size_px=el.border_size_px,
+            border_color=el.border_color,
+            border_radius_px=el.border_radius_px,
+            border_left_color=el.border_left_color,
+            box_shadow=el.box_shadow,
+        )
         return
 
     if isinstance(el, ColoredHeader):

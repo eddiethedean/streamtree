@@ -62,7 +62,7 @@ Per the dependency strategy, the base package should standardize on:
 
 **0.5.0:** **`streamtree.helpers.pages`** (stdlib discovery for Streamlit’s `pages/` directory), plus **`set_task_progress`** / **`TaskHandle.progress()`** on **`streamtree.asyncio`** for rerun-polled worker progress—see [CHANGELOG.md](../CHANGELOG.md).
 
-**0.8.0:** Optional **`[tables]`** (**`DataGrid`**, streamlit-aggrid) and **`[charts]`** (**`Chart`**, Plotly); **`routing.sync_query_value`** / **`set_query_value`**; **`streamtree.loading.match_task`**; see [CHANGELOG.md](../CHANGELOG.md).
+**0.8.0:** Optional **`[tables]`** (**`DataGrid`**, streamlit-aggrid) and **`[charts]`** (**`Chart`**, Plotly); **`routing.sync_query_value`** / **`set_query_value`**; **`streamtree.loading.match_task`**; **`helpers.page_links`**, **`asyncio.dismiss_task`**, **`[ui]`** additions (**`SocialBadge`**, **`StyleMetricCards`**), **`init --with-pages`** sidebar scaffold; see [CHANGELOG.md](../CHANGELOG.md).
 
 ## Optional extras (target)
 
@@ -70,7 +70,7 @@ Per the dependency strategy, the base package should standardize on:
 |-------|-------------------|
 | **tables** | **`DataGrid`** (streamlit-aggrid) — **0.8+** ships pinned extra and renderer integration |
 | **charts** | **`Chart`** (Plotly / `st.plotly_chart`) — **0.8+** MVP; echarts / altair remain roadmap |
-| **ui** | Polished components (e.g. streamlit-shadcn-ui, extra-streamlit-components) behind names like `Badge`, `Alert`, `ModernCard`; **0.6+** ships curated **`streamlit-extras`** wrappers under the same extra |
+| **ui** | Polished components (e.g. streamlit-shadcn-ui, extra-streamlit-components) behind stable names; **0.6+** ships **`ColoredHeader`** / **`VerticalSpaceLines`**; **0.8.0+** adds **`SocialBadge`** and **`StyleMetricCards`** (`streamlit-extras`) |
 | **auth** | streamlit-authenticator (+ shared helpers) behind **`AuthGate`** / optional extras (**shipped 0.6+**) |
 | **async** | Optional background task / poll integration (e.g. worker loop helpers) behind **`streamtree.asyncio`** — see plan async model |
 | **dev** | pytest, ruff, **ty** (canonical in CI), **mypy** (optional local) for contributors and typed app authors |

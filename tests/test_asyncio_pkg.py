@@ -12,6 +12,7 @@ import pytest
 from streamtree.asyncio import (
     TaskHandle,
     complete_cancelled,
+    dismiss_task,
     is_task_cancel_requested,
     set_task_progress,
     submit,
@@ -505,3 +506,54 @@ def test_normal_completion_wins_over_cancel_requested() -> None:
             time.sleep(0.01)
         assert h.status() == "done"
         assert h.result() == 42
+
+
+def test_dismiss_task_clears_done_and_allows_resubmit() -> None:
+    st = SimpleNamespace(session_state={})
+    with patch("streamtree.asyncio.st", st):
+        h = submit(lambda: 7, key="reuse")
+        deadline = time.monotonic() + 2.0
+        while time.monotonic() < deadline and h.status() != "done":
+            time.sleep(0.01)
+        assert dismiss_task(key="reuse") is True
+        assert "streamtree.asyncio.task.reuse" not in st.session_state
+        h2 = submit(lambda: 8, key="reuse")
+        deadline2 = time.monotonic() + 2.0
+        while time.monotonic() < deadline2 and h2.status() != "done":
+            time.sleep(0.01)
+        assert h2.result() == 8
+
+
+def test_dismiss_task_false_while_running() -> None:
+    st = SimpleNamespace(session_state={})
+    started = threading.Event()
+    hold = threading.Event()
+
+    def slow() -> int:
+        started.set()
+        assert hold.wait(timeout=2.0)
+        return 1
+
+    with patch("streamtree.asyncio.st", st):
+        h = submit(slow, key="slowjob")
+        assert started.wait(timeout=2.0)
+        assert h.status() == "running"
+        assert dismiss_task(key="slowjob") is False
+        assert "streamtree.asyncio.task.slowjob" in st.session_state
+        hold.set()
+        deadline = time.monotonic() + 2.0
+        while time.monotonic() < deadline and h.status() != "done":
+            time.sleep(0.01)
+
+
+def test_dismiss_task_missing_key() -> None:
+    st = SimpleNamespace(session_state={})
+    with patch("streamtree.asyncio.st", st):
+        assert dismiss_task(key="nope") is False
+
+
+def test_dismiss_task_removes_foreign_mapping() -> None:
+    st = SimpleNamespace(session_state={"streamtree.asyncio.task.foreign": {"not": "managed"}})
+    with patch("streamtree.asyncio.st", st):
+        assert dismiss_task(key="foreign") is True
+        assert "streamtree.asyncio.task.foreign" not in st.session_state

@@ -23,6 +23,10 @@ Use **`streamtree.asyncio.submit`** / **`submit_many`** for thread offload; poll
 **`streamtree.loading.match_task`** to map status to `loading` / `ready` / `error`
 elements (see `examples/async_loader_demo.py`).
 
+After a terminal **done** / **error** / **cancelled** run, **`streamtree.asyncio.dismiss_task`**
+drops the session slot for a ``key`` so the next **`submit`** can reuse that key safely
+(do not call while the task is still **running**).
+
 ## URL filter state
 
 **`streamtree.routing.sync_query_value`** / **`set_query_value`** mirror arbitrary

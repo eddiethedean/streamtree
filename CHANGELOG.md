@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`streamtree.helpers.pages.page_links`:** build **`PageLink`** tuples from **`discover_pages`** / **`list_page_entries`** output (navigation coupling with multipage apps).
+- **`streamtree.asyncio.dismiss_task`:** remove a **terminal** task session entry so **`submit`** can reuse the same ``key``.
+- **`[ui]`** elements **`SocialBadge`** (streamlit-extras badges) and **`StyleMetricCards`** (metric card CSS helper).
+- **`streamtree init --with-pages`:** generated **`app.py`** now wires **`discover_pages`** + **`page_links`** into a **`SidebarNav`** shell.
 - **`[tables]`** optional extra: **`streamlit-aggrid`** + **`DataGrid`** element and **`streamtree.tables.render_datagrid`** (lazy import with install hint).
 - **`[charts]`** optional extra: **`plotly`** + **`Chart`** element and **`streamtree.charts.render_chart`** (Plotly via **`st.plotly_chart`**).
 - **`streamtree.routing.sync_query_value`** / **`set_query_value`**: URL ↔ session helpers for arbitrary string query params (including empty defaults), complementing **`sync_route`** / **`set_route`**.

@@ -20,7 +20,13 @@ from streamtree.elements.layout import (
     Tabs,
     VStack,
 )
-from streamtree.elements.ui_extra import ColoredHeader, VerticalSpaceLines
+from streamtree.elements.ui_extra import (
+    ColoredHeader,
+    SocialBadge,
+    SocialBadgeKind,
+    StyleMetricCards,
+    VerticalSpaceLines,
+)
 from streamtree.elements.widgets import (
     Button,
     Checkbox,
@@ -67,7 +73,10 @@ __all__ = [
     "Routes",
     "Selectbox",
     "Sidebar",
+    "SocialBadge",
+    "SocialBadgeKind",
     "Spacer",
+    "StyleMetricCards",
     "Subheader",
     "Tabs",
     "Text",

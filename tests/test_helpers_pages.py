@@ -10,6 +10,7 @@ from streamtree.helpers.pages import (
     PageEntry,
     discover_pages,
     list_page_entries,
+    page_links,
     pages_dir_next_to,
 )
 
@@ -206,3 +207,15 @@ def test_discover_pages_accepts_str_path(tmp_path: Path) -> None:
     entries = discover_pages(str(main))
     assert len(entries) == 1
     assert entries[0].label == "X"
+
+
+def test_page_links_builds_page_link_widgets(tmp_path: Path) -> None:
+    pages = tmp_path / "pages"
+    pages.mkdir()
+    (pages / "1_Hello.py").write_text("#", encoding="utf-8")
+    entries = list_page_entries(pages)
+    links = page_links(entries, icon="🌐", disabled=False)
+    assert len(links) == 1
+    assert links[0].label == "Hello"
+    assert links[0].page == "pages/1_Hello.py"
+    assert links[0].icon == "🌐"

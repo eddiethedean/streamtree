@@ -23,6 +23,7 @@ def test_auth_submodule_exposed() -> None:
 
 def test_asyncio_and_forms_submodules_exposed() -> None:
     assert hasattr(streamtree.asyncio, "submit")
+    assert hasattr(streamtree.asyncio, "dismiss_task")
     assert hasattr(streamtree.asyncio, "submit_many")
     assert hasattr(streamtree.asyncio, "set_task_progress")
     assert hasattr(streamtree.asyncio, "is_task_cancel_requested")
@@ -36,6 +37,10 @@ def test_asyncio_and_forms_submodules_exposed() -> None:
 def test_loading_submodule_exposed() -> None:
     assert hasattr(streamtree, "loading")
     assert hasattr(streamtree.loading, "match_task")
+
+
+def test_helpers_exports_page_links() -> None:
+    assert hasattr(streamtree.helpers, "page_links")
 
 
 def test_tables_and_charts_submodules_exposed() -> None:

@@ -29,7 +29,9 @@ from streamtree.elements import (
     Routes,
     Selectbox,
     Sidebar,
+    SocialBadge,
     Spacer,
+    StyleMetricCards,
     Subheader,
     Tabs,
     Text,
@@ -85,6 +87,8 @@ def test_render_to_tree_exercises_all_node_types() -> None:
                     child=Text("authed"),
                 ),
                 ColoredHeader("CH"),
+                SocialBadge(kind="pypi", name="pkg"),
+                StyleMetricCards(),
                 VerticalSpaceLines(2),
             ),
         )
